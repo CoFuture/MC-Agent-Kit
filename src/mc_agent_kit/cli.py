@@ -2,7 +2,7 @@
 """
 MC-Agent-Kit CLI
 
-命令行工具，用于调用 ModSDK Skills。
+命令行工具，用于调用 ModSDK Skills 和自动修复功能。
 """
 
 import argparse
@@ -13,6 +13,16 @@ from typing import Any
 from mc_agent_kit.skills import (
     get_registry,
     register_modsdk_skills,
+)
+from mc_agent_kit.completion import (
+    CodeCompleter,
+    SmellDetector,
+    RefactorEngine,
+    BestPracticeChecker,
+)
+from mc_agent_kit.autofix import (
+    AutoFixer,
+    ErrorDiagnoser,
 )
 
 
@@ -212,6 +222,331 @@ def cmd_debug(args: argparse.Namespace) -> int:
     return 0 if result.success else 1
 
 
+def cmd_complete(args: argparse.Namespace) -> int:
+    """代码补全"""
+    completer = CodeCompleter()
+
+    # 读取代码
+    code = args.code
+    if args.file:
+        try:
+            with open(args.file, encoding="utf-8") as f:
+                code = f.read()
+        except FileNotFoundError:
+            print(f"错误: 文件不存在: {args.file}")
+            return 1
+
+    if not code:
+        print("错误: 请提供代码内容 (-c) 或代码文件 (-f)")
+        return 1
+
+    result = completer.complete(
+        code=code,
+        cursor_line=args.line,
+        cursor_column=args.column,
+        prefix=args.prefix,
+    )
+
+    if args.format == "json":
+        data = {
+            "items": [
+                {
+                    "text": item.text,
+                    "kind": item.kind.value,
+                    "detail": item.detail,
+                    "documentation": item.documentation,
+                }
+                for item in result.items
+            ]
+        }
+        print(json.dumps(data, ensure_ascii=False, indent=2))
+    else:
+        if result.items:
+            print(f"补全建议 ({len(result.items)} 个):\n")
+            for item in result.items:
+                print(f"  📝 {item.text}")
+                print(f"     类型: {item.kind.value}")
+                if item.detail:
+                    print(f"     详情: {item.detail}")
+                print()
+        else:
+            print("没有找到补全建议")
+
+    return 0
+
+
+def cmd_refactor(args: argparse.Namespace) -> int:
+    """代码重构"""
+    detector = SmellDetector()
+    engine = RefactorEngine()
+
+    # 读取代码
+    code = args.code
+    if args.file:
+        try:
+            with open(args.file, encoding="utf-8") as f:
+                code = f.read()
+        except FileNotFoundError:
+            print(f"错误: 文件不存在: {args.file}")
+            return 1
+
+    if not code:
+        print("错误: 请提供代码内容 (-c) 或代码文件 (-f)")
+        return 1
+
+    if args.action == "detect":
+        # 检测代码异味
+        smells = detector.detect(code)
+
+        if args.format == "json":
+            data = {
+                "smells": [
+                    {
+                        "type": smell.smell_type.value,
+                        "severity": smell.severity.value,
+                        "message": smell.message,
+                        "line": smell.line,
+                    }
+                    for smell in smells
+                ]
+            }
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            if smells:
+                print(f"检测到 {len(smells)} 个代码异味:\n")
+                for smell in smells:
+                    print(f"  ⚠️ {smell.smell_type.value}: {smell.message}")
+                    print(f"     严重程度: {smell.severity.value}")
+                    if smell.line:
+                        print(f"     位置: 第 {smell.line} 行")
+                    print()
+            else:
+                print("✅ 未检测到代码异味")
+
+    elif args.action == "suggest":
+        # 生成重构建议
+        smells = detector.detect(code)
+        suggestions = engine.suggest(code, smells)
+
+        if args.format == "json":
+            data = {
+                "suggestions": [
+                    {
+                        "type": sug.refactor_type.value,
+                        "description": sug.description,
+                        "line": sug.line,
+                        "auto_fixable": sug.auto_fixable,
+                    }
+                    for sug in suggestions
+                ]
+            }
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            if suggestions:
+                print(f"生成 {len(suggestions)} 个重构建议:\n")
+                for sug in suggestions:
+                    print(f"  💡 {sug.refactor_type.value}: {sug.description}")
+                    if sug.line:
+                        print(f"     位置: 第 {sug.line} 行")
+                    print(f"     可自动修复: {'是' if sug.auto_fixable else '否'}")
+                    print()
+            else:
+                print("✅ 无需重构")
+
+    return 0
+
+
+def cmd_check(args: argparse.Namespace) -> int:
+    """最佳实践检查"""
+    checker = BestPracticeChecker()
+
+    # 读取代码
+    code = args.code
+    if args.file:
+        try:
+            with open(args.file, encoding="utf-8") as f:
+                code = f.read()
+        except FileNotFoundError:
+            print(f"错误: 文件不存在: {args.file}")
+            return 1
+
+    if not code:
+        print("错误: 请提供代码内容 (-c) 或代码文件 (-f)")
+        return 1
+
+    if args.action == "check":
+        # 检查最佳实践
+        results = checker.check(code)
+
+        if args.format == "json":
+            data = {
+                "results": [
+                    {
+                        "practice_id": r.practice.id,
+                        "practice_name": r.practice.name,
+                        "passed": r.passed,
+                        "message": r.message,
+                        "line": r.line,
+                    }
+                    for r in results
+                ]
+            }
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            passed = [r for r in results if r.passed]
+            failed = [r for r in results if not r.passed]
+
+            print(f"最佳实践检查结果:\n")
+            print(f"  ✅ 通过: {len(passed)}")
+            print(f"  ❌ 未通过: {len(failed)}")
+
+            if failed:
+                print(f"\n未通过的项目:\n")
+                for r in failed:
+                    print(f"  ❌ {r.practice.name}")
+                    print(f"     消息: {r.message}")
+                    if r.line:
+                        print(f"     位置: 第 {r.line} 行")
+                    print()
+
+    elif args.action == "list":
+        # 列出所有最佳实践
+        practices = checker.list_practices()
+
+        if args.format == "json":
+            data = {
+                "practices": [
+                    {
+                        "id": p.id,
+                        "name": p.name,
+                        "category": p.category.value,
+                        "description": p.description,
+                    }
+                    for p in practices
+                ]
+            }
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            print(f"最佳实践列表 ({len(practices)} 条):\n")
+            for p in practices:
+                print(f"  📋 {p.id}: {p.name}")
+                print(f"     分类: {p.category.value}")
+                print(f"     描述: {p.description}")
+                print()
+
+    return 0
+
+
+def cmd_autofix(args: argparse.Namespace) -> int:
+    """自动修复错误"""
+    fixer = AutoFixer()
+    diagnoser = ErrorDiagnoser()
+
+    # 读取代码
+    code = args.code
+    if args.file:
+        try:
+            with open(args.file, encoding="utf-8") as f:
+                code = f.read()
+        except FileNotFoundError:
+            print(f"错误: 文件不存在: {args.file}")
+            return 1
+
+    if not code:
+        print("错误: 请提供代码内容 (-c) 或代码文件 (-f)")
+        return 1
+
+    # 读取错误日志
+    error_log = args.error
+    if args.error_file:
+        try:
+            with open(args.error_file, encoding="utf-8") as f:
+                error_log = f.read()
+        except FileNotFoundError:
+            print(f"错误: 错误日志文件不存在: {args.error_file}")
+            return 1
+
+    if args.action == "diagnose":
+        # 诊断错误
+        diagnosis = diagnoser.diagnose(error_log)
+
+        if args.format == "json":
+            data = {
+                "error_type": diagnosis.error_info.error_type.value,
+                "message": diagnosis.error_info.message,
+                "suggestions": [
+                    {
+                        "description": s.description,
+                        "confidence": s.confidence.value,
+                        "auto_fixable": s.auto_fixable,
+                    }
+                    for s in diagnosis.suggestions
+                ]
+            }
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            print(f"错误诊断结果:\n")
+            print(f"  类型: {diagnosis.error_info.error_type.value}")
+            print(f"  消息: {diagnosis.error_info.message}")
+            print(f"\n修复建议:\n")
+            for s in diagnosis.suggestions:
+                print(f"  💡 {s.description}")
+                print(f"     信心: {s.confidence.value}")
+                print(f"     可自动修复: {'是' if s.auto_fixable else '否'}")
+                print()
+
+    elif args.action == "fix":
+        # 自动修复
+        result = fixer.fix_from_error_log(code, error_log)
+
+        if args.format == "json":
+            data = {
+                "status": result.status.value,
+                "message": result.message,
+                "fixed_code": result.fixed_code,
+                "replacements": [
+                    {
+                        "start_line": r.start_line,
+                        "end_line": r.end_line,
+                        "original": r.original,
+                        "replacement": r.replacement,
+                    }
+                    for r in result.replacements
+                ]
+            }
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            print(f"自动修复结果:\n")
+            print(f"  状态: {result.status.value}")
+            print(f"  消息: {result.message}")
+
+            if result.replacements:
+                print(f"\n应用的修复 ({len(result.replacements)} 个):\n")
+                for r in result.replacements:
+                    print(f"  第 {r.start_line} 行:")
+                    print(f"    - {r.original}")
+                    print(f"    + {r.replacement}")
+                    print()
+
+            if result.fixed_code != code:
+                print("\n修复后代码:\n")
+                print(result.fixed_code)
+
+    elif args.action == "preview":
+        # 预览修复
+        diagnosis = diagnoser.diagnose(error_log)
+        diff = fixer.preview_fix(code, diagnosis)
+
+        if args.format == "json":
+            data = {"diff": diff}
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            print("修复预览 (diff):\n")
+            print(diff)
+
+    return 0
+
+
 def main() -> int:
     """主入口"""
     parser = argparse.ArgumentParser(
@@ -260,6 +595,34 @@ def main() -> int:
     debug_parser.add_argument("-f", "--file", help="日志文件路径")
     debug_parser.add_argument("-a", "--action", default="diagnose", help="操作类型")
 
+    # complete 命令
+    complete_parser = subparsers.add_parser("complete", help="代码补全")
+    complete_parser.add_argument("-c", "--code", help="代码内容")
+    complete_parser.add_argument("-f", "--file", help="代码文件路径")
+    complete_parser.add_argument("-l", "--line", type=int, default=1, help="光标行号")
+    complete_parser.add_argument("-C", "--column", type=int, default=0, help="光标列号")
+    complete_parser.add_argument("-p", "--prefix", help="补全前缀")
+
+    # refactor 命令
+    refactor_parser = subparsers.add_parser("refactor", help="代码重构")
+    refactor_parser.add_argument("-c", "--code", help="代码内容")
+    refactor_parser.add_argument("-f", "--file", help="代码文件路径")
+    refactor_parser.add_argument("-a", "--action", choices=["detect", "suggest"], default="detect", help="操作类型")
+
+    # check 命令
+    check_parser = subparsers.add_parser("check", help="最佳实践检查")
+    check_parser.add_argument("-c", "--code", help="代码内容")
+    check_parser.add_argument("-f", "--file", help="代码文件路径")
+    check_parser.add_argument("-a", "--action", choices=["check", "list"], default="check", help="操作类型")
+
+    # autofix 命令
+    autofix_parser = subparsers.add_parser("autofix", help="自动修复错误")
+    autofix_parser.add_argument("-c", "--code", help="代码内容")
+    autofix_parser.add_argument("-f", "--file", help="代码文件路径")
+    autofix_parser.add_argument("-e", "--error", help="错误日志内容")
+    autofix_parser.add_argument("-E", "--error-file", help="错误日志文件路径")
+    autofix_parser.add_argument("-a", "--action", choices=["diagnose", "fix", "preview"], default="diagnose", help="操作类型")
+
     args = parser.parse_args()
 
     if args.command == "list":
@@ -272,6 +635,14 @@ def main() -> int:
         return cmd_gen(args)
     elif args.command == "debug":
         return cmd_debug(args)
+    elif args.command == "complete":
+        return cmd_complete(args)
+    elif args.command == "refactor":
+        return cmd_refactor(args)
+    elif args.command == "check":
+        return cmd_check(args)
+    elif args.command == "autofix":
+        return cmd_autofix(args)
     else:
         parser.print_help()
         return 0

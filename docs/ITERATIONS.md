@@ -18,6 +18,138 @@
 | #8 | v0.5.0 | 2026-03-22 | 向量检索集成与语义搜索增强 | ✅ 完成 |
 | #9 | v0.6.0 | 2026-03-22 | 游戏内代码执行与实时调试 | ✅ 完成 |
 | #10 | v0.7.0 | 2026-03-22 | 智能代码补全与重构建议 | ✅ 完成 |
+| #11 | v0.8.0 | 2026-03-22 | 游戏内执行集成与实时日志分析 | ✅ 完成 |
+
+---
+
+## 迭代 #11 (2026-03-22)
+
+### 版本
+v0.8.0
+
+### 目标
+- 实现游戏内执行集成功能
+- 实现实时日志分析功能
+- 实现错误自动诊断和修复功能
+- 增强 CLI 工具
+
+### 完成内容
+
+#### 1. 游戏内执行集成模块
+实现了游戏执行器，整合游戏启动器与代码执行器：
+- `src/mc_agent_kit/execution/game_executor.py` - 游戏内执行器
+  - `GameExecutor`: 游戏执行器主类，管理游戏进程和代码执行
+  - `GameExecutionConfig`: 游戏执行配置（游戏路径、日志端口、自动启停等）
+  - `GameExecutionResult`: 执行结果数据结构（含游戏日志和错误）
+  - `GameExecutorState`: 执行器状态枚举（idle/starting/running/executing/stopping/error）
+  - `GameSession`: 游戏会话管理（进程、日志服务器、执行历史）
+  - 支持游戏进程启动/停止管理
+  - 支持在游戏环境中执行代码
+  - 支持实时日志捕获和错误检测
+  - 支持执行历史记录和统计
+
+#### 2. 实时日志分析模块
+实现了日志分析器和聚合器：
+- `src/mc_agent_kit/log_capture/analyzer.py` - 日志分析器
+  - `LogAnalyzer`: 日志分析器主类
+  - `LogAggregator`: 日志聚合器，支持多日志流聚合
+  - `ErrorPattern`: 错误模式定义（正则、类别、严重程度、建议）
+  - `Alert`: 告警信息数据结构
+  - `AlertSeverity`: 告警严重程度枚举（info/warning/error/critical）
+  - `PatternCategory`: 错误类别枚举（syntax/runtime/api/event/config/network/memory/custom）
+  - `MatchResult`: 模式匹配结果
+  - `LogStatistics`: 日志统计信息
+  - 内置 12 种错误模式（SyntaxError、NameError、TypeError、KeyError 等）
+  - 支持流式日志处理
+  - 支持错误模式实时匹配
+  - 支持告警回调机制
+  - 支持日志统计和聚合查询
+
+#### 3. 错误自动修复模块
+实现了错误诊断和自动修复功能：
+- `src/mc_agent_kit/autofix/__init__.py` - 模块导出
+- `src/mc_agent_kit/autofix/diagnoser.py` - 错误诊断器
+  - `ErrorDiagnoser`: 诊断器主类
+  - `ErrorInfo`: 错误信息数据结构
+  - `ErrorType`: 错误类型枚举（14 种错误类型）
+  - `FixSuggestion`: 修复建议数据结构
+  - `FixConfidence`: 修复信心等级（high/medium/low）
+  - `DiagnosisResult`: 诊断结果
+  - 支持错误日志解析和类型识别
+  - 支持 traceback 分析
+  - 支持代码 AST 分析检测语法错误
+  - 生成针对性修复建议
+- `src/mc_agent_kit/autofix/fixer.py` - 自动修复器
+  - `AutoFixer`: 修复器主类
+  - `FixResult`: 修复结果数据结构
+  - `FixStatus`: 修复状态枚举（success/partial/failed/skipped/manual_required）
+  - `Replacement`: 代码替换数据结构
+  - `FixContext`: 修复上下文
+  - 支持 KeyError 自动修复（使用 .get() 方法）
+  - 支持 AttributeError 自动修复（使用 getattr() 方法）
+  - 支持 IndexError 自动修复（添加边界检查）
+  - 支持 ZeroDivisionError 自动修复（添加除零检查）
+  - 支持修复预览（生成 diff）
+  - 支持批量修复
+
+#### 4. CLI 工具增强
+新增了 4 个 CLI 命令：
+- `mc-agent complete` - 代码补全
+  - 支持文件/代码输入
+  - 支持光标位置指定
+  - 支持 JSON/text 输出
+- `mc-agent refactor` - 代码重构
+  - `detect` 操作：检测代码异味
+  - `suggest` 操作：生成重构建议
+  - 支持 JSON/text 输出
+- `mc-agent check` - 最佳实践检查
+  - `check` 操作：检查代码
+  - `list` 操作：列出所有最佳实践
+  - 支持 JSON/text 输出
+- `mc-agent autofix` - 自动修复错误
+  - `diagnose` 操作：诊断错误
+  - `fix` 操作：自动修复
+  - `preview` 操作：预览修复（diff）
+  - 支持 JSON/text 输出
+
+#### 5. 模块导出更新
+更新了模块导出：
+- `src/mc_agent_kit/execution/__init__.py` - 导出 GameExecutor 相关类
+- `src/mc_agent_kit/log_capture/__init__.py` - 导出 LogAnalyzer 相关类
+- `src/mc_agent_kit/autofix/__init__.py` - 新模块导出
+
+#### 6. 测试验证
+- 新增 `test_v080.py` (38 个测试)
+- 所有测试通过（391 passed, 2 skipped）
+
+### 遇到的问题
+- 无
+
+### 经验总结
+- 游戏执行器整合了启动器和执行器，提供统一的执行环境
+- 日志分析器使用正则模式匹配，易于扩展新错误类型
+- 自动修复器针对常见错误提供精准修复，信心等级帮助用户判断
+- CLI 工具增强提升了用户体验，支持多种操作模式
+
+### 文件变更
+- 新增: `src/mc_agent_kit/execution/game_executor.py`
+- 新增: `src/mc_agent_kit/log_capture/analyzer.py`
+- 新增: `src/mc_agent_kit/autofix/__init__.py`
+- 新增: `src/mc_agent_kit/autofix/diagnoser.py`
+- 新增: `src/mc_agent_kit/autofix/fixer.py`
+- 新增: `src/tests/test_v080.py`
+- 修改: `src/mc_agent_kit/execution/__init__.py`
+- 修改: `src/mc_agent_kit/log_capture/__init__.py`
+- 修改: `src/mc_agent_kit/cli.py`
+- 修改: `pyproject.toml` (版本升级到 0.8.0)
+- 修改: `docs/ITERATIONS.md`
+
+### 验收标准完成情况
+- [x] 游戏内执行可用
+- [x] 实时日志分析可用
+- [x] 错误自动修复可用
+- [x] CLI 工具增强完成
+- [x] 单元测试全部通过（391 passed, 2 skipped）
 
 ---
 

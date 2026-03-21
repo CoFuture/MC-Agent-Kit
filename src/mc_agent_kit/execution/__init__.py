@@ -1,7 +1,7 @@
 """
 执行模块
 
-提供代码执行、调试、热重载和性能分析功能。
+提供代码执行、调试、热重载、性能分析和游戏内执行功能。
 """
 
 from .executor import (
@@ -36,6 +36,13 @@ from .performance import (
     ProfilingStatus,
     Timer,
 )
+from .game_executor import (
+    GameExecutionConfig,
+    GameExecutionResult,
+    GameExecutor,
+    GameExecutorState,
+    GameSession,
+)
 
 __all__ = [
     # Executor
@@ -66,4 +73,10 @@ __all__ = [
     "ProfilingResult",
     "ProfilingStatus",
     "Timer",
+    # Game Executor
+    "GameExecutionConfig",
+    "GameExecutionResult",
+    "GameExecutor",
+    "GameExecutorState",
+    "GameSession",
 ]
