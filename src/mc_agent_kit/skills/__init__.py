@@ -15,7 +15,12 @@ from .base import (
     get_skill,
     register_skill,
 )
-from .modsdk import ModSDKAPISearchSkill, ModSDKEventSearchSkill
+from .modsdk import (
+    ModSDKAPISearchSkill,
+    ModSDKCodeGenSkill,
+    ModSDKDebugSkill,
+    ModSDKEventSearchSkill,
+)
 
 __all__ = [
     # 基类和工具
@@ -30,6 +35,8 @@ __all__ = [
     "register_skill",
     # ModSDK Skills
     "ModSDKAPISearchSkill",
+    "ModSDKCodeGenSkill",
+    "ModSDKDebugSkill",
     "ModSDKEventSearchSkill",
 ]
 
@@ -49,3 +56,11 @@ def register_modsdk_skills(kb_path: str | None = None) -> None:
     # 注册事件搜索 Skill
     event_skill = ModSDKEventSearchSkill(kb_path=kb_path)
     registry.register(event_skill)
+
+    # 注册代码生成 Skill
+    code_gen_skill = ModSDKCodeGenSkill()
+    registry.register(code_gen_skill)
+
+    # 注册调试辅助 Skill
+    debug_skill = ModSDKDebugSkill()
+    registry.register(debug_skill)

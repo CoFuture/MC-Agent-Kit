@@ -8,16 +8,16 @@ import pytest
 
 from mc_agent_kit.skills import (
     BaseSkill,
+    ModSDKAPISearchSkill,
+    ModSDKEventSearchSkill,
     SkillCategory,
     SkillMetadata,
     SkillPriority,
     SkillRegistry,
     SkillResult,
     get_registry,
-    register_skill,
     register_modsdk_skills,
-    ModSDKAPISearchSkill,
-    ModSDKEventSearchSkill,
+    register_skill,
 )
 
 
@@ -274,7 +274,6 @@ class TestGlobalRegistry:
     def test_register_skill_function(self):
         """测试注册函数"""
         # 创建新的注册表避免测试污染
-        from mc_agent_kit.skills.base import _global_registry
         import mc_agent_kit.skills.base as base_module
         base_module._global_registry = None
 
@@ -352,7 +351,6 @@ class TestSkillIntegration:
     def test_register_modsdk_skills(self):
         """测试注册所有 ModSDK Skills"""
         # 重置全局注册表
-        from mc_agent_kit.skills.base import _global_registry
         import mc_agent_kit.skills.base as base_module
         base_module._global_registry = None
 

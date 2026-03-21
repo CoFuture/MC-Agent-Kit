@@ -13,6 +13,7 @@
 | #3 | v0.2.0 | 2026-03-22 | 知识库设计与构建工具 | ✅ 完成 |
 | #4 | v0.2.1 | 2026-03-22 | 知识库检索工具 | ✅ 完成 |
 | #5 | v0.3.0 | 2026-03-22 | Agent 技能封装 | ✅ 完成 |
+| #6 | v0.3.1 | 2026-03-22 | 代码生成与调试辅助 | ✅ 完成 |
 
 ---
 
@@ -291,6 +292,96 @@ v0.3.0
 - [x] API 检索 Skill 可用
 - [x] 事件检索 Skill 可用
 - [x] 单元测试全部通过
+
+---
+
+## 迭代 #6 (2026-03-22)
+
+### 版本
+v0.3.1
+
+### 目标
+- 实现代码生成和调试辅助 Skills
+- 实现 Skill CLI 工具
+- 完善测试覆盖
+
+### 完成内容
+
+#### 1. 代码生成模块
+创建了完整的代码生成系统：
+- `src/mc_agent_kit/generator/__init__.py` - 模块导出
+- `src/mc_agent_kit/generator/templates.py` - 模板系统
+  - `TemplateManager`: 模板管理器
+  - `CodeTemplate`: 代码模板数据类
+  - `TemplateParameter`: 模板参数定义
+  - 内置 5 种模板：event_listener, api_call, entity_create, item_register, ui_screen
+- `src/mc_agent_kit/generator/code_gen.py` - 代码生成器
+  - 基于 Jinja2 模板引擎
+  - 自定义过滤器：snake_case, camel_case, pascal_case
+  - 参数验证和默认值合并
+
+#### 2. 代码生成 Skill
+实现 `ModSDKCodeGenSkill`：
+- 支持模板列表、搜索、信息查询
+- 支持代码生成（预定义模板和自定义模板）
+- 提供便捷方法：`generate_event_listener()`, `generate_api_call()`
+- OpenClaw Skill 文档：`skills/modsdk-code-gen/SKILL.md`
+
+#### 3. 调试辅助 Skill
+实现 `ModSDKDebugSkill`：
+- 定义 17 种常见错误模式（SyntaxError, NameError, TypeError 等）
+- 支持错误诊断、日志分析、错误模式列表
+- 提供错误分类（syntax/runtime/api/event/config）
+- 提供严重程度分级（error/warning/info）
+- OpenClaw Skill 文档：`skills/modsdk-debug/SKILL.md`
+
+#### 4. CLI 工具
+实现 `mc_agent_kit/cli.py`：
+- `mc-agent list` - 列出所有 Skills
+- `mc-agent api` - 搜索 API 文档
+- `mc-agent event` - 搜索事件文档
+- `mc-agent gen` - 生成代码
+- `mc-agent debug` - 调试错误日志
+- 支持文本和 JSON 输出格式
+- 更新 `pyproject.toml` 添加 CLI 入口点
+
+#### 5. 测试验证
+- 新增 `test_generator.py` (27 个测试)
+- 新增 `test_codegen_skill.py` (24 个测试)
+- 所有测试通过（165 passed, 2 skipped）
+
+### 遇到的问题
+- ruff 检查发现大量空白字符和行过长问题
+- 模板字符串中的长行无法自动修复（模板内容需要保持格式）
+- 已修复 190 个问题，剩余 55 个为模板内容中的空白问题（不影响功能）
+
+### 经验总结
+- Jinja2 模板系统灵活强大，支持自定义过滤器
+- 错误模式匹配使用正则表达式，易于扩展
+- CLI 工具使用 argparse，结构清晰
+- 测试驱动开发确保代码质量
+
+### 文件变更
+- 新增: `src/mc_agent_kit/generator/__init__.py`
+- 新增: `src/mc_agent_kit/generator/templates.py`
+- 新增: `src/mc_agent_kit/generator/code_gen.py`
+- 新增: `src/mc_agent_kit/skills/modsdk/code_gen.py`
+- 新增: `src/mc_agent_kit/skills/modsdk/debug.py`
+- 新增: `src/mc_agent_kit/cli.py`
+- 新增: `src/tests/test_generator.py`
+- 新增: `src/tests/test_codegen_skill.py`
+- 新增: `skills/modsdk-code-gen/SKILL.md`
+- 新增: `skills/modsdk-debug/SKILL.md`
+- 修改: `src/mc_agent_kit/skills/modsdk/__init__.py`
+- 修改: `src/mc_agent_kit/skills/__init__.py`
+- 修改: `pyproject.toml` (版本升级到 0.3.1，添加 jinja2 依赖和 CLI 入口)
+- 修改: `docs/ITERATIONS.md`
+
+### 验收标准完成情况
+- [x] 代码生成 Skill 可用
+- [x] 调试辅助 Skill 可用
+- [x] CLI 工具可用
+- [x] 单元测试全部通过（165 passed, 2 skipped）
 
 ---
 

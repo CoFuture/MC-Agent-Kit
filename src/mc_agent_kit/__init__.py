@@ -6,10 +6,7 @@ MC-Agent-Kit: AI Agent 辅助 Minecraft ModSDK 开发工具包
 
 __version__ = "0.3.0"
 
-from . import knowledge_base
-from . import skills
-from . import launcher
-from . import log_capture
+from . import knowledge_base, launcher, log_capture, skills
 
 __all__ = [
     "knowledge_base",
