@@ -16,6 +16,115 @@
 | #6 | v0.3.1 | 2026-03-22 | 代码生成与调试辅助 | ✅ 完成 |
 | #7 | v0.4.0 | 2026-03-22 | 模板系统增强与 API 绑定生成 | ✅ 完成 |
 | #8 | v0.5.0 | 2026-03-22 | 向量检索集成与语义搜索增强 | ✅ 完成 |
+| #9 | v0.6.0 | 2026-03-22 | 游戏内代码执行与实时调试 | ✅ 完成 |
+
+---
+
+## 迭代 #9 (2026-03-22)
+
+### 版本
+v0.6.0
+
+### 目标
+- 实现游戏内代码执行功能
+- 实现实时调试支持（断点、变量监视、调用栈）
+- 实现日志分析增强
+- 实现性能分析工具
+
+### 完成内容
+
+#### 1. 代码执行模块
+实现了完整的代码执行系统：
+- `src/mc_agent_kit/execution/executor.py` - 代码执行器
+  - `CodeExecutor`: 代码执行器类，支持执行 Python 代码并捕获结果
+  - `ExecutionConfig`: 执行配置（超时、沙箱模式、输出捕获等）
+  - `ExecutionResult`: 执行结果数据结构
+  - `ExecutionStatus`: 执行状态枚举（success/error/timeout/cancelled）
+  - `ExecutionManager`: 执行管理器，支持执行器池和历史记录
+  - `CodeValidator`: 代码验证器，支持安全检查
+  - 支持沙箱模式阻止危险导入和调用
+  - 支持超时控制
+  - 支持执行上下文传递
+  - 支持返回值捕获
+
+#### 2. 调试器模块
+实现了完整的调试功能：
+- `src/mc_agent_kit/execution/debugger.py` - 调试器
+  - `Debugger`: 调试器主类
+  - `DebugSession`: 调试会话管理
+  - `Breakpoint`: 断点定义（支持条件断点、忽略计数、日志消息）
+  - `BreakpointCondition`: 断点条件评估
+  - `VariableWatch`: 变量监视
+  - `CallFrame`: 调用栈帧
+  - `DebuggerState`: 调试器状态枚举
+  - `DebugCodeAnalyzer`: 调试代码分析器（AST 分析）
+  - 支持断点设置/移除/切换
+  - 支持条件断点
+  - 支持变量监视
+  - 支持调用栈追踪
+  - 支持单步执行（step into/over/out）
+
+#### 3. 热重载模块
+实现了代码热重载功能：
+- `src/mc_agent_kit/execution/hot_reload.py` - 热重载
+  - `HotReloader`: 热重载器主类
+  - `FileWatcher`: 文件监控器（支持防抖、模式过滤）
+  - `ReloadConfig`: 重载配置
+  - `ReloadResult`: 重载结果
+  - `ReloadStatus`: 重载状态枚举
+  - `ModSDKHotReloader`: ModSDK 专用热重载器
+  - 支持文件变化检测
+  - 支持模块热重载
+  - 支持 Addon 目录监控
+  - 支持重载回调
+
+#### 4. 性能分析模块
+实现了性能分析功能：
+- `src/mc_agent_kit/execution/performance.py` - 性能分析
+  - `PerformanceAnalyzer`: 性能分析器
+  - `PerformanceConfig`: 分析配置
+  - `PerformanceReport`: 性能报告
+  - `ProfilingResult`: 分析结果
+  - `MemorySnapshot`: 内存快照
+  - `MemoryMonitor`: 内存监控器
+  - `Timer`: 简单计时器
+  - 支持 CPU 性能分析（cProfile 集成）
+  - 支持内存监控（tracemalloc 集成）
+  - 支持热点函数检测
+  - 支持优化建议生成
+  - 支持装饰器和上下文管理器
+
+#### 5. 测试验证
+- 新增 `test_execution.py` (56 个测试)
+- 所有测试通过（313 passed, 2 skipped）
+
+### 遇到的问题
+- Python 3.13 中 `ast.Exec` 和 `ast.Eval` 已被移除，需要适配
+- pstats.Stats.get_stats_profile() 在 Python 3.13 中返回 StatsProfile 对象而非可迭代列表
+- FunctionProfile 的属性名变化（callcount → ncalls）
+- Windows 文件锁定问题（临时文件删除失败）
+
+### 经验总结
+- Python 版本兼容性需要注意标准库 API 变化
+- 沙箱模式通过 AST 分析实现代码安全检查
+- 热重载需要文件监控和模块重载配合
+- 性能分析需要合理配置采样间隔和阈值
+
+### 文件变更
+- 新增: `src/mc_agent_kit/execution/__init__.py`
+- 新增: `src/mc_agent_kit/execution/executor.py`
+- 新增: `src/mc_agent_kit/execution/debugger.py`
+- 新增: `src/mc_agent_kit/execution/hot_reload.py`
+- 新增: `src/mc_agent_kit/execution/performance.py`
+- 新增: `src/tests/test_execution.py`
+- 修改: `docs/ITERATIONS.md`
+
+### 验收标准完成情况
+- [x] 代码执行可用
+- [x] 实时调试可用
+- [x] 热重载可用
+- [x] 性能分析可用
+- [x] 单元测试全部通过（313 passed, 2 skipped）
 
 ---
 

@@ -1,6 +1,6 @@
 [project]
 name = "mc-agent-kit"
-version = "0.5.0"
+version = "0.6.0"
 description = "Toolsets and Skills to Empower AI Agent for the development of Minecraft mods"
 readme = "README.md"
 requires-python = ">=3.13"
