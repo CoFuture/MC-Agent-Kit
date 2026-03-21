@@ -1,101 +1,105 @@
 # 下次迭代计划
 
-## 当前迭代 #2 (v0.1.1)
+## 当前迭代 #3 (v0.2.0)
 
 ### 版本目标
-v0.1.1 - 游戏启动器与日志捕获
+v0.2.0 - 知识库设计与构建工具
 
 ### 迭代目标
-实现自动化拉起 Minecraft 开发调试程序，加载指定 Addon 脚本，获取运行时日志
+分析 ModSDK 文档结构，设计知识库架构，实现文档解析和索引构建工具
 
 ### 任务清单
 
 #### 高优先级 🔥
 
-**任务 1: 游戏启动器实现**
-- [ ] 分析 `resources/mc_hook/mc_launcher.py` 参考代码
-- [ ] 分析 `resources/run_test_command` 启动命令
-- [ ] 设计模块化架构
-- [ ] 实现 Addon 扫描功能
-- [ ] 实现配置生成功能
-- [ ] 实现游戏进程启动功能
+**任务 1: ModSDK 文档分析**
+- [ ] 分析 `resources/docs/mcdocs/` 文档结构
+- [ ] 分析 `resources/docs/mcguide/` 开发指南
+- [ ] 分析 `resources/docs/mconline/` 在线教程
+- [ ] 提取 API 文档结构
+- [ ] 提取代码示例结构
 
-**任务 2: 日志捕获实现**
-- [ ] 实现 TCP 日志服务器
-- [ ] 实现日志解析器
-- [ ] 实现日志结构化存储
-- [ ] 实现错误检测
+**任务 2: 知识库设计**
+- [ ] 设计知识库数据模型
+- [ ] 设计索引结构 (API、事件、示例)
+- [ ] 设计检索接口
+- [ ] 确定存储方案 (SQLite/JSON/向量数据库)
 
-**任务 3: 测试验证**
-- [ ] 编写单元测试
-- [ ] 本地测试验证
-- [ ] 文档更新
+**任务 3: 文档解析器实现**
+- [ ] 实现 Markdown 解析器
+- [ ] 实现 API 文档提取器
+- [ ] 实现代码示例提取器
+- [ ] 实现元数据提取
+
+**任务 4: 索引构建工具**
+- [ ] 实现索引生成器
+- [ ] 实现增量更新机制
+- [ ] 编写测试用例
 
 #### 技术细节
 
-**启动命令参考**:
+**文档结构分析**:
 ```
-Minecraft.Windows.exe
-  config=<cppconfig路径>
-  errorlog=<错误日志路径>
-  dc_tag1=studio_no_launcher
-  dc_web=<网关地址>
-  dc_uid=<用户ID>
-  loggingIP=<日志接收IP>
-  loggingPort=<日志接收端口>
+resources/docs/mcdocs/
+├── 1-ModAPI/          # 核心 API 文档
+│   ├── 事件/          # 事件列表
+│   ├── 接口/          # API 接口
+│   └── 枚举值/        # 枚举定义
+├── 2-Apollo/          # Apollo 框架
+└── 3-PresetAPI/       # 预设 API
 ```
 
-**日志捕获**:
-- 通过 TCP Server 接收游戏日志
-- 解析日志内容
-- 识别错误和警告
-- 结构化存储
+**知识库模型**:
+```python
+@dataclass
+class APIEntry:
+    name: str           # API 名称
+    module: str         # 所属模块
+    description: str    # 描述
+    parameters: list    # 参数列表
+    return_type: str    # 返回类型
+    examples: list      # 示例代码
+    source_path: str    # 文档来源
+```
 
 ### 预期产出
 ```
 MC-Agent-Kit/
-├── src/
-│   └── mc_agent_kit/
+├── src/mc_agent_kit/
+│   └── knowledge_base/
 │       ├── __init__.py
-│       ├── launcher/
-│       │   ├── __init__.py
-│       │   ├── addon_scanner.py    # Addon 扫描
-│       │   ├── config_generator.py # 配置生成
-│       │   └── game_launcher.py    # 游戏启动
-│       └── log_capture/
-│           ├── __init__.py
-│           ├── tcp_server.py       # TCP 日志服务
-│           ├── parser.py           # 日志解析
-│           └── storage.py          # 日志存储
+│       ├── models.py          # 数据模型
+│       ├── parser.py          # 文档解析器
+│       ├── indexer.py         # 索引构建器
+│       └── retriever.py       # 检索接口
 └── tests/
-    └── test_launcher.py
+    └── test_knowledge_base.py
 ```
 
 ### 验收标准
-- [ ] 能够扫描 Addon 目录
-- [ ] 能够生成启动配置
-- [ ] 能够启动游戏进程
-- [ ] 能够捕获游戏日志
+- [ ] 能够解析 ModSDK 文档
+- [ ] 能够提取 API 信息
+- [ ] 能够构建检索索引
 - [ ] 单元测试全部通过
 
 ### 预计时间
-1-2 个迭代周期
+2-3 个迭代周期
 
 ---
 
 ## 后续迭代预览
 
-### 迭代 #3 (v0.2.0)
-- 知识库设计
-- 文档解析器
-- 索引结构设计
+### 迭代 #4 (v0.2.1)
+- 实现知识库检索工具
+- 语义搜索实现
+- 搜索结果排序
 
-### 迭代 #4 (v0.3.0)
+### 迭代 #5 (v0.3.0)
 - ModSDK 场景分析
 - Agent 角色划分
 - Skill 接口设计
 
 ---
 
-*文档版本: v0.1.1*
+*文档版本: v0.1.2*
 *最后更新: 2026-03-22*

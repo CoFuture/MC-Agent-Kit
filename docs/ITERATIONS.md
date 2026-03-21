@@ -9,7 +9,7 @@
 | 迭代 | 版本 | 日期 | 主要内容 | 状态 |
 |------|------|------|----------|------|
 | #1 | v0.1.0 | 2026-03-22 | 项目初始化与文档框架 | ✅ 完成 |
-| #2 | v0.1.1 | 2026-03-22 | 游戏启动器与日志捕获 | 🔄 进行中 |
+| #2 | v0.1.1 | 2026-03-22 | 游戏启动器与日志捕获 | ✅ 完成 |
 
 ---
 
@@ -74,6 +74,26 @@ v0.1.1
 - [x] 实现日志解析器 `log_capture/parser.py`
 - [x] 编写单元测试 (18个测试全部通过)
 - [x] 代码格式检查通过 (ruff)
+
+### 遇到的问题
+- ruff 检查发现裸 except 问题，已修复为 `except Exception`
+
+### 经验总结
+- 使用 dataclass 简化数据结构定义
+- 日志解析需要处理多种格式
+
+### 文件变更
+- 新增: `src/mc_agent_kit/__init__.py`
+- 新增: `src/mc_agent_kit/launcher/__init__.py`
+- 新增: `src/mc_agent_kit/launcher/addon_scanner.py`
+- 新增: `src/mc_agent_kit/launcher/config_generator.py`
+- 新增: `src/mc_agent_kit/launcher/game_launcher.py`
+- 新增: `src/mc_agent_kit/log_capture/__init__.py`
+- 新增: `src/mc_agent_kit/log_capture/tcp_server.py`
+- 新增: `src/mc_agent_kit/log_capture/parser.py`
+- 新增: `src/tests/test_launcher.py`
+- 新增: `src/tests/test_parser.py`
+- 修改: `pyproject.toml`
 
 ---
 
