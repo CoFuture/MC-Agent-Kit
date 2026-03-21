@@ -66,6 +66,14 @@ v0.1.1
 - [x] 更新 ROADMAP.md 重新规划任务优先级
 - [x] 更新 NEXT_ITERATION.md 设置迭代计划
 - [x] 创建 Cron 任务 (每30分钟执行迭代)
+- [x] 创建项目包结构 `src/mc_agent_kit/`
+- [x] 实现 Addon 扫描模块 `launcher/addon_scanner.py`
+- [x] 实现配置生成模块 `launcher/config_generator.py`
+- [x] 实现游戏启动模块 `launcher/game_launcher.py`
+- [x] 实现 TCP 日志服务器 `log_capture/tcp_server.py`
+- [x] 实现日志解析器 `log_capture/parser.py`
+- [x] 编写单元测试 (18个测试全部通过)
+- [x] 代码格式检查通过 (ruff)
 
 ---
 
