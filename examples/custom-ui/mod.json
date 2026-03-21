@@ -1,0 +1,9 @@
+{
+  "mod_id": "custom_ui",
+  "name": "Custom UI Mod",
+  "version": "1.0.0",
+  "description": "Demo for custom UI creation",
+  "author": "MC-Agent-Kit",
+  "entry": "ui_demo.py",
+  "type": "behavior"
+}

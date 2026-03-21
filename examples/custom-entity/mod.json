@@ -1,0 +1,9 @@
+{
+  "mod_id": "custom_entity",
+  "name": "Custom Entity Mod",
+  "version": "1.0.0",
+  "description": "Demo for custom entity creation",
+  "author": "MC-Agent-Kit",
+  "entry": "frost_ghost.py",
+  "type": "behavior"
+}

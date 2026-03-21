@@ -1,0 +1,26 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "custom:frost_essence_recipe"
+    },
+    "tags": ["crafting_table"],
+    "pattern": [
+      " I ",
+      "ISI",
+      " I "
+    ],
+    "key": {
+      "I": {
+        "item": "minecraft:ice"
+      },
+      "S": {
+        "item": "minecraft:snowball"
+      }
+    },
+    "result": {
+      "item": "custom:frost_essence",
+      "count": 1
+    }
+  }
+}

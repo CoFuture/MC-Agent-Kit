@@ -1,0 +1,9 @@
+{
+  "mod_id": "custom_item",
+  "name": "Custom Item Mod",
+  "version": "1.0.0",
+  "description": "Demo for custom item creation",
+  "author": "MC-Agent-Kit",
+  "entry": "frost_essence.py",
+  "type": "behavior"
+}

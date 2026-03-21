@@ -1,0 +1,9 @@
+{
+  "mod_id": "hello_world",
+  "name": "Hello World Mod",
+  "version": "1.0.0",
+  "description": "A simple welcome message mod",
+  "author": "MC-Agent-Kit",
+  "entry": "hello_world.py",
+  "type": "behavior"
+}

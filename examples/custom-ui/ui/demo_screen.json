@@ -1,0 +1,51 @@
+{
+  "namespace": "demo_screen",
+  
+  "demo_screen@common.base_screen": {
+    "button_mappings": [
+      {
+        "button_id": "btn_ok",
+        "action": "button.ok"
+      },
+      {
+        "button_id": "btn_info", 
+        "action": "button.info"
+      },
+      {
+        "button_id": "btn_close",
+        "action": "button.close"
+      }
+    ],
+    
+    "controls": [
+      {
+        "title_text@common.text": {
+          "text": "演示界面",
+          "color": [1.0, 1.0, 1.0],
+          "font_size": "large"
+        }
+      },
+      {
+        "content_text@common.text": {
+          "text": "欢迎使用 MC-Agent-Kit UI 示例！",
+          "color": [0.8, 0.8, 0.8]
+        }
+      },
+      {
+        "btn_ok@common.button": {
+          "text": "确定"
+        }
+      },
+      {
+        "btn_info@common.button": {
+          "text": "信息"
+        }
+      },
+      {
+        "btn_close@common.button": {
+          "text": "关闭"
+        }
+      }
+    ]
+  }
+}
