@@ -15,6 +15,115 @@
 | #5 | v0.3.0 | 2026-03-22 | Agent 技能封装 | ✅ 完成 |
 | #6 | v0.3.1 | 2026-03-22 | 代码生成与调试辅助 | ✅ 完成 |
 | #7 | v0.4.0 | 2026-03-22 | 模板系统增强与 API 绑定生成 | ✅ 完成 |
+| #8 | v0.5.0 | 2026-03-22 | 向量检索集成与语义搜索增强 | ✅ 完成 |
+
+---
+
+## 迭代 #8 (2026-03-22)
+
+### 版本
+v0.5.0
+
+### 目标
+- 集成 ChromaDB 向量数据库
+- 实现文档向量化（使用 sentence-transformers）
+- 实现语义搜索功能
+- 支持混合搜索（关键词 + 语义）
+- 集成 LlamaIndex 框架
+- 实现知识库增量更新
+
+### 完成内容
+
+#### 1. 向量存储模块
+实现了基于 ChromaDB 的向量存储：
+- `src/mc_agent_kit/retrieval/vector_store.py` - 向量存储
+  - `VectorStore`: ChromaDB 集成的向量存储类
+  - `VectorStoreConfig`: 存储配置（持久化、集合名称、嵌入模型等）
+  - `Document`: 文档数据结构
+  - `SearchResult`: 搜索结果数据结构
+  - 支持文档添加、删除、搜索
+  - 支持增量更新（基于内容哈希检测变更）
+
+#### 2. 语义搜索模块
+实现了语义搜索引擎：
+- `src/mc_agent_kit/retrieval/semantic_search.py` - 语义搜索
+  - `SemanticSearchEngine`: 语义搜索引擎
+  - `SemanticSearchConfig`: 搜索配置（分块大小、重叠等）
+  - `IndexStats`: 索引统计信息
+  - 支持文档分块（按段落、按标题、整体）
+  - 支持重排序（结合关键词匹配）
+  - 支持最小分数过滤
+
+#### 3. 混合搜索模块
+实现了关键词 + 语义混合搜索：
+- `src/mc_agent_kit/retrieval/hybrid_search.py` - 混合搜索
+  - `HybridSearchEngine`: 混合搜索引擎
+  - `KeywordSearchEngine`: BM25 风格的关键词搜索引擎
+  - `HybridSearchResult`: 混合搜索结果（含关键词分数和语义分数）
+  - `HybridSearchConfig`: 混合搜索配置（权重、top_k 等）
+  - 支持可调节的关键词/语义权重
+  - 支持纯关键词、纯语义、混合三种搜索模式
+
+#### 4. LlamaIndex 集成
+实现了 LlamaIndex 框架集成：
+- `src/mc_agent_kit/retrieval/llama_index.py` - LlamaIndex 集成
+  - `LlamaIndexRetriever`: LlamaIndex 检索器
+  - `LlamaIndexConfig`: 配置（持久化、查询模式等）
+  - 支持文档索引和查询
+  - 支持 ChromaDB 向量存储后端
+  - 优雅处理依赖缺失情况
+
+#### 5. 知识库增量更新
+实现了知识库增量更新机制：
+- `src/mc_agent_kit/knowledge/incremental.py` - 增量更新
+  - `IncrementalUpdater`: 增量更新器
+  - `DocumentChange`: 文档变更记录
+  - `ChangeReport`: 变更报告
+  - 支持检测文档新增、修改、删除
+  - 支持状态持久化和加载
+  - 支持按扩展名过滤
+
+#### 6. 语义搜索 Skill
+创建了 OpenClaw Skill：
+- `skills/modsdk-semantic-search/SKILL.md` - 语义搜索 Skill 文档
+  - `mc_semantic_search`: 语义搜索工具
+  - `mc_index_documents`: 文档索引工具
+  - 支持 hybrid/semantic/keyword 三种搜索模式
+
+#### 7. 测试验证
+- 新增 `test_retrieval.py` (46 个测试)
+- 新增 `test_incremental.py` (16 个测试)
+- 所有测试通过（257 passed, 2 skipped）
+
+### 遇到的问题
+- 无
+
+### 经验总结
+- 混合搜索结合关键词和语义的优势，提供更准确的检索结果
+- 增量更新通过内容哈希检测变更，避免不必要的重新索引
+- LlamaIndex 集成作为可选功能，优雅处理依赖缺失
+
+### 文件变更
+- 新增: `src/mc_agent_kit/retrieval/__init__.py`
+- 新增: `src/mc_agent_kit/retrieval/vector_store.py`
+- 新增: `src/mc_agent_kit/retrieval/semantic_search.py`
+- 新增: `src/mc_agent_kit/retrieval/hybrid_search.py`
+- 新增: `src/mc_agent_kit/retrieval/llama_index.py`
+- 新增: `src/mc_agent_kit/knowledge/incremental.py`
+- 新增: `src/tests/test_retrieval.py`
+- 新增: `src/tests/test_incremental.py`
+- 新增: `skills/modsdk-semantic-search/SKILL.md`
+- 修改: `src/mc_agent_kit/knowledge/__init__.py` (导出增量更新模块)
+- 修改: `pyproject.toml` (版本升级到 0.5.0)
+- 修改: `docs/ITERATIONS.md`
+
+### 验收标准完成情况
+- [x] ChromaDB 集成完成
+- [x] LlamaIndex 集成完成（作为可选功能）
+- [x] 语义搜索可用
+- [x] 混合搜索可用
+- [x] 知识库增量更新可用
+- [x] 单元测试全部通过（257 passed, 2 skipped）
 
 ---
 

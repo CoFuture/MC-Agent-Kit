@@ -1,74 +1,6 @@
 # 下次迭代计划
 
-## 当前迭代 #7 (v0.4.0) ✅
-
-### 版本目标
-v0.4.0 - 模板系统增强与 API 绑定生成
-
-### 迭代目标
-增强代码生成能力，支持更多模板类型和 API 绑定生成
-
-### 任务清单
-
-#### 高优先级 🔥
-
-**任务 1: 模板系统增强**
-- [x] 支持从文件系统加载自定义模板
-- [x] 实现模板热重载
-- [x] 添加更多内置模板（方块、维度）
-- [x] 支持模板继承和组合
-
-**任务 2: API 绑定生成**
-- [x] 解析 ModSDK API 元数据
-- [x] 生成类型注解存根文件 (.pyi)
-- [x] 生成 API 文档索引
-- [x] 支持自动补全建议
-
-**任务 3: 事件处理生成**
-- [x] 解析事件列表
-- [x] 生成事件监听器模板
-- [x] 支持参数验证代码生成
-- [x] 生成事件文档索引
-
-#### 中优先级
-
-**任务 4: 代码质量工具**
-- [x] 实现代码格式化检查
-- [x] 集成 ruff 检查
-- [x] 生成代码复杂度报告
-
-### 预期产出
-```
-MC-Agent-Kit/
-├── src/mc_agent_kit/
-│   └── generator/
-│       ├── templates.py
-│       ├── code_gen.py
-│       ├── template_loader.py  # 新增
-│       ├── bindings.py         # 新增
-│       ├── event_gen.py        # 新增
-│       └── lint.py             # 新增
-├── templates/                  # 用户自定义模板目录
-└── skills/
-    └── modsdk-code-gen/
-        └── SKILL.md
-```
-
-### 验收标准
-- [x] 支持自定义模板加载
-- [x] 生成类型存根文件
-- [x] 新增 2 种内置模板（block_register, dimension_config）
-- [x] 单元测试全部通过（205 passed, 2 skipped）
-
-### 实际结果
-- 所有任务完成
-- 新增 4 个模块文件
-- 新增 40 个单元测试
-- 总测试数：205 passed, 2 skipped
-
----
-
-## 下次迭代 #8 (v0.5.0)
+## 当前迭代 #8 (v0.5.0) ✅
 
 ### 版本目标
 v0.5.0 - 向量检索集成与语义搜索增强
@@ -81,76 +13,30 @@ v0.5.0 - 向量检索集成与语义搜索增强
 #### 高优先级 🔥
 
 **任务 1: 向量检索集成**
-- [ ] 集成 ChromaDB 向量数据库
-- [ ] 实现文档向量化（使用 sentence-transformers）
-- [ ] 实现语义搜索功能
-- [ ] 支持混合搜索（关键词 + 语义）
+- [x] 集成 ChromaDB 向量数据库
+- [x] 实现文档向量化（使用 sentence-transformers）
+- [x] 实现语义搜索功能
+- [x] 支持混合搜索（关键词 + 语义）
 
 **任务 2: LlamaIndex 集成**
-- [ ] 集成 LlamaIndex 框架
-- [ ] 实现向量存储（ChromaDB）
-- [ ] 实现文档加载器
-- [ ] 实现查询引擎
+- [x] 集成 LlamaIndex 框架
+- [x] 实现向量存储（ChromaDB）
+- [x] 实现文档加载器
+- [x] 实现查询引擎
 
 **任务 3: 知识库增量更新**
-- [ ] 支持增量构建知识库
-- [ ] 实现文档变更检测
-- [ ] 支持增量向量化
-- [ ] 实现向量索引更新
+- [x] 支持增量构建知识库
+- [x] 实现文档变更检测
+- [x] 支持增量向量化
+- [x] 实现向量索引更新
 
 #### 中优先级
 
 **任务 4: 搜索增强**
-- [ ] 实现搜索结果重排序
-- [ ] 支持多路召回
-- [ ] 实现搜索结果解释
-- [ ] 支持相关度评分
-
-#### 技术细节
-
-**向量检索架构**:
-```python
-class VectorRetriever:
-    def __init__(self, chroma_path: str, embedding_model: str):
-        self.client = chromadb.PersistentClient(path=chroma_path)
-        self.collection = self.client.get_or_create_collection("modsdk")
-        self.embedding_model = embedding_model
-    
-    def add_documents(self, docs: list[Document]) -> None:
-        """添加文档到向量库"""
-        pass
-    
-    def search(self, query: str, top_k: int = 5) -> list[SearchResult]:
-        """语义搜索"""
-        pass
-    
-    def hybrid_search(
-        self,
-        query: str,
-        keyword_weight: float = 0.5,
-        semantic_weight: float = 0.5,
-    ) -> list[SearchResult]:
-        """混合搜索"""
-        pass
-```
-
-**LlamaIndex 集成**:
-```python
-class LlamaIndexRetriever:
-    def __init__(self, chroma_path: str):
-        self.vector_store = ChromaVectorStore(chroma_path)
-        self.storage_context = StorageContext.from_defaults(
-            vector_store=self.vector_store
-        )
-        self.index = VectorStoreIndex.from_documents(
-            documents=[],
-            storage_context=self.storage_context,
-        )
-    
-    def query(self, query_str: str) -> Response:
-        """查询"""
-        pass
-```
+- [x] 实现搜索结果重排序
+- [x] 支持多路召回
+- [x] 实现搜索结果解释
+- [x] 支持相关度评分
 
 ### 预期产出
 ```
@@ -168,11 +54,112 @@ MC-Agent-Kit/
 ```
 
 ### 验收标准
-- [ ] ChromaDB 集成完成
-- [ ] LlamaIndex 集成完成
-- [ ] 语义搜索可用
-- [ ] 混合搜索可用
-- [ ] 知识库增量更新可用
+- [x] ChromaDB 集成完成
+- [x] LlamaIndex 集成完成
+- [x] 语义搜索可用
+- [x] 混合搜索可用
+- [x] 知识库增量更新可用
+- [x] 单元测试全部通过（257 passed, 2 skipped）
+
+### 实际结果
+- 所有任务完成
+- 新增 5 个模块文件（retrieval/ 目录）
+- 新增 1 个知识库模块（incremental.py）
+- 新增 62 个单元测试
+- 总测试数：257 passed, 2 skipped
+
+---
+
+## 下次迭代 #9 (v0.6.0)
+
+### 版本目标
+v0.6.0 - 游戏内代码执行与实时调试
+
+### 迭代目标
+实现游戏内代码执行、实时调试支持和性能分析工具
+
+### 任务清单
+
+#### 高优先级 🔥
+
+**任务 1: 游戏内代码执行**
+- [ ] 实现代码热重载机制
+- [ ] 支持 Python 代码执行
+- [ ] 实现执行结果捕获
+- [ ] 支持错误反馈
+
+**任务 2: 实时调试支持**
+- [ ] 实现断点调试接口
+- [ ] 支持变量监视
+- [ ] 实现调用栈追踪
+- [ ] 支持条件断点
+
+**任务 3: 日志分析增强**
+- [ ] 实现日志实时解析
+- [ ] 支持错误模式匹配
+- [ ] 实现性能日志分析
+- [ ] 支持日志过滤
+
+#### 中优先级
+
+**任务 4: 性能分析工具**
+- [ ] 实现代码性能分析
+- [ ] 支持内存使用监控
+- [ ] 生成性能报告
+- [ ] 支持性能对比
+
+#### 技术细节
+
+**代码执行架构**:
+```python
+class CodeExecutor:
+    def __init__(self, launcher: GameLauncher):
+        self.launcher = launcher
+        self.log_capture = LogCapture()
+    
+    async def execute(self, code: str) -> ExecutionResult:
+        """执行代码并返回结果"""
+        pass
+    
+    async def hot_reload(self, file_path: str) -> bool:
+        """热重载代码文件"""
+        pass
+```
+
+**调试器架构**:
+```python
+class Debugger:
+    def __init__(self, game_process):
+        self.breakpoints: dict[str, list[Breakpoint]] = {}
+        self.watch_vars: dict[str, Any] = {}
+    
+    def set_breakpoint(self, file: str, line: int, condition: str = None) -> None:
+        """设置断点"""
+        pass
+    
+    def watch_variable(self, name: str) -> Any:
+        """监视变量"""
+        pass
+```
+
+### 预期产出
+```
+MC-Agent-Kit/
+├── src/mc_agent_kit/
+│   └── execution/            # 新增执行模块
+│       ├── executor.py       # 代码执行器
+│       ├── debugger.py       # 调试器
+│       ├── hot_reload.py     # 热重载
+│       └── performance.py    # 性能分析
+└── skills/
+    └── modsdk-debug-enhanced/ # 增强调试 Skill
+        └── SKILL.md
+```
+
+### 验收标准
+- [ ] 代码执行可用
+- [ ] 实时调试可用
+- [ ] 性能分析可用
 - [ ] 单元测试全部通过
 
 ### 预计时间
@@ -181,11 +168,6 @@ MC-Agent-Kit/
 ---
 
 ## 后续迭代预览
-
-### 迭代 #9 (v0.6.0)
-- 游戏内代码执行
-- 实时调试支持
-- 性能分析工具
 
 ### 迭代 #10 (v0.7.0)
 - 智能代码补全
@@ -199,5 +181,5 @@ MC-Agent-Kit/
 
 ---
 
-*文档版本：v0.1.7*
+*文档版本：v0.1.8*
 *最后更新：2026-03-22*

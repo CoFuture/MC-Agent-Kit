@@ -4,14 +4,19 @@ MC-Agent-Kit 知识库模块
 为 AI Agent 提供 MC ModSDK 开发知识的检索能力。
 """
 
-from .base import Document, DocumentChunk, SearchResult
+from .base import Document, DocumentChunk, DocumentType, SearchResult
 from .knowledge_base import KnowledgeBase
+from .incremental import IncrementalUpdater, DocumentChange, ChangeReport
 
 __all__ = [
     "KnowledgeBase",
     "Document",
     "DocumentChunk",
+    "DocumentType",
     "SearchResult",
+    "IncrementalUpdater",
+    "DocumentChange",
+    "ChangeReport",
 ]
 
 
