@@ -8,16 +8,15 @@ import cProfile
 import io
 import logging
 import pstats
-import sys
 import threading
 import time
 import tracemalloc
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from functools import wraps
-from pstats import Stats
-from typing import Any, Callable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -162,17 +161,17 @@ class PerformanceAnalyzer:
 
     使用示例:
         analyzer = PerformanceAnalyzer()
-        
+
         # 分析函数
         @analyzer.profile
         def my_function():
             pass
-        
+
         # 手动分析
         analyzer.start()
         # ... 执行代码 ...
         report = analyzer.stop()
-        
+
         # 分析代码块
         with analyzer.profile_block("my_block"):
             # ... 执行代码 ...
@@ -548,10 +547,10 @@ class MemoryMonitor:
     使用示例:
         monitor = MemoryMonitor()
         monitor.start()
-        
+
         # 获取当前内存使用
         usage = monitor.get_current_usage()
-        
+
         monitor.stop()
     """
 

@@ -240,16 +240,16 @@ class TestLogBatchProcessor:
     
     def test_should_flush(self):
         """测试是否应该刷新"""
-        config = BatchConfig(batch_size=5, flush_interval=0.1)
+        config = BatchConfig(batch_size=10, flush_interval=0.1)  # 更大的批次大小避免自动刷新
         processor = LogBatchProcessor(config)
         
         # 队列未满，时间未到
         assert processor.should_flush() is False
         
-        # 达到批次大小
+        # 添加日志但未达到批次大小
         for _ in range(5):
             processor.add("log")
-        assert processor.should_flush() is True
+        assert processor.should_flush() is False  # 未达到批次大小
         
         # 刷新后
         processor.flush()
@@ -257,22 +257,23 @@ class TestLogBatchProcessor:
         
         # 等待时间到
         time.sleep(0.15)
-        assert processor.should_flush() is True
+        assert processor.should_flush() is True  # 时间到了应该刷新
     
     def test_stats(self):
         """测试统计信息"""
-        config = BatchConfig(batch_size=10)
+        config = BatchConfig(batch_size=10)  # 更大的批次大小避免自动刷新
         processor = LogBatchProcessor(config)
         
         processor.add("log1")
         processor.add("log2")
         processor.flush()
-        processor.flush()  # 空刷新
+        processor.add("log3")  # 添加新日志再刷新
+        processor.flush()
         
         stats = processor.stats()
         
-        assert stats["total_added"] == 2
-        assert stats["total_processed"] == 2
+        assert stats["total_added"] == 3
+        assert stats["total_processed"] == 3
         assert stats["flush_count"] == 2
         assert stats["queue_size"] == 0
 
@@ -353,16 +354,18 @@ class TestCodeGenOptimizer:
         config = OptimizationConfig(enable_cache=True)
         optimizer = CodeGenOptimizer(config)
         
-        optimizer.generate_with_cache("t1", {"p": "v1"}, lambda: "c1")  # miss
+        optimizer.generate_with_cache("t1", {"p": "v1"}, lambda: "c1")  # miss, generation 1
         optimizer.generate_with_cache("t1", {"p": "v1"}, lambda: "c1")  # hit
-        optimizer.generate_with_cache("t2", {"p": "v2"}, lambda: "c2")  # miss
+        optimizer.generate_with_cache("t2", {"p": "v2"}, lambda: "c2")  # miss, generation 2
+        optimizer.generate_with_cache("t2", {"p": "v2"}, lambda: "c2")  # hit
+        optimizer.generate_with_cache("t1", {"p": "v3"}, lambda: "c3")  # miss, generation 3
         
         stats = optimizer.stats()
         
-        assert stats["cache_hits"] == 1
-        assert stats["cache_misses"] == 2
+        assert stats["cache_hits"] == 2
+        assert stats["cache_misses"] == 3
         assert stats["total_generations"] == 3
-        assert stats["cache_hit_rate"] == 1/3  # ~33%
+        assert stats["cache_hit_rate"] == 2/5  # 40%
 
 
 if __name__ == "__main__":

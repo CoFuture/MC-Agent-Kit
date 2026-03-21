@@ -7,7 +7,6 @@
 from __future__ import annotations
 
 import ast
-import re
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING
@@ -501,7 +500,7 @@ class BestPracticeChecker:
 
                 if func_name in api_calls:
                     # 检查是否在 try 块中（简化检查）
-                    practice = self._practice_map["ERR001"]
+                    self._practice_map["ERR001"]
                     # 不报告，仅记录建议
 
         return results

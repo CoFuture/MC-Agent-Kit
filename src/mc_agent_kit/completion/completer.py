@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-import ast
 import re
 from dataclasses import dataclass, field
 from enum import Enum
@@ -68,7 +67,7 @@ class CompletionContext:
     indent_level: int = 0  # 缩进级别
 
     @classmethod
-    def from_code(cls, code: str, cursor_line: int, cursor_column: int) -> "CompletionContext":
+    def from_code(cls, code: str, cursor_line: int, cursor_column: int) -> CompletionContext:
         """从代码创建上下文"""
         lines = code.split("\n")
 
@@ -154,7 +153,7 @@ class CodeCompleter:
     # 触发补全的字符
     trigger_characters = [".", "(", ","]
 
-    def __init__(self, knowledge_base: "KnowledgeBase | None" = None) -> None:
+    def __init__(self, knowledge_base: KnowledgeBase | None = None) -> None:
         """初始化补全器
 
         Args:
@@ -164,7 +163,7 @@ class CodeCompleter:
         self._api_cache: dict[str, list[Completion]] = {}
         self._event_cache: dict[str, list[Completion]] = {}
 
-    def set_knowledge_base(self, kb: "KnowledgeBase") -> None:
+    def set_knowledge_base(self, kb: KnowledgeBase) -> None:
         """设置知识库"""
         self._kb = kb
         self._api_cache.clear()

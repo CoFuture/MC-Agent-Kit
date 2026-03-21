@@ -17,9 +17,9 @@ logger = logging.getLogger(__name__)
 class KnowledgeBase:
     """
     MC ModSDK 知识库
-    
+
     提供文档索引、语义搜索、API 查询等功能。
-    
+
     使用示例:
         # 初始化并构建索引
         kb = KnowledgeBase(
@@ -27,10 +27,10 @@ class KnowledgeBase:
             persist_dir="data/knowledge_db"
         )
         kb.build_index()
-        
+
         # 搜索
         results = kb.search("如何创建自定义实体")
-        
+
         # 加载已有索引
         kb = KnowledgeBase.load("data/knowledge_db")
     """
@@ -45,7 +45,7 @@ class KnowledgeBase:
     ):
         """
         初始化知识库
-        
+
         Args:
             docs_path: 文档目录路径
             persist_dir: 索引持久化目录
@@ -69,7 +69,7 @@ class KnowledgeBase:
     def build_index(self, force: bool = False) -> None:
         """
         构建知识库索引
-        
+
         Args:
             force: 是否强制重建
         """
@@ -104,12 +104,12 @@ class KnowledgeBase:
     ) -> list[SearchResult]:
         """
         语义搜索
-        
+
         Args:
             query: 搜索查询
             doc_type: 文档类型过滤 (api/guide/demo/all)
             top_k: 返回结果数量
-            
+
         Returns:
             搜索结果列表
         """
@@ -133,10 +133,10 @@ class KnowledgeBase:
     def get_api(self, api_name: str) -> SearchResult | None:
         """
         获取 API 信息
-        
+
         Args:
             api_name: API 名称
-            
+
         Returns:
             API 信息，未找到返回 None
         """
@@ -156,12 +156,12 @@ class KnowledgeBase:
     ) -> list[SearchResult]:
         """
         获取代码示例
-        
+
         Args:
             topic: 主题关键词
             language: 代码语言
             top_k: 返回结果数量
-            
+
         Returns:
             代码示例列表
         """
@@ -171,10 +171,10 @@ class KnowledgeBase:
     def query(self, question: str) -> str:
         """
         问答查询（供 Agent 调用）
-        
+
         Args:
             question: 问题
-            
+
         Returns:
             回答文本
         """
@@ -223,10 +223,10 @@ class KnowledgeBase:
     def load(cls, persist_dir: str) -> "KnowledgeBase":
         """
         加载已有索引
-        
+
         Args:
             persist_dir: 持久化目录
-            
+
         Returns:
             KnowledgeBase 实例
         """
@@ -287,7 +287,7 @@ class KnowledgeBase:
     def _chunk_single_document(self, doc: Document) -> list[DocumentChunk]:
         """
         单文档分块
-        
+
         策略：
         - API 文档：按接口/事件分块
         - 教程文档：按段落分块

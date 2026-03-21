@@ -22,7 +22,7 @@ class CodeGenerator:
 
     使用示例:
         generator = CodeGenerator()
-        
+
         # 生成事件监听器代码
         code = generator.generate(
             template_name="event_listener",
@@ -34,7 +34,7 @@ class CodeGenerator:
                 ]
             }
         )
-        
+
         # 列出可用模板
         templates = generator.list_templates()
     """

@@ -51,10 +51,10 @@ class APIBindingGenerator:
 
     使用示例:
         generator = APIBindingGenerator(knowledge_base)
-        
+
         # 生成类型存根
         stub_content = generator.generate_stubs()
-        
+
         # 生成文档索引
         doc_index = generator.generate_doc_index()
     """
@@ -93,8 +93,8 @@ class APIBindingGenerator:
 
         # 文件头部
         lines.append('"""')
-        lines.append(f"ModSDK 类型存根文件")
-        lines.append(f"自动生成，请勿手动修改")
+        lines.append("ModSDK 类型存根文件")
+        lines.append("自动生成，请勿手动修改")
         lines.append(f"API 数量: {len(self._kb.apis)}")
         lines.append(f"事件数量: {len(self._kb.events)}")
         lines.append('"""')

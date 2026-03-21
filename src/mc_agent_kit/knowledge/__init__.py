@@ -5,8 +5,8 @@ MC-Agent-Kit 知识库模块
 """
 
 from .base import Document, DocumentChunk, DocumentType, SearchResult
+from .incremental import ChangeReport, DocumentChange, IncrementalUpdater
 from .knowledge_base import KnowledgeBase
-from .incremental import IncrementalUpdater, DocumentChange, ChangeReport
 
 __all__ = [
     "KnowledgeBase",
@@ -23,10 +23,10 @@ __all__ = [
 def create_knowledge_tool(kb: KnowledgeBase):
     """
     创建 Agent 可调用的知识库工具函数
-    
+
     Args:
         kb: KnowledgeBase 实例
-        
+
     Returns:
         可供 Agent 调用的工具函数
     """
@@ -37,12 +37,12 @@ def create_knowledge_tool(kb: KnowledgeBase):
     ) -> str:
         """
         搜索 MC ModSDK 知识库
-        
+
         Args:
             query: 搜索关键词或问题
             doc_type: 文档类型 (api/guide/demo/all)
             top_k: 返回结果数量
-            
+
         Returns:
             搜索结果文本
         """

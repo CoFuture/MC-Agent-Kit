@@ -6,13 +6,12 @@
 
 from __future__ import annotations
 
-import ast
 import re
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from .smells import CodeSmell, SmellSeverity, SmellType
+from .smells import CodeSmell, SmellType
 
 if TYPE_CHECKING:
     pass
@@ -131,7 +130,7 @@ class RefactorEngine:
 
         return RefactorSuggestion(
             type=RefactorType.EXTRACT_FUNCTION,
-            message=f"将函数拆分为更小的函数",
+            message="将函数拆分为更小的函数",
             line=smell.line,
             end_line=smell.end_line,
             original_code=original,

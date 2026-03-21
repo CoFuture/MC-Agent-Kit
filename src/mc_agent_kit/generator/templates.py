@@ -106,7 +106,7 @@ SystemName = serverApi.GetSystemName()
 def On{{ event_name }}(args):
     \"\"\"
     {{ event_name }} 事件回调
-    
+
     参数:
     {% for param in event_params %}
     - {{ param.name }} ({{ param.type }}): {{ param.desc }}
@@ -115,7 +115,7 @@ def On{{ event_name }}(args):
     # TODO: 实现事件处理逻辑
     {{ event_name | snake_case }}_id = args.get('{{ id_field | default('id') }}')
     print("[{{ event_name }}] 触发事件, id:", {{ event_name | snake_case }}_id)
-    
+
     # 返回值控制事件传播
     # return True  # 继续传播
     # return False  # 取消传播
@@ -193,12 +193,12 @@ comp = serverApi.GetEngineCompFactory().{{ component_factory | default('CreateCo
 def call_{{ api_name | snake_case }}({% for param in api_params %}{{ param.name }}{% if not param.required %}={{ param.default }}{% endif %}, {% endfor %}):
     \"\"\"
     调用 {{ api_name }} API
-    
+
     {% for param in api_params %}
     Args:
         {{ param.name }} ({{ param.type }}): {{ param.desc }}
     {% endfor %}
-    
+
     Returns:
         {{ return_type | default('None') }}: {{ return_desc | default('返回值') }}
     \"\"\"
@@ -268,23 +268,23 @@ import mod.server.extraServerApi as serverApi
 def create_entity(pos, dimensionId=0):
     \"\"\"
     创建实体
-    
+
     Args:
         pos (tuple): 坐标 (x, y, z)
         dimensionId (int): 维度 ID
-        
+
     Returns:
         str: 实体 ID
     \"\"\"
     comp = serverApi.GetEngineCompFactory().CreateGame()
-    
+
     # 创建实体
     entity_id = comp.CreateEngineEntityByType(
         '{{ entity_type | default('minecraft:pig') }}',
         pos,
         dimensionId
     )
-    
+
     if entity_id:
         print(f"[Entity] 创建成功: {entity_id}")
         return entity_id
@@ -339,16 +339,16 @@ ITEM_CONFIG = {
 def register_custom_item():
     \"\"\"
     注册自定义物品
-    
+
     Returns:
         bool: 是否注册成功
     \"\"\"
     comp = serverApi.GetEngineCompFactory().CreateItem()
-    
+
     # TODO: 调用物品注册 API
     # result = comp.RegisterItem(ITEM_CONFIG)
     # return result
-    
+
     print(f"[Item] 注册物品: {ITEM_CONFIG['itemName']}")
     return True
 
@@ -414,16 +414,16 @@ BLOCK_CONFIG = {
 def register_custom_block():
     \"\"\"
     注册自定义方块
-    
+
     Returns:
         bool: 是否注册成功
     \"\"\"
     comp = serverApi.GetEngineCompFactory().CreateBlock()
-    
+
     # TODO: 调用方块注册 API
     # result = comp.RegisterBlock(BLOCK_CONFIG)
     # return result
-    
+
     print(f"[Block] 注册方块: {BLOCK_CONFIG['blockName']}")
     return True
 
@@ -431,28 +431,28 @@ def register_custom_block():
 def on_block_placed(args):
     \"\"\"
     方块放置事件
-    
+
     Args:
         args: 事件参数，包含坐标、维度、玩家等信息
     \"\"\"
     pos = args.get('pos')
     dimensionId = args.get('dimensionId')
     entityId = args.get('entityId')
-    
+
     print(f"[Block] 方块被放置在: {pos}")
     # TODO: 实现方块放置后的逻辑
 
 def on_block_destroyed(args):
     \"\"\"
     方块破坏事件
-    
+
     Args:
         args: 事件参数，包含坐标、维度、玩家等信息
     \"\"\"
     pos = args.get('pos')
     dimensionId = args.get('dimensionId')
     entityId = args.get('entityId')
-    
+
     print(f"[Block] 方块被破坏于: {pos}")
     # TODO: 实现方块破坏后的逻辑
 
@@ -540,7 +540,7 @@ DIMENSION_CONFIG = {
 def get_dimension_id():
     \"\"\"
     获取自定义维度 ID
-    
+
     Returns:
         int: 维度 ID
     \"\"\"
@@ -549,10 +549,10 @@ def get_dimension_id():
 def is_custom_dimension(dimensionId):
     \"\"\"
     检查是否为自定义维度
-    
+
     Args:
         dimensionId: 维度 ID
-        
+
     Returns:
         bool: 是否为自定义维度
     \"\"\"
@@ -561,44 +561,44 @@ def is_custom_dimension(dimensionId):
 def teleport_to_dimension(entityId, pos=None):
     \"\"\"
     传送实体到自定义维度
-    
+
     Args:
         entityId: 实体 ID
         pos: 目标坐标 (x, y, z)，默认为出生点
     \"\"\"
     if pos is None:
         pos = DIMENSION_CONFIG['spawnPoint']
-    
+
     comp = serverApi.GetEngineCompFactory().CreateGame()
     result = comp.SetEntityDimension(
         entityId,
         pos,
         DIMENSION_CONFIG['dimensionId']
     )
-    
+
     if result:
         print(f"[Dimension] 已传送实体 {entityId} 到维度 {DIMENSION_CONFIG['dimensionName']}")
     else:
         print(f"[Dimension] 传送失败")
-    
+
     return result
 
 # 维度事件监听
 def on_dimension_change(args):
     \"\"\"
     维度切换事件
-    
+
     Args:
         args: 事件参数
     \"\"\"
     from_dimension = args.get('fromDimensionId')
     to_dimension = args.get('toDimensionId')
     entityId = args.get('entityId')
-    
+
     if is_custom_dimension(to_dimension):
         print(f"[Dimension] 实体 {entityId} 进入自定义维度")
         # TODO: 实现进入维度的逻辑
-    
+
     if is_custom_dimension(from_dimension):
         print(f"[Dimension] 实体 {entityId} 离开自定义维度")
         # TODO: 实现离开维度的逻辑
@@ -669,35 +669,35 @@ class {{ ui_name }}Screen:
     {{ ui_name }} UI 屏幕
     {{ description | default('自定义 UI 屏幕') }}
     \"\"\"
-    
+
     def __init__(self):
         self.screenNode = None
         self.uiNode = None
-        
+
     def Create(self):
         \"\"\"创建 UI\"\"\"
         # 获取 UI 组件
         comp = clientApi.GetEngineCompFactory().CreateUI()
-        
+
         # 创建屏幕节点
         # TODO: 实现 UI 创建逻辑
         pass
-    
+
     def Destroy(self):
         \"\"\"销毁 UI\"\"\"
         if self.screenNode:
             # TODO: 实现 UI 销毁逻辑
             pass
-    
+
     def OnButtonClick(self, buttonName):
         \"\"\"
         按钮点击回调
-        
+
         Args:
             buttonName (str): 按钮名称
         \"\"\"
         print(f"[UI] Button clicked: {buttonName}")
-        
+
         {% for button in buttons %}
         if buttonName == '{{ button }}':
             print(f"[UI] {{ button }} 按钮被点击")

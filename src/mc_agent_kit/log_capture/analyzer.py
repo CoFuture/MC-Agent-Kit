@@ -7,11 +7,12 @@
 import re
 import threading
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from queue import Queue
-from typing import Any, Callable
+from typing import Any
 
 from .parser import LogEntry, LogLevel, LogParser
 

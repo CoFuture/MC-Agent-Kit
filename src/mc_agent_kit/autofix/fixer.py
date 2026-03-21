@@ -16,7 +16,6 @@ from .diagnoser import (
     ErrorDiagnoser,
     ErrorInfo,
     ErrorType,
-    FixConfidence,
     FixSuggestion,
 )
 

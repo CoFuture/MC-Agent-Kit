@@ -38,16 +38,16 @@ class ModSDKCodeGenSkill(BaseSkill):
 
     使用示例:
         skill = ModSDKCodeGenSkill()
-        
+
         # 生成事件监听器
         result = skill.execute(
             template="event_listener",
             params={"event_name": "OnServerChat"}
         )
-        
+
         # 列出可用模板
         result = skill.execute(action="list")
-        
+
         # 获取模板信息
         result = skill.execute(action="info", template="event_listener")
     """

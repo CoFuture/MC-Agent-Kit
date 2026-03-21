@@ -5,13 +5,12 @@
 """
 
 import ast
-import inspect
 import logging
-import re
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -210,19 +209,19 @@ class Debugger:
 
     使用示例:
         debugger = Debugger()
-        
+
         # 设置断点
         bp = debugger.set_breakpoint("main.py", 10)
-        
+
         # 添加条件断点
         bp = debugger.set_breakpoint(
             "main.py", 20,
             condition="x > 10"
         )
-        
+
         # 监视变量
         debugger.watch_variable("x")
-        
+
         # 开始调试
         debugger.start()
     """

@@ -6,14 +6,15 @@
 
 import asyncio
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable
+from typing import Any
 
 from ..launcher.game_launcher import GameProcess, find_free_port, launch_game
 from ..log_capture.tcp_server import LogServer
-from .executor import CodeExecutor, ExecutionConfig, ExecutionResult, ExecutionStatus
+from .executor import CodeExecutor, ExecutionConfig, ExecutionResult
 
 logger = logging.getLogger(__name__)
 

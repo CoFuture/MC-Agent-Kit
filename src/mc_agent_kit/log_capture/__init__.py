@@ -5,8 +5,6 @@
 提供实时日志分析和聚合功能。
 """
 
-from .parser import LogEntry, LogLevel, LogParser
-from .tcp_server import LogServer, start_log_server
 from .analyzer import (
     Alert,
     AlertSeverity,
@@ -17,6 +15,8 @@ from .analyzer import (
     MatchResult,
     PatternCategory,
 )
+from .parser import LogEntry, LogLevel, LogParser
+from .tcp_server import LogServer, start_log_server
 
 __all__ = [
     # Parser

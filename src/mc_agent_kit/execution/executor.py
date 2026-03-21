@@ -5,15 +5,15 @@
 """
 
 import ast
-import asyncio
 import logging
 import sys
 import traceback
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from io import StringIO
-from typing import Any, Callable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -169,10 +169,10 @@ class CodeExecutor:
 
     使用示例:
         executor = CodeExecutor()
-        
+
         # 执行代码
         result = executor.execute("print('Hello, World!')")
-        
+
         # 执行并获取返回值
         result = executor.execute("x = 1 + 2; x")
         print(result.return_value)  # 3

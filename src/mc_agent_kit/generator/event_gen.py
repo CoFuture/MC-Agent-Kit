@@ -36,10 +36,10 @@ class EventGenerator:
 
     使用示例:
         generator = EventGenerator(knowledge_base)
-        
+
         # 生成事件监听器
         code = generator.generate_listener("OnServerChat")
-        
+
         # 生成批量事件索引
         index = generator.generate_event_index()
     """
@@ -89,7 +89,7 @@ SystemName = serverApi.GetSystemName()
 def validate_{{ event_name | snake_case }}_params(args):
     \"\"\"
     验证 {{ event_name }} 事件参数
-    
+
     预期参数:
     {% for param in event_params %}
     - {{ param.name }} ({{ param.type }}): {{ param.desc }}
@@ -100,7 +100,7 @@ def validate_{{ event_name | snake_case }}_params(args):
     if '{{ param.name }}' not in args:
         errors.append("缺少参数: {{ param.name }}")
     {% endfor %}
-    
+
     if errors:
         print("[ValidationError] {{ event_name }}:", errors)
         return False
@@ -110,12 +110,12 @@ def validate_{{ event_name | snake_case }}_params(args):
 def {{ callback_name }}(args):
     \"\"\"
     {{ event_name }} 事件回调
-    
+
     参数:
     {% for param in event_params %}
     - {{ param.name }} ({{ param.type }}): {{ param.desc }}
     {% endfor %}
-    
+
     返回值控制:
     - return True: 继续传播事件
     - return False: 取消事件传播
@@ -125,7 +125,7 @@ def {{ callback_name }}(args):
     if not validate_{{ event_name | snake_case }}_params(args):
         return True  # 验证失败，但不影响事件传播
     {% endif %}
-    
+
     {% if include_logging %}
     # 日志记录
     print("[{{ event_name }}] 事件触发")
@@ -133,7 +133,7 @@ def {{ callback_name }}(args):
     print("  {{ param.name }}:", args.get('{{ param.name }}'))
     {% endfor %}
     {% endif %}
-    
+
     {% if custom_code %}
     # 自定义代码
     {{ custom_code | indent(4) }}
@@ -141,7 +141,7 @@ def {{ callback_name }}(args):
     # TODO: 实现事件处理逻辑
     pass
     {% endif %}
-    
+
     return True  # 继续传播
 
 # 注册事件监听

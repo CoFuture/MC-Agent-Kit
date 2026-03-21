@@ -10,19 +10,19 @@ import json
 import sys
 from typing import Any
 
-from mc_agent_kit.skills import (
-    get_registry,
-    register_modsdk_skills,
-)
-from mc_agent_kit.completion import (
-    CodeCompleter,
-    SmellDetector,
-    RefactorEngine,
-    BestPracticeChecker,
-)
 from mc_agent_kit.autofix import (
     AutoFixer,
     ErrorDiagnoser,
+)
+from mc_agent_kit.completion import (
+    BestPracticeChecker,
+    CodeCompleter,
+    RefactorEngine,
+    SmellDetector,
+)
+from mc_agent_kit.skills import (
+    get_registry,
+    register_modsdk_skills,
 )
 
 
@@ -396,12 +396,12 @@ def cmd_check(args: argparse.Namespace) -> int:
             passed = [r for r in results if r.passed]
             failed = [r for r in results if not r.passed]
 
-            print(f"最佳实践检查结果:\n")
+            print("最佳实践检查结果:\n")
             print(f"  ✅ 通过: {len(passed)}")
             print(f"  ❌ 未通过: {len(failed)}")
 
             if failed:
-                print(f"\n未通过的项目:\n")
+                print("\n未通过的项目:\n")
                 for r in failed:
                     print(f"  ❌ {r.practice.name}")
                     print(f"     消息: {r.message}")
@@ -485,10 +485,10 @@ def cmd_autofix(args: argparse.Namespace) -> int:
             }
             print(json.dumps(data, ensure_ascii=False, indent=2))
         else:
-            print(f"错误诊断结果:\n")
+            print("错误诊断结果:\n")
             print(f"  类型: {diagnosis.error_info.error_type.value}")
             print(f"  消息: {diagnosis.error_info.message}")
-            print(f"\n修复建议:\n")
+            print("\n修复建议:\n")
             for s in diagnosis.suggestions:
                 print(f"  💡 {s.description}")
                 print(f"     信心: {s.confidence.value}")
@@ -516,7 +516,7 @@ def cmd_autofix(args: argparse.Namespace) -> int:
             }
             print(json.dumps(data, ensure_ascii=False, indent=2))
         else:
-            print(f"自动修复结果:\n")
+            print("自动修复结果:\n")
             print(f"  状态: {result.status.value}")
             print(f"  消息: {result.message}")
 

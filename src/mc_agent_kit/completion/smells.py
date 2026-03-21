@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import ast
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
 
@@ -444,7 +444,7 @@ class SmellDetector:
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 methods = [n for n in node.body if isinstance(n, ast.FunctionDef)]
-                assignments = [n for n in node.body if isinstance(n, ast.Assign)]
+                [n for n in node.body if isinstance(n, ast.Assign)]
 
                 # 如果只有 __init__ 且只是赋值
                 if len(methods) == 1 and methods[0].name == "__init__":

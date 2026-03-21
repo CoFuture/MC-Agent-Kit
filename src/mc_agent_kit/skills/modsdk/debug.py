@@ -284,13 +284,13 @@ class ModSDKDebugSkill(BaseSkill):
 
     使用示例:
         skill = ModSDKDebugSkill()
-        
+
         # 诊断错误日志
         result = skill.execute(log_content="SyntaxError: invalid syntax")
-        
+
         # 分析日志文件
         result = skill.execute(action="analyze", log_content="...")
-        
+
         # 获取常见错误列表
         result = skill.execute(action="list_errors")
     """

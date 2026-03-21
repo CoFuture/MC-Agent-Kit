@@ -12,11 +12,11 @@ import os
 import sys
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -86,10 +86,10 @@ class FileWatcher:
         watcher = FileWatcher()
         watcher.add_watch("/path/to/dir")
         watcher.start()
-        
+
         # 检查变化
         changes = watcher.get_changes()
-        
+
         watcher.stop()
     """
 
@@ -310,14 +310,14 @@ class HotReloader:
 
     使用示例:
         reloader = HotReloader()
-        
+
         # 手动重载
         result = reloader.reload_module("my_module")
-        
+
         # 自动监控重载
         reloader.watch_directory("/path/to/project")
         reloader.start()
-        
+
         # 停止
         reloader.stop()
     """
