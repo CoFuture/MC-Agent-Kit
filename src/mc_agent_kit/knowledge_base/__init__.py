@@ -16,6 +16,7 @@ from .models import (
     KnowledgeBase,
 )
 from .parser import DocumentParser, MarkdownParser
+from .retriever import KnowledgeRetriever, create_retriever
 
 __all__ = [
     # Models
@@ -32,4 +33,7 @@ __all__ = [
     "DocumentParser",
     # Indexer
     "KnowledgeIndexer",
+    # Retriever
+    "KnowledgeRetriever",
+    "create_retriever",
 ]

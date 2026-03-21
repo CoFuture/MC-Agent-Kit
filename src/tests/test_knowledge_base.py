@@ -4,22 +4,21 @@
 测试数据模型、文档解析器和索引构建器。
 """
 
-import pytest
-from pathlib import Path
 import tempfile
-import json
+from pathlib import Path
+
+import pytest
 
 from mc_agent_kit.knowledge_base import (
     APIEntry,
     APIParameter,
-    EventEntry,
-    EventParameter,
     EnumEntry,
     EnumValue,
-    CodeExample,
+    EventEntry,
+    EventParameter,
     KnowledgeBase,
-    MarkdownParser,
     KnowledgeIndexer,
+    MarkdownParser,
 )
 from mc_agent_kit.knowledge_base.models import Scope
 

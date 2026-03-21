@@ -1,73 +1,74 @@
 # 下次迭代计划
 
-## 当前迭代 #4 (v0.2.1)
+## 当前迭代 #5 (v0.3.0)
 
 ### 版本目标
-v0.2.1 - 知识库检索工具
+v0.3.0 - Agent 技能封装
 
 ### 迭代目标
-实现知识库检索功能，支持语义搜索和关键词搜索
+分析 ModSDK 开发场景，设计 Agent 角色和 Skill 接口
 
 ### 任务清单
 
 #### 高优先级 🔥
 
-**任务 1: 实现检索器**
-- [ ] 实现 `Retriever` 类
-- [ ] 支持关键词搜索
-- [ ] 支持模块过滤
-- [ ] 支持作用域过滤
+**任务 1: 场景分析**
+- [ ] 分析 ModSDK 开发流程
+- [ ] 识别关键开发场景
+- [ ] 定义 Agent 角色职责
 
-**任务 2: 构建完整知识库**
-- [ ] 解析 `resources/docs/mcdocs/` 全部文档
-- [ ] 生成知识库索引文件
-- [ ] 测试解析完整性
+**任务 2: Skill 接口设计**
+- [ ] 设计 Skill 基类
+- [ ] 定义 Skill 元数据格式
+- [ ] 设计 Skill 注册机制
 
-**任务 3: 测试验证**
-- [ ] 编写检索器测试用例
-- [ ] 验证搜索结果准确性
+**任务 3: 核心 Skills 实现**
+- [ ] `modsdk-api-search` - API 文档检索
+- [ ] `modsdk-event-search` - 事件文档检索
+- [ ] 测试验证
 
 #### 技术细节
 
-**检索接口设计**:
+**Skill 基类设计**:
 ```python
-class KnowledgeRetriever:
-    def search(self, query: str, entry_type: str = "all") -> list:
-        """搜索知识库"""
-        pass
+class BaseSkill:
+    name: str
+    description: str
+    version: str
     
-    def search_api(self, keyword: str, scope: Scope = None) -> list[APIEntry]:
-        """搜索 API"""
-        pass
-    
-    def search_event(self, keyword: str, scope: Scope = None) -> list[EventEntry]:
-        """搜索事件"""
+    def execute(self, *args, **kwargs) -> SkillResult:
+        """执行 Skill"""
         pass
 ```
 
-**知识库文件位置**:
-```
-data/knowledge_base.json
+**Skill 元数据**:
+```yaml
+name: modsdk-api-search
+description: 搜索 ModSDK API 文档
+version: 1.0.0
+author: MC-Agent-Kit
 ```
 
 ### 预期产出
 ```
 MC-Agent-Kit/
 ├── src/mc_agent_kit/
-│   └── knowledge_base/
+│   └── skills/
 │       ├── __init__.py
-│       ├── models.py
-│       ├── parser.py
-│       ├── indexer.py
-│       └── retriever.py    # 新增
-└── data/
-    └── knowledge_base.json  # 新增
+│       ├── base.py
+│       └── modsdk/
+│           ├── __init__.py
+│           ├── api_search.py
+│           └── event_search.py
+└── skills/                    # OpenClaw Skill 目录
+    └── modsdk-api-search/
+        └── SKILL.md
 ```
 
 ### 验收标准
-- [ ] 能够搜索 API 和事件
-- [ ] 能够按模块过滤
-- [ ] 能够按作用域过滤
+- [ ] Skill 基类实现完成
+- [ ] API 检索 Skill 可用
+- [ ] 事件检索 Skill 可用
 - [ ] 单元测试全部通过
 
 ### 预计时间
@@ -77,17 +78,16 @@ MC-Agent-Kit/
 
 ## 后续迭代预览
 
-### 迭代 #5 (v0.3.0)
-- ModSDK 场景分析
-- Agent 角色划分
-- Skill 接口设计
-
 ### 迭代 #6 (v0.3.1)
-- 核心 Skills 实现
-- `modsdk-api-search` - API 文档检索
 - `modsdk-code-gen` - 代码生成
+- `modsdk-debug` - 调试辅助
+
+### 迭代 #7 (v0.4.0)
+- 模板系统
+- API 绑定生成
+- 类型注解生成
 
 ---
 
-*文档版本: v0.1.3*
+*文档版本: v0.1.4*
 *最后更新: 2026-03-22*
