@@ -389,6 +389,270 @@ def register_custom_item():
         ],
         scope="server",
     ),
+    # 方块注册模板
+    CodeTemplate(
+        name="block_register",
+        template_type=TemplateType.BLOCK,
+        description="生成注册自定义方块代码",
+        template="""# 注册自定义方块
+# 方块名称: {{ block_name | default('custom_block') }}
+# 方块标识符: {{ block_identifier | default('my_mod:custom_block') }}
+
+import mod.server.extraServerApi as serverApi
+
+# 方块配置
+BLOCK_CONFIG = {
+    'blockName': '{{ block_name | default('custom_block') }}',
+    'blockIdentifier': '{{ block_identifier | default('my_mod:custom_block') }}',
+    'blockCategory': '{{ block_category | default('Building') }}',
+    'hardness': {{ hardness | default(1.0) }},
+    'blastResistance': {{ blast_resistance | default(1.0) }},
+    'lightLevel': {{ light_level | default(0) }},
+    'transparent': {{ transparent | default('False') }},
+}
+
+def register_custom_block():
+    \"\"\"
+    注册自定义方块
+    
+    Returns:
+        bool: 是否注册成功
+    \"\"\"
+    comp = serverApi.GetEngineCompFactory().CreateBlock()
+    
+    # TODO: 调用方块注册 API
+    # result = comp.RegisterBlock(BLOCK_CONFIG)
+    # return result
+    
+    print(f"[Block] 注册方块: {BLOCK_CONFIG['blockName']}")
+    return True
+
+# 方块事件监听
+def on_block_placed(args):
+    \"\"\"
+    方块放置事件
+    
+    Args:
+        args: 事件参数，包含坐标、维度、玩家等信息
+    \"\"\"
+    pos = args.get('pos')
+    dimensionId = args.get('dimensionId')
+    entityId = args.get('entityId')
+    
+    print(f"[Block] 方块被放置在: {pos}")
+    # TODO: 实现方块放置后的逻辑
+
+def on_block_destroyed(args):
+    \"\"\"
+    方块破坏事件
+    
+    Args:
+        args: 事件参数，包含坐标、维度、玩家等信息
+    \"\"\"
+    pos = args.get('pos')
+    dimensionId = args.get('dimensionId')
+    entityId = args.get('entityId')
+    
+    print(f"[Block] 方块被破坏于: {pos}")
+    # TODO: 实现方块破坏后的逻辑
+
+# 服务端初始化时注册
+# register_custom_block()
+# serverApi.ListenForEvent('Minecraft', 'OnBlockPlaced', on_block_placed)
+# serverApi.ListenForEvent('Minecraft', 'OnBlockDestroyed', on_block_destroyed)
+""",
+        parameters=[
+            TemplateParameter(
+                name="block_name",
+                description="方块名称",
+                param_type="str",
+                required=True,
+            ),
+            TemplateParameter(
+                name="block_identifier",
+                description="方块标识符 (namespace:block_name)",
+                param_type="str",
+                required=True,
+            ),
+            TemplateParameter(
+                name="block_category",
+                description="方块分类",
+                param_type="str",
+                required=False,
+                default="Building",
+            ),
+            TemplateParameter(
+                name="hardness",
+                description="方块硬度",
+                param_type="float",
+                required=False,
+                default=1.0,
+            ),
+            TemplateParameter(
+                name="blast_resistance",
+                description="爆炸抗性",
+                param_type="float",
+                required=False,
+                default=1.0,
+            ),
+            TemplateParameter(
+                name="light_level",
+                description="光照等级 (0-15)",
+                param_type="int",
+                required=False,
+                default=0,
+            ),
+            TemplateParameter(
+                name="transparent",
+                description="是否透明",
+                param_type="bool",
+                required=False,
+                default=False,
+            ),
+        ],
+        tags=["block", "register"],
+        examples=[
+            "block_register(block_name='magic_block', block_identifier='my_mod:magic_block')",
+        ],
+        scope="server",
+    ),
+    # 维度配置模板
+    CodeTemplate(
+        name="dimension_config",
+        template_type=TemplateType.BLOCK,
+        description="生成维度配置代码",
+        template="""# 维度配置
+# 维度名称: {{ dimension_name | default('custom_dimension') }}
+# 维度 ID: {{ dimension_id | default(100) }}
+
+import mod.server.extraServerApi as serverApi
+
+# 维度配置
+DIMENSION_CONFIG = {
+    'dimensionName': '{{ dimension_name | default('custom_dimension') }}',
+    'dimensionId': {{ dimension_id | default(100) }},
+    'dimensionType': '{{ dimension_type | default('OVERWORLD') }}',
+    'generatorType': '{{ generator_type | default('DEFAULT') }}',
+    'seed': {{ seed | default('None') }},
+    'spawnPoint': {{ spawn_point | default('(0, 64, 0)') }},
+}
+
+def get_dimension_id():
+    \"\"\"
+    获取自定义维度 ID
+    
+    Returns:
+        int: 维度 ID
+    \"\"\"
+    return DIMENSION_CONFIG['dimensionId']
+
+def is_custom_dimension(dimensionId):
+    \"\"\"
+    检查是否为自定义维度
+    
+    Args:
+        dimensionId: 维度 ID
+        
+    Returns:
+        bool: 是否为自定义维度
+    \"\"\"
+    return dimensionId == DIMENSION_CONFIG['dimensionId']
+
+def teleport_to_dimension(entityId, pos=None):
+    \"\"\"
+    传送实体到自定义维度
+    
+    Args:
+        entityId: 实体 ID
+        pos: 目标坐标 (x, y, z)，默认为出生点
+    \"\"\"
+    if pos is None:
+        pos = DIMENSION_CONFIG['spawnPoint']
+    
+    comp = serverApi.GetEngineCompFactory().CreateGame()
+    result = comp.SetEntityDimension(
+        entityId,
+        pos,
+        DIMENSION_CONFIG['dimensionId']
+    )
+    
+    if result:
+        print(f"[Dimension] 已传送实体 {entityId} 到维度 {DIMENSION_CONFIG['dimensionName']}")
+    else:
+        print(f"[Dimension] 传送失败")
+    
+    return result
+
+# 维度事件监听
+def on_dimension_change(args):
+    \"\"\"
+    维度切换事件
+    
+    Args:
+        args: 事件参数
+    \"\"\"
+    from_dimension = args.get('fromDimensionId')
+    to_dimension = args.get('toDimensionId')
+    entityId = args.get('entityId')
+    
+    if is_custom_dimension(to_dimension):
+        print(f"[Dimension] 实体 {entityId} 进入自定义维度")
+        # TODO: 实现进入维度的逻辑
+    
+    if is_custom_dimension(from_dimension):
+        print(f"[Dimension] 实体 {entityId} 离开自定义维度")
+        # TODO: 实现离开维度的逻辑
+
+# 注册事件
+# serverApi.ListenForEvent('Minecraft', 'OnDimensionChange', on_dimension_change)
+""",
+        parameters=[
+            TemplateParameter(
+                name="dimension_name",
+                description="维度名称",
+                param_type="str",
+                required=True,
+            ),
+            TemplateParameter(
+                name="dimension_id",
+                description="维度 ID (唯一标识)",
+                param_type="int",
+                required=True,
+            ),
+            TemplateParameter(
+                name="dimension_type",
+                description="维度类型 (OVERWORLD/NETHER/THE_END)",
+                param_type="str",
+                required=False,
+                default="OVERWORLD",
+            ),
+            TemplateParameter(
+                name="generator_type",
+                description="生成器类型",
+                param_type="str",
+                required=False,
+                default="DEFAULT",
+            ),
+            TemplateParameter(
+                name="seed",
+                description="世界种子",
+                param_type="int",
+                required=False,
+            ),
+            TemplateParameter(
+                name="spawn_point",
+                description="出生点坐标",
+                param_type="tuple",
+                required=False,
+                default=(0, 64, 0),
+            ),
+        ],
+        tags=["dimension", "config"],
+        examples=[
+            "dimension_config(dimension_name='sky_world', dimension_id=100)",
+        ],
+        scope="server",
+    ),
     # UI 创建模板
     CodeTemplate(
         name="ui_screen",

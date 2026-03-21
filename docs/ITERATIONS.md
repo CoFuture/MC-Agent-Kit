@@ -14,6 +14,101 @@
 | #4 | v0.2.1 | 2026-03-22 | 知识库检索工具 | ✅ 完成 |
 | #5 | v0.3.0 | 2026-03-22 | Agent 技能封装 | ✅ 完成 |
 | #6 | v0.3.1 | 2026-03-22 | 代码生成与调试辅助 | ✅ 完成 |
+| #7 | v0.4.0 | 2026-03-22 | 模板系统增强与 API 绑定生成 | ✅ 完成 |
+
+---
+
+## 迭代 #7 (2026-03-22)
+
+### 版本
+v0.4.0
+
+### 目标
+- 增强代码生成能力，支持更多模板类型和 API 绑定生成
+- 实现模板系统增强（自定义模板加载、热重载）
+- 实现 API 绑定生成（类型存根、文档索引）
+- 实现事件处理生成（事件监听器、参数验证）
+- 实现代码质量工具（格式化检查、复杂度分析）
+
+### 完成内容
+
+#### 1. 模板系统增强
+实现了完整的模板加载和热重载系统：
+- `src/mc_agent_kit/generator/template_loader.py` - 模板加载器
+  - `TemplateLoader`: 从文件系统加载自定义模板
+  - 支持 YAML frontmatter 解析模板元数据
+  - 支持模板热重载（检测文件变更）
+  - 支持递归加载目录
+- 新增 2 种内置模板：
+  - `block_register`: 方块注册模板
+  - `dimension_config`: 维度配置模板
+- 内置模板总数达到 7 种
+
+#### 2. API 绑定生成
+实现了 API 类型存根和文档索引生成：
+- `src/mc_agent_kit/generator/bindings.py` - API 绑定生成器
+  - `APIBindingGenerator`: 从知识库生成类型存根
+  - `generate_stubs()`: 生成 .pyi 类型存根文件
+  - `generate_doc_index()`: 生成 Markdown/JSON 文档索引
+  - `generate_completion_suggestions()`: 生成自动补全建议
+  - 支持类型映射（ModSDK 类型 → Python 类型注解）
+  - 支持按模块分组生成类
+
+#### 3. 事件处理生成
+实现了事件监听器和文档索引生成：
+- `src/mc_agent_kit/generator/event_gen.py` - 事件生成器
+  - `EventGenerator`: 事件处理代码生成
+  - `EventListenerConfig`: 事件监听器配置
+  - `generate_listener()`: 生成事件监听器代码
+  - `generate_validation_code()`: 生成参数验证代码
+  - `generate_event_index()`: 生成事件文档索引
+  - 支持高级模板（包含验证、日志、自定义代码）
+  - 支持注册/注销监听器函数生成
+
+#### 4. 代码质量工具
+实现了代码检查和复杂度分析工具：
+- `src/mc_agent_kit/generator/lint.py` - 代码质量工具
+  - `CodeQualityTool`: 代码质量检查
+  - `LintIssue`: 代码问题数据类
+  - `ComplexityReport`: 复杂度报告数据类
+  - `check_file()`: 检查单个文件
+  - `check_directory()`: 检查目录
+  - `run_ruff_check()`: 运行 ruff 检查
+  - `analyze_complexity()`: 分析代码复杂度（圈复杂度）
+  - `generate_complexity_report()`: 生成复杂度报告
+  - 支持文本/Markdown/JSON 输出格式
+
+#### 5. 测试验证
+- 新增 `test_v040.py` (40 个测试)
+- 所有测试通过（205 passed, 2 skipped）
+- 代码格式检查通过 (ruff)
+
+### 遇到的问题
+- 简单 frontmatter 解析器需要支持列表格式
+- 已修复：添加了对 `key:` 后跟列表项的解析支持
+
+### 经验总结
+- 模板热重载需要记录文件 checksum 检测变更
+- 类型存根生成需要考虑 ModSDK 特殊类型映射
+- 圈复杂度计算使用 AST 遍历，准确可靠
+- ruff 集成提供快速代码检查
+
+### 文件变更
+- 新增: `src/mc_agent_kit/generator/template_loader.py`
+- 新增: `src/mc_agent_kit/generator/bindings.py`
+- 新增: `src/mc_agent_kit/generator/event_gen.py`
+- 新增: `src/mc_agent_kit/generator/lint.py`
+- 新增: `src/tests/test_v040.py`
+- 修改: `src/mc_agent_kit/generator/__init__.py` (导出新增模块)
+- 修改: `src/mc_agent_kit/generator/templates.py` (新增 block_register, dimension_config 模板)
+- 修改: `pyproject.toml` (版本升级到 0.4.0)
+- 修改: `docs/ITERATIONS.md`
+
+### 验收标准完成情况
+- [x] 支持自定义模板加载
+- [x] 生成类型存根文件
+- [x] 新增 2 种内置模板（block_register, dimension_config）
+- [x] 单元测试全部通过（205 passed, 2 skipped）
 
 ---
 
