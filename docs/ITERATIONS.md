@@ -17,6 +17,122 @@
 | #7 | v0.4.0 | 2026-03-22 | 模板系统增强与 API 绑定生成 | ✅ 完成 |
 | #8 | v0.5.0 | 2026-03-22 | 向量检索集成与语义搜索增强 | ✅ 完成 |
 | #9 | v0.6.0 | 2026-03-22 | 游戏内代码执行与实时调试 | ✅ 完成 |
+| #10 | v0.7.0 | 2026-03-22 | 智能代码补全与重构建议 | ✅ 完成 |
+
+---
+
+## 迭代 #10 (2026-03-22)
+
+### 版本
+v0.7.0
+
+### 目标
+- 实现智能代码补全功能
+- 实现代码异味检测
+- 实现重构建议生成
+- 实现最佳实践推荐
+- 创建对应的 OpenClaw Skills
+
+### 完成内容
+
+#### 1. 代码补全模块
+实现了完整的智能代码补全系统：
+- `src/mc_agent_kit/completion/completer.py` - 代码补全器
+  - `CodeCompleter`: 代码补全器类，基于知识库提供补全建议
+  - `Completion`: 补全项数据结构
+  - `CompletionContext`: 补全上下文（代码、光标位置、前缀等）
+  - `CompletionResult`: 补全结果
+  - `CompletionKind`: 补全类型枚举（API/事件/参数/变量/关键字/代码片段）
+  - 支持标识符补全（API、事件、常量、关键字）
+  - 支持成员补全（如 `GetConfig.` 后的成员）
+  - 支持参数补全（函数调用时的参数提示）
+  - 支持代码片段插入
+
+#### 2. 代码异味检测模块
+实现了代码异味检测器：
+- `src/mc_agent_kit/completion/smells.py` - 代码异味检测
+  - `SmellDetector`: 异味检测器类
+  - `CodeSmell`: 代码异味数据结构
+  - `SmellDetectorConfig`: 检测器配置
+  - `SmellType`: 异味类型枚举（命名/复杂度/重复/结构/ModSDK 特定/代码质量）
+  - `SmellSeverity`: 严重程度枚举（info/minor/major/critical）
+  - `SmellCategory`: 异味类别枚举
+  - 支持检测：长函数、多参数、深嵌套、高复杂度、魔法数字、裸 except、print 调试等
+  - 支持 AST 分析和行级别检测
+
+#### 3. 重构建议模块
+实现了重构建议引擎：
+- `src/mc_agent_kit/completion/refactor.py` - 重构建议
+  - `RefactorEngine`: 重构引擎类
+  - `RefactorSuggestion`: 重构建议数据结构
+  - `RefactorType`: 重构类型枚举（提取函数/变量/类、内联、重命名、替换魔法数字等）
+  - 根据代码异味生成具体重构建议
+  - 提供原始代码和建议代码对比
+  - 支持优先级排序
+
+#### 4. 最佳实践推荐模块
+实现了最佳实践检查器：
+- `src/mc_agent_kit/completion/best_practices.py` - 最佳实践
+  - `BestPracticeChecker`: 最佳实践检查器
+  - `BestPractice`: 最佳实践定义
+  - `BestPracticeResult`: 检查结果
+  - `PracticeCategory`: 实践类别（性能/安全/可维护性/ModSDK 特定/编码风格/错误处理）
+  - `PracticeSeverity`: 实践严重程度
+  - 内置 16 条 ModSDK 最佳实践：
+    - PERF001-003: 性能优化（Tick 事件、缓存、批量操作）
+    - SEC001-002: 安全性（输入验证、权限检查）
+    - MAIN001-003: 可维护性（命名、魔法数字、单一职责）
+    - MSDK001-004: ModSDK 特定（事件注册、端分离、通信、实体 ID）
+    - ERR001-002: 错误处理（try-except、错误信息）
+    - STYLE001-002: 编码风格（PEP 8、文档字符串）
+
+#### 5. OpenClaw Skills
+创建了 3 个 OpenClaw Skills：
+- `skills/modsdk-code-completion/SKILL.md` - 代码补全 Skill
+  - `mc_code_complete`: 智能代码补全
+  - `mc_complete_api`: API 名称补全
+  - `mc_complete_event`: 事件名称补全
+- `skills/modsdk-refactor/SKILL.md` - 代码重构 Skill
+  - `mc_detect_smells`: 代码异味检测
+  - `mc_suggest_refactor`: 重构建议生成
+  - `mc_analyze_complexity`: 复杂度分析
+- `skills/modsdk-best-practices/SKILL.md` - 最佳实践 Skill
+  - `mc_check_best_practices`: 最佳实践检查
+  - `mc_list_practices`: 列出最佳实践
+  - `mc_get_practice`: 获取实践详情
+
+#### 6. 测试验证
+- 新增 `test_completion.py` (40 个测试)
+- 所有测试通过（353 passed, 2 skipped）
+
+### 遇到的问题
+- 测试中光标位置计算需要精确（点号前缀检测）
+- 已修复：调整测试中的 cursor_column 值
+
+### 经验总结
+- AST 分析是代码检测的强大工具
+- 代码异味检测和重构建议需要配合使用
+- 最佳实践库需要持续更新和完善
+- 补全功能需要平衡响应速度和准确性
+
+### 文件变更
+- 新增: `src/mc_agent_kit/completion/__init__.py`
+- 新增: `src/mc_agent_kit/completion/completer.py`
+- 新增: `src/mc_agent_kit/completion/smells.py`
+- 新增: `src/mc_agent_kit/completion/refactor.py`
+- 新增: `src/mc_agent_kit/completion/best_practices.py`
+- 新增: `src/tests/test_completion.py`
+- 新增: `skills/modsdk-code-completion/SKILL.md`
+- 新增: `skills/modsdk-refactor/SKILL.md`
+- 新增: `skills/modsdk-best-practices/SKILL.md`
+- 修改: `docs/ITERATIONS.md`
+
+### 验收标准完成情况
+- [x] 代码补全可用
+- [x] 代码异味检测可用
+- [x] 重构建议可用
+- [x] 最佳实践推荐可用
+- [x] 单元测试全部通过（353 passed, 2 skipped）
 
 ---
 
