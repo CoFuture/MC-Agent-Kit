@@ -10,6 +10,7 @@
 |------|------|------|----------|------|
 | #1 | v0.1.0 | 2026-03-22 | 项目初始化与文档框架 | ✅ 完成 |
 | #2 | v0.1.1 | 2026-03-22 | 游戏启动器与日志捕获 | ✅ 完成 |
+| #3 | v0.2.0 | 2026-03-22 | 知识库设计与构建工具 | ✅ 完成 |
 
 ---
 
@@ -94,6 +95,60 @@ v0.1.1
 - 新增: `src/tests/test_launcher.py`
 - 新增: `src/tests/test_parser.py`
 - 修改: `pyproject.toml`
+
+---
+
+## 迭代 #3 (2026-03-22)
+
+### 版本
+v0.2.0
+
+### 目标
+- 分析 ModSDK 文档结构
+- 设计知识库数据模型
+- 实现文档解析器
+- 实现索引构建工具
+
+### 完成内容
+1. 分析 `resources/docs/mcdocs/` 文档结构，了解事件、API、枚举文档格式
+2. 设计知识库数据模型：
+   - `APIEntry`: API 接口条目
+   - `EventEntry`: 事件条目
+   - `EnumEntry`: 枚举条目
+   - `KnowledgeBase`: 知识库容器
+3. 实现 Markdown 文档解析器：
+   - 解析 YAML frontmatter
+   - 解析表格提取参数信息
+   - 提取代码示例
+   - 解析作用域（客户端/服务端）
+4. 实现知识库索引构建器：
+   - 扫描文档目录
+   - 批量解析文档
+   - 支持序列化到 JSON
+5. 编写单元测试（17个测试全部通过）
+6. 代码格式检查通过 (ruff)
+
+### 遇到的问题
+- Markdown 表格解析正则需要调整以正确匹配中文表格
+- 修复后可正确解析 `| 参数名 | 数据类型 | 说明 |` 格式
+
+### 经验总结
+- 使用 dataclass 定义数据模型，结构清晰
+- 正则表达式解析 Markdown 表格需要注意边界情况
+- 文档结构相对统一，但仍有变化需要容错处理
+
+### 文件变更
+- 新增: `src/mc_agent_kit/knowledge_base/__init__.py`
+- 新增: `src/mc_agent_kit/knowledge_base/models.py`
+- 新增: `src/mc_agent_kit/knowledge_base/parser.py`
+- 新增: `src/mc_agent_kit/knowledge_base/indexer.py`
+- 新增: `src/tests/test_knowledge_base.py`
+
+### 验收标准完成情况
+- [x] 能够解析 ModSDK 文档
+- [x] 能够提取 API 信息
+- [x] 能够构建检索索引
+- [x] 单元测试全部通过
 
 ---
 
