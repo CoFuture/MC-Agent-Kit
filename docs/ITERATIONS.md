@@ -12,6 +12,7 @@
 | #2 | v0.1.1 | 2026-03-22 | 游戏启动器与日志捕获 | ✅ 完成 |
 | #3 | v0.2.0 | 2026-03-22 | 知识库设计与构建工具 | ✅ 完成 |
 | #4 | v0.2.1 | 2026-03-22 | 知识库检索工具 | ✅ 完成 |
+| #5 | v0.3.0 | 2026-03-22 | Agent 技能封装 | ✅ 完成 |
 
 ---
 
@@ -205,6 +206,90 @@ v0.2.1
 - [x] 能够搜索 API 和事件
 - [x] 能够按模块过滤
 - [x] 能够按作用域过滤
+- [x] 单元测试全部通过
+
+---
+
+## 迭代 #5 (2026-03-22)
+
+### 版本
+v0.3.0
+
+### 目标
+- 分析 ModSDK 开发场景
+- 设计 Skill 接口和基类
+- 实现 API 和事件检索 Skills
+- 知识库集成到 Skill 模块
+
+### 完成内容
+
+#### 1. 场景分析
+分析了 ModSDK 开发流程，识别关键开发场景：
+- API 文档查询：开发者需要快速查找 API 用法、参数、返回值
+- 事件文档查询：开发者需要了解事件触发条件、参数含义
+- 代码生成：根据模板生成 ModSDK 代码
+- 调试辅助：分析错误日志，提供解决方案
+
+#### 2. Skill 接口设计
+设计了 Skill 基类和元数据格式：
+- `BaseSkill`: 抽象基类，定义 execute 接口
+- `SkillMetadata`: 元数据定义（名称、描述、版本、分类、优先级、标签）
+- `SkillResult`: 统一的执行结果格式
+- `SkillRegistry`: Skill 注册和管理机制
+- `SkillCategory`: Skill 分类枚举（SEARCH/CODE_GEN/DEBUG/ANALYSIS/UTILITY）
+- `SkillPriority`: Skill 优先级枚举
+
+#### 3. 核心 Skills 实现
+实现了两个核心检索 Skills：
+- `ModSDKAPISearchSkill`: API 文档检索
+  - 关键词搜索
+  - 模块过滤
+  - 作用域过滤（客户端/服务端）
+  - 参数名搜索
+  - 返回类型搜索
+  - 模糊搜索
+- `ModSDKEventSearchSkill`: 事件文档检索
+  - 关键词搜索
+  - 模块过滤
+  - 作用域过滤
+  - 参数名搜索
+  - 模糊搜索
+
+#### 4. OpenClaw Skill 集成
+创建了 OpenClaw Skill 目录：
+- `skills/modsdk-api-search/SKILL.md`
+- `skills/modsdk-event-search/SKILL.md`
+
+#### 5. 测试验证
+- 编写 34 个单元测试
+- 所有测试通过（118 passed, 2 skipped）
+- 代码格式检查通过 (ruff)
+
+### 遇到的问题
+- 需要将 `Scope` 导出到 knowledge_base 模块的 `__all__` 列表
+- ruff 检查发现行过长问题，已修复
+
+### 经验总结
+- Skill 基类设计支持延迟初始化，适合知识库加载场景
+- 元数据设计支持分类、优先级、标签，便于 Skill 发现和排序
+- 统一的 SkillResult 格式便于 Agent 解析和处理
+
+### 文件变更
+- 新增: `src/mc_agent_kit/skills/__init__.py`
+- 新增: `src/mc_agent_kit/skills/base.py`
+- 新增: `src/mc_agent_kit/skills/modsdk/__init__.py`
+- 新增: `src/mc_agent_kit/skills/modsdk/api_search.py`
+- 新增: `src/mc_agent_kit/skills/modsdk/event_search.py`
+- 新增: `src/tests/test_skills.py`
+- 新增: `skills/modsdk-api-search/SKILL.md`
+- 新增: `skills/modsdk-event-search/SKILL.md`
+- 修改: `src/mc_agent_kit/__init__.py`
+- 修改: `src/mc_agent_kit/knowledge_base/__init__.py`
+
+### 验收标准完成情况
+- [x] Skill 基类实现完成
+- [x] API 检索 Skill 可用
+- [x] 事件检索 Skill 可用
 - [x] 单元测试全部通过
 
 ---

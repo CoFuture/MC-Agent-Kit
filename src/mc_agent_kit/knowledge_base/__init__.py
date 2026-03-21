@@ -14,6 +14,7 @@ from .models import (
     EventEntry,
     EventParameter,
     KnowledgeBase,
+    Scope,
 )
 from .parser import DocumentParser, MarkdownParser
 from .retriever import KnowledgeRetriever, create_retriever
@@ -28,6 +29,7 @@ __all__ = [
     "EnumValue",
     "CodeExample",
     "KnowledgeBase",
+    "Scope",
     # Parser
     "MarkdownParser",
     "DocumentParser",
