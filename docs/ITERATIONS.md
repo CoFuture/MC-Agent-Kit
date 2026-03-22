@@ -43,6 +43,217 @@
 | #33 | v1.20.0 | 2026-03-22 | CLI 工具增强与文档完善 | ✅ 完成 |
 | #34 | v1.21.0 | 2026-03-22 | 性能优化与缓存增强 | ✅ 完成 |
 | #35 | v1.22.0 | 2026-03-22 | 代码生成增强与插件系统完善 | ✅ 完成 |
+| #36 | v1.23.0 | 2026-03-22 | CLI 交互增强与配置管理 | ✅ 完成 |
+
+---
+
+## 迭代 #36 (2026-03-22)
+
+### 版本
+v1.23.0
+
+### 目标
+CLI 工具增强与用户体验优化
+
+### 完成内容
+
+#### 1. CLI 交互增强 🔥
+
+**新增 `src/mc_agent_kit/cli_enhanced/` 模块**:
+- `repl.py` - 交互式 REPL（Read-Eval-Print Loop）
+  - `CLIRepl` - REPL 主类
+  - `ReplConfig` - REPL 配置
+  - `ReplCommand` - 命令定义
+  - `ReplResult` - 命令执行结果
+  - `ReplState` - REPL 状态枚举
+  - `create_repl()` - 便捷创建函数
+
+- `history.py` - 命令历史记录
+  - `CommandHistory` - 历史管理器
+  - `HistoryEntry` - 历史条目
+  - `HistoryConfig` - 历史配置
+  - `create_history()` - 便捷创建函数
+
+- `output.py` - 彩色输出和进度指示器
+  - `ColoredOutput` - 彩色输出处理器
+  - `ProgressBar` - 进度条
+  - `Spinner` - 加载旋转器
+  - `Color` - 颜色枚举
+  - `Style` - 样式枚举
+  - `create_output()` - 便捷创建函数
+  - `create_progress_bar()` - 便捷创建函数
+  - `create_spinner()` - 便捷创建函数
+
+- `aliases.py` - 命令别名管理
+  - `CommandAlias` - 命令别名定义
+  - `AliasManager` - 别名管理器
+  - `AliasConfig` - 别名配置
+  - `create_alias_manager()` - 便捷创建函数
+  - `get_builtin_aliases()` - 获取内置别名
+
+**功能特性**:
+- 交互式命令输入（REPL 模式）
+- 命令历史记录和持久化
+- 内置命令别名（s, api, evt, new, run, diag 等）
+- 彩色终端输出
+- 进度条和加载动画
+
+#### 2. 配置管理增强 🔥
+
+**新增 `src/mc_agent_kit/config/` 模块**:
+- `manager.py` - 配置管理器
+  - `ConfigManager` - 配置管理主类
+  - `ConfigSource` - 配置来源枚举
+  - `ConfigValue` - 配置值数据结构
+  - `ManagerConfig` - 管理器配置
+  - `create_config_manager()` - 便捷创建函数
+
+- `validator.py` - 配置验证器
+  - `ConfigValidator` - 验证器主类
+  - `ValidationResult` - 验证结果
+  - `ValidationError` - 验证错误
+  - `ValidationWarning` - 验证警告
+  - `ValidationLevel` - 验证级别枚举
+  - `SchemaField` - 模式字段定义
+  - `ConfigSchema` - 配置模式
+  - `create_validator()` - 便捷创建函数
+  - `get_default_schema()` - 获取默认模式
+
+- `templates.py` - 配置模板生成器
+  - `ConfigTemplate` - 配置模板
+  - `TemplateGenerator` - 模板生成器
+  - `TemplateField` - 模板字段
+  - `TemplateType` - 模板类型枚举
+  - `create_template_generator()` - 便捷创建函数
+  - `get_default_template()` - 获取默认模板
+
+**功能特性**:
+- 多源配置（文件、环境变量、默认值、运行时）
+- 配置验证和模式检查
+- 配置文件模板生成（JSON/YAML）
+- 配置热重载支持
+- 变更通知回调
+
+#### 3. 文档生成器 🔥
+
+**新增 `src/mc_agent_kit/docs/` 模块**:
+- `generator.py` - 文档生成器
+  - `DocGenerator` - 文档生成主类
+  - `GeneratorConfig` - 生成器配置
+  - `ApiDoc` - API 文档数据结构
+  - `ApiDocField` - API 字段
+  - `ExampleDoc` - 示例文档
+  - `DocVersion` - 文档版本
+  - `create_doc_generator()` - 便捷创建函数
+
+- `formatter.py` - 文档格式化器
+  - `DocFormatter` - 格式化器主类
+  - `FormatterConfig` - 格式化配置
+  - `OutputFormat` - 输出格式枚举
+  - `create_formatter()` - 便捷创建函数
+
+**功能特性**:
+- 从代码生成 API 文档
+- 多格式输出（Markdown/HTML/JSON/reStructuredText）
+- 示例代码生成
+- 版本管理
+- 多语言支持框架
+
+#### 4. 测试完善 ✅
+
+**新增 `src/tests/test_iteration_36.py` (90 个测试)**:
+- TestReplConfig: REPL 配置测试 (2 个)
+- TestReplCommand: REPL 命令测试 (2 个)
+- TestReplResult: REPL 结果测试 (2 个)
+- TestCLIRepl: REPL 功能测试 (8 个)
+- TestHistoryEntry: 历史条目测试 (3 个)
+- TestHistoryConfig: 历史配置测试 (1 个)
+- TestCommandHistory: 历史管理测试 (7 个)
+- TestColor: 颜色枚举测试 (1 个)
+- TestStyle: 样式枚举测试 (1 个)
+- TestColoredOutput: 彩色输出测试 (4 个)
+- TestProgressBar: 进度条测试 (5 个)
+- TestSpinner: 旋转器测试 (3 个)
+- TestCommandAlias: 命令别名测试 (4 个)
+- TestAliasManager: 别名管理测试 (5 个)
+- TestConfigValue: 配置值测试 (1 个)
+- TestConfigManager: 配置管理测试 (9 个)
+- TestValidationError: 验证错误测试 (1 个)
+- TestValidationResult: 验证结果测试 (3 个)
+- TestSchemaField: 模式字段测试 (4 个)
+- TestConfigValidator: 配置验证测试 (3 个)
+- TestTemplateField: 模板字段测试 (2 个)
+- TestConfigTemplate: 配置模板测试 (2 个)
+- TestTemplateGenerator: 模板生成测试 (4 个)
+- TestApiDoc: API 文档测试 (1 个)
+- TestExampleDoc: 示例文档测试 (1 个)
+- TestDocGenerator: 文档生成测试 (5 个)
+- TestDocFormatter: 文档格式化测试 (3 个)
+- TestIteration36Integration: 集成测试 (4 个)
+
+**测试验证**:
+- 新增 90 个测试
+- 总测试数：1815 passed, 2 skipped
+- 测试覆盖率保持 90%+
+
+### 遇到的问题
+
+1. **模块命名冲突**
+   - 问题：新建的 cli/ 目录与原有的 cli.py 文件冲突
+   - 解决：重命名为 cli_enhanced/ 目录
+   - 记录：新模块应使用不冲突的命名
+
+2. **依赖缺失**
+   - 问题：缺少 pyyaml 依赖
+   - 解决：使用 `uv add pyyaml` 安装
+   - 记录：需要在 pyproject.toml 中记录新依赖
+
+### 经验总结
+
+- CLI 交互增强提供了更好的用户体验，特别是 REPL 模式和命令别名
+- 配置管理系统支持多源配置和热重载，便于灵活部署
+- 文档生成器可以自动化生成 API 文档，减少手动维护成本
+- 测试驱动开发确保新功能质量，90 个新增测试全部通过
+- 模块命名需要仔细规划，避免与现有模块冲突
+
+### 文件变更
+
+- 新增：`src/mc_agent_kit/cli_enhanced/__init__.py` (~70 行)
+- 新增：`src/mc_agent_kit/cli_enhanced/repl.py` (~400 行)
+- 新增：`src/mc_agent_kit/cli_enhanced/history.py` (~350 行)
+- 新增：`src/mc_agent_kit/cli_enhanced/output.py` (~400 行)
+- 新增：`src/mc_agent_kit/cli_enhanced/aliases.py` (~300 行)
+- 新增：`src/mc_agent_kit/config/__init__.py` (~50 行)
+- 新增：`src/mc_agent_kit/config/manager.py` (~350 行)
+- 新增：`src/mc_agent_kit/config/validator.py` (~450 行)
+- 新增：`src/mc_agent_kit/config/templates.py` (~500 行)
+- 新增：`src/mc_agent_kit/docs/__init__.py` (~30 行)
+- 新增：`src/mc_agent_kit/docs/generator.py` (~450 行)
+- 新增：`src/mc_agent_kit/docs/formatter.py` (~400 行)
+- 新增：`src/tests/test_iteration_36.py` (90 个测试)
+- 修改：`pyproject.toml` (版本升级到 1.23.0，添加 pyyaml 依赖)
+- 修改：`docs/ITERATIONS.md`
+- 修改：`docs/NEXT_ITERATION.md`
+
+### 验收标准完成情况
+
+- [x] CLI 交互增强完成 ✅
+  - [x] 交互式 CLI 模式（REPL） ✅
+  - [x] 命令历史记录持久化 ✅
+  - [x] 命令别名和快捷方式 ✅
+  - [x] 彩色输出和进度条 ✅
+- [x] 配置管理增强完成 ✅
+  - [x] 配置文件模板生成 ✅
+  - [x] 配置验证和迁移 ✅
+  - [x] 环境变量覆盖配置 ✅
+  - [x] 配置热重载支持 ✅
+- [x] 文档生成器完成 ✅
+  - [x] 从代码生成 API 文档 ✅
+  - [x] 多格式输出支持 ✅
+  - [x] 版本管理框架 ✅
+  - [x] 多语言支持框架 ✅
+- [x] 测试覆盖率 90%+ ✅
+- [x] 所有测试通过 (1815 passed, 2 skipped) ✅
 
 ---
 
