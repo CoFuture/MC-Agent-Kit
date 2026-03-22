@@ -1,6 +1,6 @@
 [project]
 name = "mc-agent-kit"
-version = "1.29.0"
+version = "1.30.0"
 description = "Toolsets and Skills to empower AI Agents for Minecraft ModSDK development"
 readme = "README.md"
 license = "MIT"

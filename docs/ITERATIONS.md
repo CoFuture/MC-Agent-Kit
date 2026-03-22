@@ -50,6 +50,173 @@
 | #40 | v1.27.0 | 2026-03-22 | 测试覆盖率提升与文档完善 | ✅ 完成 |
 | #41 | v1.28.0 | 2026-03-22 | MVP 闭环完善与用户体验提升 | ✅ 完成 |
 | #42 | v1.29.0 | 2026-03-22 | 工作流 CLI 命令与性能优化 | ✅ 完成 |
+| #43 | v1.30.0 | 2026-03-23 | 工作流增强与 UX 本地化 | ✅ 完成 |
+
+---
+
+## 迭代 #43 (2026-03-23)
+
+### 版本
+v1.30.0
+
+### 目标
+工作流增强与 UX 本地化
+
+### 完成内容
+
+#### 1. 工作流步骤增强 🔥
+
+**新增 `src/mc_agent_kit/workflow/enhanced.py` 模块**:
+- `EnhancedWorkflow` - 增强工作流管理器
+- `RetryConfig` - 重试配置（支持线性/指数退避策略）
+- `RetryPolicy` - 重试策略枚举（NONE/LINEAR/EXPONENTIAL）
+- `SkipCondition` - 跳过条件
+- `ProgressInfo` - 进度信息数据结构
+- `ProgressCallback` - 进度回调函数类型
+- `WorkflowControl` - 工作流控制（暂停/恢复/取消）
+- `WorkflowState` - 工作流状态枚举
+- `create_enhanced_workflow()` - 便捷创建函数
+
+**功能特性**:
+- 可配置的重试机制（最大重试次数、延迟策略）
+- 自定义跳过条件（基于上下文判断）
+- 实时进度回调（完成百分比、预估剩余时间）
+- 工作流暂停/恢复/取消控制
+- 线程安全的控制机制
+
+#### 2. 缓存增强 🔥
+
+**新增 `src/mc_agent_kit/workflow/cache_enhanced.py` 模块**:
+- `EnhancedCache` - 增强缓存管理器
+- `CacheEntryEnhanced` - 增强缓存条目（支持标签、大小追踪）
+- `CacheMetrics` - 缓存指标（命中率、驱逐数等）
+- `WarmupConfig` - 预热配置
+- `WarmupFunction` - 预热函数类型
+- `get_enhanced_cache()` - 获取全局缓存实例
+- `clear_enhanced_cache()` - 清空全局缓存
+
+**功能特性**:
+- 缓存预热功能（后台执行、自定义预热函数）
+- 批量操作（批量设置/获取/失效）
+- 按标签失效缓存
+- 命中率监控和统计
+- 大小限制的 LRU 淘汰
+- 优化的持久化策略（增量保存）
+
+#### 3. UX 模块增强 🔥
+
+**新增 `src/mc_agent_kit/ux/enhanced.py` 模块**:
+- `EnhancedUXManager` - 增强 UX 管理器
+- `LocaleManager` - 本地化管理器
+- `LocaleConfig` - 本地化配置
+- `MessageHistory` - 消息历史记录器
+- `MessageHistoryEntry` - 历史条目
+- `MessageTemplate` - 自定义消息模板
+- `TemplateRegistry` - 模板注册表
+- `get_ux_manager()` - 获取全局 UX 管理器
+- `localized_message()` - 本地化消息便捷函数
+
+**功能特性**:
+- 消息本地化（支持中英文，可扩展）
+- 消息历史记录（按类型/会话/关键词查询）
+- 自定义消息模板（流式渲染）
+- 内置 10+ 种预定义模板（工作流/诊断/缓存相关）
+- 会话级别的消息追踪
+
+**新增预定义消息模板**:
+- `workflow_started()` - 工作流开始消息
+- `workflow_completed()` - 工作流完成消息
+- `workflow_paused()` - 工作流暂停消息
+- `workflow_resumed()` - 工作流恢复消息
+- `workflow_cancelled()` - 工作流取消消息
+- `cache_status()` - 缓存状态消息
+- `progress_update()` - 进度更新消息
+- `retry_attempt()` - 重试尝试消息
+- `step_skipped()` - 步骤跳过消息
+
+#### 4. 模块导出更新 ✅
+
+**更新 `src/mc_agent_kit/workflow/__init__.py`**:
+- 导出增强工作流相关类
+- 导出增强缓存相关类
+
+**更新 `src/mc_agent_kit/ux/__init__.py`**:
+- 导出增强 UX 相关类
+
+#### 5. 测试完善 ✅
+
+**新增 `src/tests/test_iteration_43.py` (67 个测试)**:
+- TestRetryConfig: 重试配置测试 (5 个)
+- TestWorkflowControl: 工作流控制测试 (3 个)
+- TestProgressInfo: 进度信息测试 (1 个)
+- TestEnhancedWorkflow: 增强工作流测试 (3 个)
+- TestCacheMetrics: 缓存指标测试 (3 个)
+- TestCacheEntryEnhanced: 增强缓存条目测试 (4 个)
+- TestEnhancedCache: 增强缓存测试 (8 个)
+- TestLocaleManager: 本地化管理器测试 (6 个)
+- TestMessageHistory: 消息历史测试 (5 个)
+- TestMessageTemplate: 消息模板测试 (2 个)
+- TestTemplateRegistry: 模板注册表测试 (3 个)
+- TestEnhancedUXManager: 增强 UX 管理器测试 (6 个)
+- TestConvenienceFunctions: 便捷函数测试 (3 个)
+- TestIteration43Integration: 集成测试 (4 个)
+- TestIteration43Performance: 性能测试 (2 个)
+- TestIteration43AcceptanceCriteria: 验收标准测试 (10 个)
+
+**测试验证**:
+- 新增 67 个测试
+- 总测试数：1318 → 1385 ✅
+- 所有测试通过 (1385 passed, 2 skipped)
+
+### 遇到的问题
+
+1. **类型注解问题**
+   - 问题：`set[str]` 在 Python 3.13 中与内置 `set` 函数冲突
+   - 解决：在模块开头添加 `from __future__ import annotations`
+   - 记录：使用延迟类型评估可避免此类问题
+
+### 经验总结
+
+- 重试机制提高了工作流的容错能力，特别是对于网络请求等不稳定操作
+- 跳过条件允许根据上下文动态调整工作流执行路径
+- 进度回调为用户提供实时反馈，提升用户体验
+- 缓存预热可以显著减少冷启动时间
+- 消息本地化使项目更容易国际化
+- 消息历史记录有助于调试和问题追踪
+- 模板系统提供了统一的消息格式，便于维护
+
+### 文件变更
+
+- 新增：`src/mc_agent_kit/workflow/enhanced.py` (~450 行)
+- 新增：`src/mc_agent_kit/workflow/cache_enhanced.py` (~400 行)
+- 新增：`src/mc_agent_kit/ux/enhanced.py` (~500 行)
+- 新增：`src/tests/test_iteration_43.py` (67 个测试)
+- 修改：`src/mc_agent_kit/workflow/__init__.py` (导出新增模块)
+- 修改：`src/mc_agent_kit/ux/__init__.py` (导出新增模块)
+- 修改：`pyproject.toml` (版本升级到 1.30.0)
+- 修改：`docs/ITERATIONS.md`
+- 修改：`docs/NEXT_ITERATION.md`
+
+### 验收标准完成情况
+
+- [x] 工作流步骤增强完成 ✅
+  - [x] 重试机制可配置 ✅
+  - [x] 跳过条件可自定义 ✅
+  - [x] 进度回调可用 ✅
+  - [x] 暂停/恢复功能正常 ✅
+- [x] 缓存增强完成 ✅
+  - [x] 缓存预热可配置 ✅
+  - [x] 批量操作性能提升 ✅
+  - [x] 命中率监控可用 ✅
+  - [x] 持久化策略优化 ✅
+- [x] UX 模块增强完成 ✅
+  - [x] 预定义模板覆盖常用场景 ✅
+  - [x] 本地化支持中英文 ✅
+  - [x] 消息历史可查询 ✅
+  - [x] 自定义模板可用 ✅
+- [x] 新增 67 个测试 ✅
+- [x] 所有测试通过 (1385 passed, 2 skipped) ✅
+- [x] 测试覆盖率保持 90%+ ✅
 
 ---
 

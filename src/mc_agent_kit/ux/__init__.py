@@ -17,8 +17,20 @@ from .enhancer import (
     success,
     warning,
 )
+from .enhanced import (
+    EnhancedUXManager,
+    LocaleConfig,
+    LocaleManager,
+    MessageHistory,
+    MessageHistoryEntry,
+    MessageTemplate,
+    TemplateRegistry,
+    get_ux_manager,
+    localized_message,
+)
 
 __all__ = [
+    # Base enhancer
     "MessageType",
     "OutputFormat",
     "UserMessage",
@@ -30,4 +42,14 @@ __all__ = [
     "warning",
     "info",
     "hint",
+    # Enhanced UX
+    "EnhancedUXManager",
+    "LocaleConfig",
+    "LocaleManager",
+    "MessageHistory",
+    "MessageHistoryEntry",
+    "MessageTemplate",
+    "TemplateRegistry",
+    "get_ux_manager",
+    "localized_message",
 ]

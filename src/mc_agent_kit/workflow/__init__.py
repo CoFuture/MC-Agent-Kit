@@ -20,6 +20,26 @@ from .end_to_end import (
     create_workflow,
     run_development_cycle,
 )
+from .enhanced import (
+    EnhancedWorkflow,
+    ProgressCallback,
+    ProgressInfo,
+    RetryConfig,
+    RetryPolicy,
+    SkipCondition,
+    WorkflowControl,
+    WorkflowState,
+    create_enhanced_workflow,
+)
+from .cache_enhanced import (
+    CacheEntryEnhanced,
+    CacheMetrics,
+    EnhancedCache,
+    WarmupConfig,
+    WarmupFunction,
+    clear_enhanced_cache,
+    get_enhanced_cache,
+)
 
 __all__ = [
     # End-to-end workflow
@@ -36,4 +56,22 @@ __all__ = [
     "CacheEntry",
     "get_workflow_cache",
     "clear_workflow_cache",
+    # Enhanced workflow
+    "EnhancedWorkflow",
+    "ProgressCallback",
+    "ProgressInfo",
+    "RetryConfig",
+    "RetryPolicy",
+    "SkipCondition",
+    "WorkflowControl",
+    "WorkflowState",
+    "create_enhanced_workflow",
+    # Enhanced cache
+    "CacheEntryEnhanced",
+    "CacheMetrics",
+    "EnhancedCache",
+    "WarmupConfig",
+    "WarmupFunction",
+    "clear_enhanced_cache",
+    "get_enhanced_cache",
 ]
