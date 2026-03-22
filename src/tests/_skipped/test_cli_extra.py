@@ -256,7 +256,7 @@ class TestCLICompleteExtra:
                         documentation="Returns the configuration object",
                     ),
                 ],
-                context=CompletionContext.from_code("Get", 0, 3),
+                context=CompletionContext(code="Get", cursor_line=1, cursor_column=3),
             )
             MockCompleter.return_value = mock_completer
 

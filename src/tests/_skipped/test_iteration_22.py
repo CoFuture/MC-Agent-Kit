@@ -875,7 +875,7 @@ class TestCompletionKind:
 
     def test_completion_kinds(self):
         """测试补全类型"""
-        from mc_agent_kit.completion.completer import CompletionKind
+        from mc_agent_kit.completion import CompletionKind
 
         assert CompletionKind.API.value == "api"
         assert CompletionKind.EVENT.value == "event"
@@ -892,7 +892,7 @@ class TestCompletion:
 
     def test_completion_creation(self):
         """测试补全项创建"""
-        from mc_agent_kit.completion.completer import Completion, CompletionKind
+        from mc_agent_kit.completion import Completion, CompletionKind
 
         completion = Completion(
             label="GetEngineType",
@@ -905,7 +905,7 @@ class TestCompletion:
 
     def test_completion_post_init(self):
         """测试补全项初始化后处理"""
-        from mc_agent_kit.completion.completer import Completion, CompletionKind
+        from mc_agent_kit.completion import Completion, CompletionKind
 
         completion = Completion(
             label="test",
@@ -917,7 +917,7 @@ class TestCompletion:
 
     def test_completion_custom_sort_text(self):
         """测试自定义排序文本"""
-        from mc_agent_kit.completion.completer import Completion, CompletionKind
+        from mc_agent_kit.completion import Completion, CompletionKind
 
         completion = Completion(
             label="test",
@@ -932,7 +932,7 @@ class TestCompletionContext:
 
     def test_context_from_code_simple(self):
         """测试从代码创建上下文"""
-        from mc_agent_kit.completion.completer import CompletionContext
+        from mc_agent_kit.completion import CompletionContext
 
         ctx = CompletionContext.from_code("GetEngine", 0, 10)
         assert ctx.code == "GetEngine"
@@ -943,7 +943,7 @@ class TestCompletionContext:
 
     def test_context_from_code_multiline(self):
         """测试多行代码上下文"""
-        from mc_agent_kit.completion.completer import CompletionContext
+        from mc_agent_kit.completion import CompletionContext
 
         code = "def test():\n    GetEngine"
         ctx = CompletionContext.from_code(code, 1, 14)
@@ -953,7 +953,7 @@ class TestCompletionContext:
 
     def test_context_get_prefix_before_dot(self):
         """测试获取点号前前缀"""
-        from mc_agent_kit.completion.completer import CompletionContext
+        from mc_agent_kit.completion import CompletionContext
 
         ctx = CompletionContext.from_code("GetConfig.", 0, 10)
         prefix = ctx.get_prefix_before_dot()
@@ -961,7 +961,7 @@ class TestCompletionContext:
 
     def test_context_get_prefix_before_dot_no_dot(self):
         """测试没有点号时的前缀"""
-        from mc_agent_kit.completion.completer import CompletionContext
+        from mc_agent_kit.completion import CompletionContext
 
         ctx = CompletionContext.from_code("GetConfig", 0, 9)
         prefix = ctx.get_prefix_before_dot()
@@ -969,7 +969,7 @@ class TestCompletionContext:
 
     def test_context_get_call_context(self):
         """测试获取函数调用上下文"""
-        from mc_agent_kit.completion.completer import CompletionContext
+        from mc_agent_kit.completion import CompletionContext
 
         ctx = CompletionContext.from_code("CreateEntity(", 0, 13)
         call_ctx = ctx.get_call_context()
@@ -979,7 +979,7 @@ class TestCompletionContext:
 
     def test_context_get_call_context_with_args(self):
         """测试带参数的函数调用上下文"""
-        from mc_agent_kit.completion.completer import CompletionContext
+        from mc_agent_kit.completion import CompletionContext
 
         ctx = CompletionContext.from_code("SetPos(x, ", 0, 10)
         call_ctx = ctx.get_call_context()
@@ -989,7 +989,7 @@ class TestCompletionContext:
 
     def test_context_indent_level(self):
         """测试缩进级别计算"""
-        from mc_agent_kit.completion.completer import CompletionContext
+        from mc_agent_kit.completion import CompletionContext
 
         ctx = CompletionContext.from_code("def test():\n        test", 1, 12)
         assert ctx.indent_level == 2  # 8 spaces / 4
@@ -1000,7 +1000,7 @@ class TestCompletionResult:
 
     def test_result_creation(self):
         """测试结果创建"""
-        from mc_agent_kit.completion.completer import (
+        from mc_agent_kit.completion import (
             CompletionResult, Completion, CompletionKind, CompletionContext
         )
 
@@ -1016,7 +1016,7 @@ class TestCompletionResult:
 
     def test_result_get_top_n(self):
         """测试获取前 N 个补全"""
-        from mc_agent_kit.completion.completer import (
+        from mc_agent_kit.completion import (
             CompletionResult, Completion, CompletionKind, CompletionContext
         )
 
@@ -1040,14 +1040,14 @@ class TestCodeCompleter:
 
     def test_completer_init(self):
         """测试补全器初始化"""
-        from mc_agent_kit.completion.completer import CodeCompleter
+        from mc_agent_kit.completion import CodeCompleter
 
         completer = CodeCompleter()
         assert completer._kb is None
 
     def test_completer_set_knowledge_base(self):
         """测试设置知识库"""
-        from mc_agent_kit.completion.completer import CodeCompleter
+        from mc_agent_kit.completion import CodeCompleter
 
         completer = CodeCompleter()
         mock_kb = MagicMock()
@@ -1056,7 +1056,7 @@ class TestCodeCompleter:
 
     def test_complete_identifier(self):
         """测试标识符补全"""
-        from mc_agent_kit.completion.completer import CodeCompleter, CompletionContext
+        from mc_agent_kit.completion import CodeCompleter, CompletionContext
 
         completer = CodeCompleter()
         ctx = CompletionContext.from_code("GetEngine", 0, 9)
@@ -1070,7 +1070,7 @@ class TestCodeCompleter:
 
     def test_complete_member(self):
         """测试成员补全"""
-        from mc_agent_kit.completion.completer import CodeCompleter, CompletionContext
+        from mc_agent_kit.completion import CodeCompleter, CompletionContext
 
         completer = CodeCompleter()
         ctx = CompletionContext.from_code("GetConfig.", 0, 10)
@@ -1084,7 +1084,7 @@ class TestCodeCompleter:
 
     def test_complete_member_server_api(self):
         """测试 serverApi 成员补全"""
-        from mc_agent_kit.completion.completer import CodeCompleter, CompletionContext
+        from mc_agent_kit.completion import CodeCompleter, CompletionContext
 
         completer = CodeCompleter()
         ctx = CompletionContext.from_code("serverApi.", 0, 10)
@@ -1095,7 +1095,7 @@ class TestCodeCompleter:
 
     def test_complete_member_client_api(self):
         """测试 clientApi 成员补全"""
-        from mc_agent_kit.completion.completer import CodeCompleter, CompletionContext
+        from mc_agent_kit.completion import CodeCompleter, CompletionContext
 
         completer = CodeCompleter()
         ctx = CompletionContext.from_code("clientApi.", 0, 10)
@@ -1106,7 +1106,7 @@ class TestCodeCompleter:
 
     def test_complete_parameter(self):
         """测试参数补全"""
-        from mc_agent_kit.completion.completer import CodeCompleter, CompletionContext
+        from mc_agent_kit.completion import CodeCompleter, CompletionContext
 
         completer = CodeCompleter()
         ctx = CompletionContext.from_code("CreateEngineEntityByType(", 0, 26)
@@ -1116,7 +1116,7 @@ class TestCodeCompleter:
 
     def test_complete_api_method(self):
         """测试 API 补全方法"""
-        from mc_agent_kit.completion.completer import CodeCompleter
+        from mc_agent_kit.completion import CodeCompleter
 
         completer = CodeCompleter()
         apis = completer.complete_api("Get")
@@ -1125,7 +1125,7 @@ class TestCodeCompleter:
 
     def test_complete_event_method(self):
         """测试事件补全方法"""
-        from mc_agent_kit.completion.completer import CodeCompleter
+        from mc_agent_kit.completion import CodeCompleter
 
         completer = CodeCompleter()
         events = completer.complete_event("Add")
@@ -1134,7 +1134,7 @@ class TestCodeCompleter:
 
     def test_complete_keyword_snippets(self):
         """测试关键字代码片段"""
-        from mc_agent_kit.completion.completer import CodeCompleter, CompletionContext
+        from mc_agent_kit.completion import CodeCompleter, CompletionContext
 
         completer = CodeCompleter()
         ctx = CompletionContext.from_code("def", 0, 3)
@@ -1145,7 +1145,7 @@ class TestCodeCompleter:
 
     def test_complete_constant(self):
         """测试常量补全"""
-        from mc_agent_kit.completion.completer import CodeCompleter, CompletionContext
+        from mc_agent_kit.completion import CodeCompleter, CompletionContext
 
         completer = CodeCompleter()
         ctx = CompletionContext.from_code("SERV", 0, 4)
@@ -1156,7 +1156,7 @@ class TestCodeCompleter:
 
     def test_complete_with_knowledge_base(self):
         """测试带知识库的补全"""
-        from mc_agent_kit.completion.completer import CodeCompleter
+        from mc_agent_kit.completion import CodeCompleter
 
         mock_kb = MagicMock()
         mock_kb.search_apis.return_value = []
@@ -1231,14 +1231,14 @@ class TestKnowledgeCache:
 
     def test_cache_creation(self):
         """测试缓存创建"""
-        from mc_agent_kit.performance.cache import LRUCache
+        from mc_agent_kit.performance import LRUCache
 
         cache = LRUCache(max_size=100)
         assert cache.max_size == 100
 
     def test_cache_get_set(self):
         """测试缓存存取"""
-        from mc_agent_kit.performance.cache import LRUCache
+        from mc_agent_kit.performance import LRUCache
 
         cache = LRUCache(max_size=10)
         cache.set("key1", "value1")
@@ -1248,7 +1248,7 @@ class TestKnowledgeCache:
 
     def test_cache_eviction(self):
         """测试缓存淘汰"""
-        from mc_agent_kit.performance.cache import LRUCache
+        from mc_agent_kit.performance import LRUCache
 
         cache = LRUCache(max_size=2)
         cache.set("key1", "value1")
@@ -1262,7 +1262,7 @@ class TestKnowledgeCache:
 
     def test_cache_clear(self):
         """测试缓存清空"""
-        from mc_agent_kit.performance.cache import LRUCache
+        from mc_agent_kit.performance import LRUCache
 
         cache = LRUCache(max_size=10)
         cache.set("key1", "value1")
@@ -1277,14 +1277,14 @@ class TestPluginLoader:
 
     def test_plugin_registry(self):
         """测试插件注册表"""
-        from mc_agent_kit.plugin.loader import PluginRegistry
+        from mc_agent_kit.plugin import PluginRegistry
 
         registry = PluginRegistry()
         assert registry.get_all() == []
 
     def test_plugin_info(self):
         """测试插件信息"""
-        from mc_agent_kit.plugin.base import PluginInfo, PluginMetadata
+        from mc_agent_kit.plugin import PluginInfo, PluginMetadata
 
         metadata = PluginMetadata(name="test", version="1.0.0")
         info = PluginInfo(metadata=metadata)

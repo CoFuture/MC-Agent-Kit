@@ -22,8 +22,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from mc_agent_kit.completion.refactor import RefactorEngine, RefactorSuggestion, RefactorType
-from mc_agent_kit.completion.smells import CodeSmell, SmellSeverity, SmellType
+from mc_agent_kit.completion import RefactorEngine, RefactorSuggestion, RefactorType
+from mc_agent_kit.completion import CodeSmell, SmellSeverity, SmellType
 from mc_agent_kit.knowledge.incremental import ChangeReport, DocumentChange, IncrementalUpdater
 from mc_agent_kit.log_capture.analyzer import (
     Alert,

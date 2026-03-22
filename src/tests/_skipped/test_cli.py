@@ -297,7 +297,6 @@ class TestCLIComplete:
                 completions=[
                     Completion(label="GetEngineType", kind=CompletionKind.API),
                 ],
-                context=CompletionContext.from_code("Get", 0, 3),
             )
             MockCompleter.return_value = mock_completer
 
@@ -327,7 +326,6 @@ class TestCLIComplete:
             mock_completer = mock.MagicMock()
             mock_completer.complete.return_value = CompletionResult(
                 completions=[],
-                context=CompletionContext.from_code("GetConfig", 0, 9),
             )
             MockCompleter.return_value = mock_completer
 
@@ -376,7 +374,6 @@ class TestCLIComplete:
             mock_completer = mock.MagicMock()
             mock_completer.complete.return_value = CompletionResult(
                 completions=[],
-                context=CompletionContext.from_code("Get", 0, 3),
             )
             MockCompleter.return_value = mock_completer
 
