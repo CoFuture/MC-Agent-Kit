@@ -9,6 +9,21 @@ from .incremental import ChangeReport, DocumentChange, IncrementalUpdater
 from .knowledge_base import KnowledgeBase
 from .retrieval import CodeExampleSearchResult, KnowledgeRetrieval, SearchResult as RetrievalSearchResult, create_retrieval
 
+# Iteration #34: 缓存模块
+from .index_cache import (
+    CacheMetadata,
+    FileState,
+    IndexCacheStats,
+    KnowledgeIndexCache,
+    create_index_cache,
+)
+from .search_cache import (
+    SearchCacheEntry,
+    SearchCacheStats,
+    SearchResultCache,
+    create_search_cache,
+)
+
 __all__ = [
     "KnowledgeBase",
     "Document",
@@ -23,6 +38,17 @@ __all__ = [
     "RetrievalSearchResult",
     "CodeExampleSearchResult",
     "create_retrieval",
+    # Iteration #34: Index Cache
+    "KnowledgeIndexCache",
+    "CacheMetadata",
+    "FileState",
+    "IndexCacheStats",
+    "create_index_cache",
+    # Iteration #34: Search Cache
+    "SearchResultCache",
+    "SearchCacheEntry",
+    "SearchCacheStats",
+    "create_search_cache",
 ]
 
 

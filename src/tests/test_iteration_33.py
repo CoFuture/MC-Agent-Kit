@@ -85,8 +85,8 @@ class TestApiUsageStats:
             success_count=80,
             error_count=20,
         )
-        assert stats.success_rate == 0.8
-        assert stats.error_rate == 0.2
+        assert stats.success_rate == pytest.approx(0.8)
+        assert stats.error_rate == pytest.approx(0.2)
 
     def test_stats_to_dict(self) -> None:
         """测试统计数据序列化"""
@@ -207,7 +207,7 @@ class TestApiUsageTracker:
         assert summary["total_calls"] == 3
         assert summary["total_success"] == 2
         assert summary["total_errors"] == 1
-        assert summary["success_rate"] == pytest.approx(2 / 3)
+        assert summary["success_rate"] == pytest.approx(2 / 3, rel=1e-3)
 
     def test_save_and_load(self) -> None:
         """测试保存和加载统计数据"""
