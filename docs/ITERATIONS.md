@@ -47,6 +47,94 @@
 | #37 | v1.24.0 | 2026-03-22 | CLI 命令集成与用户工作流优化 | ✅ 完成 |
 | #38 | v1.25.0 | 2026-03-22 | MVP 闭环完善与性能优化 | ✅ 完成 |
 | #39 | v1.26.0 | 2026-03-22 | 测试覆盖率提升与端到端流程完善 | ✅ 完成 |
+| #40 | v1.27.0 | 2026-03-22 | 测试覆盖率提升与文档完善 | ✅ 完成 |
+
+---
+
+## 迭代 #40 (2026-03-22)
+
+### 版本
+v1.27.0
+
+### 目标
+测试覆盖率提升与文档完善
+
+### 完成内容
+
+#### 1. 测试覆盖率提升 🔥
+
+**新增 `test_iteration_40.py` (60 个测试)**:
+- TestCodeExampleManagerEnhanced: 示例管理器增强测试 (19 个)
+- TestCodeExampleEnhanced: 增强代码示例测试 (3 个)
+- TestKnowledgeIndexCacheEnhanced: 索引缓存测试 (5 个)
+- TestSearchResultCacheEnhanced: 搜索缓存测试 (6 个)
+- TestPluginBackwardsCompatibility: 插件向后兼容性测试 (4 个)
+- TestLogAnalyzer: 日志分析器测试 (4 个)
+- TestScaffoldModule: 脚手架模块测试 (3 个)
+- TestLauncherAutoFixer: 启动器自动修复器测试 (3 个)
+- TestLauncherDiagnoser: 启动器诊断器测试 (2 个)
+- TestKnowledgeRetrieval: 知识检索测试 (2 个)
+- TestIteration40Integration: 集成测试 (3 个)
+- TestPerformanceBenchmarks: 性能基准测试 (2 个)
+- TestAcceptanceCriteria: 验收标准测试 (4 个)
+
+**测试数增长**:
+- 整体测试数: 1154 → 1214 ✅
+
+#### 2. 低覆盖率模块测试补充 ✅
+
+**CodeExampleManager 测试补充**:
+- 难度过滤搜索
+- 类别过滤搜索
+- 作用域过滤搜索
+- API/事件/标签过滤
+- 按描述/代码/标签匹配
+- 难度和类别分布统计
+- 按难度/类别列出
+- API/事件/标签索引查询
+
+**缓存模块测试补充**:
+- KnowledgeIndexCache 测试
+- SearchResultCache 测试
+- 性能基准测试（100 次操作 < 1 秒）
+
+**其他模块测试补充**:
+- 插件模块向后兼容性测试
+- 日志分析器枚举测试
+- 脚手架模板管理器测试
+- 启动器修复器/诊断器测试
+- 知识检索数据类测试
+
+### 遇到的问题
+
+1. **测试 API 与实际实现不匹配**
+   - 问题：部分测试假设的 API 与实际实现不一致
+   - 解决：阅读源码，调整测试使用正确的 API
+
+2. **缓存模块 API 差异**
+   - 问题：SearchResultCache 没有 clear 方法
+   - 解决：调整测试避免使用不存在的方法
+
+### 经验总结
+
+- 测试覆盖率提升需要针对性为低覆盖率模块编写测试
+- 测试应该基于实际 API 而非预期 API
+- 性能基准测试帮助确保响应时间满足要求
+- 模块导出测试验证向后兼容性
+
+### 文件变更
+
+- 新增：`src/tests/test_iteration_40.py` (60 个测试)
+- 修改：`pyproject.toml` (版本升级到 1.27.0)
+- 修改：`docs/ITERATIONS.md`
+- 修改：`docs/NEXT_ITERATION.md`
+
+### 验收标准完成情况
+
+- [x] 测试覆盖率提升完成 ✅
+- [x] 新增 60 个测试 ✅
+- [x] 所有测试通过 (1214 passed, 2 skipped) ✅
+- [x] 性能基准测试通过 ✅
 
 ---
 
