@@ -27,6 +27,12 @@ from mc_agent_kit.skills import (
     get_registry,
     register_modsdk_skills,
 )
+from mc_agent_kit.ux import (
+    CLIOutputFormatter,
+    MessageType,
+    UserExperienceEnhancer,
+    UserMessage,
+)
 
 
 def setup_skills() -> None:
@@ -2040,6 +2046,217 @@ def cmd_stats(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_workflow(args: argparse.Namespace) -> int:
+    """工作流管理"""
+    from mc_agent_kit.workflow import (
+        WorkflowConfig,
+        WorkflowStep,
+        clear_workflow_cache,
+        create_workflow,
+        get_workflow_cache,
+    )
+
+    if args.action == "run":
+        # 运行完整工作流
+        config = WorkflowConfig(
+            project_name=args.project_name or "my_addon",
+            output_dir=args.output_dir or ".",
+            search_query=args.query or "",
+            entity_name=args.entity,
+            game_path=args.game_path,
+            auto_fix=args.auto_fix,
+            verbose=args.verbose,
+        )
+
+        workflow = create_workflow(config)
+
+        if args.verbose:
+            print("🔄 启动工作流...")
+            print(f"   项目名称: {config.project_name}")
+            print(f"   输出目录: {config.output_dir}")
+            if config.search_query:
+                print(f"   搜索查询: {config.search_query}")
+            print()
+
+        # 运行完整周期
+        result = workflow.run_full_cycle(
+            search_query=args.query,
+            addon_path=args.addon_path,
+        )
+
+        if args.format == "json":
+            output = result.to_dict()
+            output["config"] = {
+                "project_name": config.project_name,
+                "output_dir": config.output_dir,
+            }
+            print(json.dumps(output, ensure_ascii=False, indent=2))
+        else:
+            # 使用 UX 模块的友好输出
+            print("\n" + "=" * 60)
+            print("工作流执行结果")
+            print("=" * 60)
+            print()
+
+            # 显示步骤结果
+            for step_result in result.steps:
+                step_name = {
+                    WorkflowStep.SEARCH_DOCS: "搜索文档",
+                    WorkflowStep.CREATE_PROJECT: "创建项目",
+                    WorkflowStep.LAUNCH_TEST: "启动测试",
+                    WorkflowStep.DIAGNOSE_ERROR: "诊断错误",
+                    WorkflowStep.FIX_ERROR: "修复错误",
+                }.get(step_result.step, step_result.step.value)
+
+                status_icon = "✅" if step_result.status.value == "success" else "❌" if step_result.status.value == "failed" else "⏭️"
+                print(f"  {status_icon} {step_name}: {step_result.status.value}")
+                if step_result.duration_ms > 0:
+                    print(f"     耗时: {step_result.duration_ms}ms")
+                if step_result.error:
+                    print(f"     错误: {step_result.error}")
+                if step_result.suggestions:
+                    print("     建议:")
+                    for s in step_result.suggestions[:2]:
+                        print(f"       - {s}")
+
+            print()
+            print("-" * 60)
+            print(f"  总耗时: {result.total_duration_ms}ms")
+            print(f"  成功步骤: {len(result.success_steps)}")
+            print(f"  失败步骤: {len(result.failed_steps)}")
+            print(f"  最终状态: {'✅ 成功' if result.success else '❌ 失败'}")
+            print("=" * 60)
+
+            # 显示建议
+            if not result.success:
+                print("\n💡 建议:")
+                for step in result.failed_steps:
+                    if step.suggestions:
+                        for s in step.suggestions[:2]:
+                            print(f"   - {s}")
+
+        return 0 if result.success else 1
+
+    elif args.action == "search":
+        # 单独运行搜索步骤
+        config = WorkflowConfig(
+            knowledge_base_path=args.kb_path,
+        )
+        workflow = create_workflow(config)
+
+        result = workflow.step_search_docs(args.query)
+
+        if args.format == "json":
+            print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
+        else:
+            # 使用 UX 模块的友好输出
+            msg = UserExperienceEnhancer.search_result(
+                args.query,
+                result.output.get("api_count", 0),
+                result.output.get("event_count", 0),
+            )
+            print(msg.to_text())
+
+            if result.output.get("results"):
+                print("\n详细结果:")
+                for i, r in enumerate(result.output["results"][:5], 1):
+                    print(f"  [{i}] {r.get('name', 'N/A')} ({r.get('type', 'N/A')})")
+                    if r.get("description"):
+                        desc = r["description"][:80]
+                        print(f"      {desc}...")
+
+        return 0 if result.status.value == "success" else 1
+
+    elif args.action == "create":
+        # 单独运行创建项目步骤
+        config = WorkflowConfig(
+            project_name=args.project_name or "my_addon",
+            output_dir=args.output_dir or ".",
+            entity_name=args.entity,
+        )
+        workflow = create_workflow(config)
+
+        result = workflow.step_create_project()
+
+        if args.format == "json":
+            print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
+        else:
+            if result.status.value == "success":
+                project_path = result.output.get("project_path")
+                msg = UserExperienceEnhancer.project_created(project_path)
+                print(msg.to_text())
+            else:
+                print(f"❌ 项目创建失败: {result.error or '未知错误'}")
+
+        return 0 if result.status.value == "success" else 1
+
+    elif args.action == "diagnose":
+        # 单独运行诊断步骤
+        if not args.addon_path:
+            print("错误: 请提供 --addon-path 参数")
+            return 1
+
+        config = WorkflowConfig(game_path=args.game_path)
+        workflow = create_workflow(config)
+
+        result = workflow.step_diagnose_error(addon_path=args.addon_path)
+
+        if args.format == "json":
+            print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
+        else:
+            print("\n" + "=" * 60)
+            print("诊断结果")
+            print("=" * 60)
+
+            if result.output.get("diagnostic_report"):
+                report = result.output["diagnostic_report"]
+                print(f"  检查通过: {report.get('checks_passed', 0)}")
+                print(f"  检查失败: {report.get('checks_failed', 0)}")
+                print(f"  警告数量: {report.get('checks_warning', 0)}")
+
+            if result.output.get("log_analysis"):
+                log_analysis = result.output["log_analysis"]
+                print(f"\n  日志分析:")
+                print(f"    错误: {log_analysis.get('error_count', 0)}")
+                print(f"    警告: {log_analysis.get('warning_count', 0)}")
+
+            if result.suggestions:
+                print("\n💡 建议:")
+                for s in result.suggestions[:5]:
+                    print(f"   - {s}")
+
+            print("=" * 60)
+
+        return 0 if result.status.value == "success" else 1
+
+    elif args.action == "cache":
+        # 缓存管理
+        if args.cache_action == "status":
+            cache = get_workflow_cache()
+            stats = cache.get_stats()
+
+            if args.format == "json":
+                print(json.dumps(stats, ensure_ascii=False, indent=2))
+            else:
+                print("工作流缓存状态:\n")
+                print(f"  条目数: {stats['entries']}/{stats['max_entries']}")
+                print(f"  命中次数: {stats['hits']}")
+                print(f"  未命中次数: {stats['misses']}")
+                print(f"  命中率: {stats['hit_rate']:.2%}")
+                print(f"  持久化: {'是' if stats['persisted'] else '否'}")
+
+        elif args.cache_action == "clear":
+            count = clear_workflow_cache()
+            if args.format == "json":
+                print(json.dumps({"cleared": count}, ensure_ascii=False))
+            else:
+                print(f"✅ 已清除 {count} 个缓存条目")
+
+        return 0
+
+    return 0
+
+
 def main() -> int:
     """主入口"""
     parser = argparse.ArgumentParser(
@@ -2338,6 +2555,35 @@ def main() -> int:
         help="输出格式",
     )
 
+    # workflow 命令
+    workflow_parser = subparsers.add_parser("workflow", help="工作流管理")
+    workflow_parser.add_argument(
+        "action",
+        choices=["run", "search", "create", "diagnose", "cache"],
+        help="操作类型",
+    )
+    workflow_parser.add_argument("-q", "--query", help="搜索查询")
+    workflow_parser.add_argument("-n", "--project-name", help="项目名称")
+    workflow_parser.add_argument("-o", "--output-dir", help="输出目录")
+    workflow_parser.add_argument("-e", "--entity", help="实体名称")
+    workflow_parser.add_argument("--addon-path", help="Addon 路径")
+    workflow_parser.add_argument("--game-path", help="游戏路径")
+    workflow_parser.add_argument("--kb-path", help="知识库路径")
+    workflow_parser.add_argument(
+        "--cache-action",
+        choices=["status", "clear"],
+        help="缓存操作类型",
+    )
+    workflow_parser.add_argument("--auto-fix", action="store_true", help="自动修复错误")
+    workflow_parser.add_argument("-v", "--verbose", action="store_true", help="详细输出")
+    workflow_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
+
     args = parser.parse_args()
 
     if args.command == "list":
@@ -2380,6 +2626,8 @@ def main() -> int:
         return cmd_wizard(args)
     elif args.command == "batch":
         return cmd_batch(args)
+    elif args.command == "workflow":
+        return cmd_workflow(args)
     else:
         parser.print_help()
         return 0
