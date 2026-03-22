@@ -7,6 +7,7 @@ MC-Agent-Kit 知识库模块
 from .base import Document, DocumentChunk, DocumentType, SearchResult
 from .incremental import ChangeReport, DocumentChange, IncrementalUpdater
 from .knowledge_base import KnowledgeBase
+from .retrieval import CodeExampleSearchResult, KnowledgeRetrieval, SearchResult as RetrievalSearchResult, create_retrieval
 
 __all__ = [
     "KnowledgeBase",
@@ -17,6 +18,11 @@ __all__ = [
     "IncrementalUpdater",
     "DocumentChange",
     "ChangeReport",
+    # Retrieval
+    "KnowledgeRetrieval",
+    "RetrievalSearchResult",
+    "CodeExampleSearchResult",
+    "create_retrieval",
 ]
 
 

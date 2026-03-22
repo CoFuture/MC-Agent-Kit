@@ -6,6 +6,14 @@
 
 from .addon_scanner import AddonInfo, list_addons, scan_addon
 from .config_generator import GameConfig, generate_config
+from .diagnoser import (
+    DiagnosticCategory,
+    DiagnosticIssue,
+    DiagnosticReport,
+    DiagnosticSeverity,
+    LauncherDiagnoser,
+    diagnose_launcher,
+)
 from .game_launcher import GameProcess, launch_game
 
 __all__ = [
@@ -16,4 +24,11 @@ __all__ = [
     "generate_config",
     "launch_game",
     "GameProcess",
+    # Diagnoser
+    "LauncherDiagnoser",
+    "DiagnosticReport",
+    "DiagnosticIssue",
+    "DiagnosticSeverity",
+    "DiagnosticCategory",
+    "diagnose_launcher",
 ]

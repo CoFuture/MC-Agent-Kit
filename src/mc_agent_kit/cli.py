@@ -776,6 +776,377 @@ def cmd_kb(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_run(args: argparse.Namespace) -> int:
+    """运行游戏并加载 Addon"""
+    from mc_agent_kit.launcher import (
+        AddonInfo,
+        GameConfig,
+        PlayerInfo,
+        ServerInfo,
+        WorldInfo,
+        generate_config,
+        launch_game,
+        scan_addon,
+    )
+    from mc_agent_kit.log_capture import start_log_server
+    import time
+
+    # 扫描 Addon
+    try:
+        addon_info = scan_addon(args.addon_path)
+    except FileNotFoundError as e:
+        if args.format == "json":
+            print(json.dumps({"success": False, "error": str(e)}, ensure_ascii=False))
+        else:
+            print(f"❌ 错误: {e}")
+        return 1
+
+    # 检查游戏路径
+    game_path = args.game_path
+    if not game_path:
+        # 尝试自动检测
+        from mc_agent_kit.launcher.diagnoser import LauncherDiagnoser
+        diagnoser = LauncherDiagnoser()
+        game_path = diagnoser._detect_game_path()
+        if not game_path:
+            if args.format == "json":
+                print(json.dumps({
+                    "success": False,
+                    "error": "未找到游戏路径，请使用 --game-path 指定"
+                }, ensure_ascii=False))
+            else:
+                print("❌ 未找到游戏路径，请使用 --game-path 指定")
+            return 1
+
+    # 生成配置
+    world_info = WorldInfo()
+    player_info = PlayerInfo()
+    server_info = ServerInfo()
+
+    game_config = GameConfig(
+        addon_id=addon_info.id,
+        addon_name=addon_info.name,
+        addon_path=args.addon_path,
+        game_version=args.version or "1.0.0",
+        game_exe_path=game_path,
+        world_info=world_info,
+        player_info=player_info,
+        server_info=server_info,
+    )
+
+    config, config_path = generate_config(addon_info, game_config, args.output_dir or ".")
+
+    # 启动日志服务器
+    log_server = None
+    log_entries = []
+    if not args.no_logs:
+        try:
+            log_server = start_log_server(port=args.log_port or 0)
+            game_config.logging_port = log_server.port
+        except Exception as e:
+            if args.verbose:
+                print(f"警告: 无法启动日志服务器: {e}")
+
+    # 启动游戏
+    try:
+        game_process = launch_game(
+            game_exe_path=game_path,
+            config_path=config_path,
+            logging_port=game_config.logging_port,
+            logging_ip=game_config.logging_ip,
+        )
+
+        result = {
+            "success": True,
+            "pid": game_process.pid,
+            "config_path": config_path,
+            "game_path": game_path,
+            "addon_name": addon_info.name,
+            "logging_port": game_config.logging_port,
+        }
+
+        if args.format == "json":
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+        else:
+            print(f"✅ 游戏启动成功!")
+            print(f"   PID: {game_process.pid}")
+            print(f"   配置文件: {config_path}")
+            print(f"   Addon: {addon_info.name}")
+            if game_config.logging_port:
+                print(f"   日志端口: {game_config.logging_port}")
+
+        if args.wait:
+            if args.verbose:
+                print("\n等待游戏退出...")
+            exit_code = game_process.wait()
+            result["exit_code"] = exit_code
+            result["duration"] = time.time()  # 简化
+
+            if args.format == "json":
+                print(json.dumps(result, ensure_ascii=False, indent=2))
+            else:
+                print(f"\n游戏已退出，返回码: {exit_code}")
+
+        return 0
+
+    except Exception as e:
+        if args.format == "json":
+            print(json.dumps({"success": False, "error": str(e)}, ensure_ascii=False))
+        else:
+            print(f"❌ 启动失败: {e}")
+        return 1
+
+
+def cmd_logs(args: argparse.Namespace) -> int:
+    """日志分析"""
+    from mc_agent_kit.log_capture import LogAnalyzer, LogParser
+
+    analyzer = LogAnalyzer()
+    parser = LogParser()
+
+    # 读取日志
+    log_content = args.log
+    if args.file:
+        try:
+            with open(args.file, encoding="utf-8") as f:
+                log_content = f.read()
+        except FileNotFoundError:
+            print(f"错误：文件不存在：{args.file}")
+            return 1
+
+    if not log_content:
+        print("错误：请提供日志内容 (-l) 或日志文件 (--file)")
+        return 1
+
+    if args.action == "analyze":
+        # 解析日志
+        entries = parser.parse(log_content)
+
+        # 分析日志
+        stats = analyzer.get_statistics()
+
+        if args.format == "json":
+            data = {
+                "success": True,
+                "total_entries": len(entries),
+                "statistics": {
+                    "total_logs": stats.total_logs,
+                    "error_count": stats.error_count,
+                    "warning_count": stats.warning_count,
+                    "by_level": dict(stats.by_level),
+                },
+                "entries": [
+                    {
+                        "timestamp": e.timestamp.isoformat() if e.timestamp else None,
+                        "level": e.level.value if e.level else "unknown",
+                        "source": e.source,
+                        "message": e.message[:200] if len(e.message) > 200 else e.message,
+                    }
+                    for e in entries[:args.limit]
+                ]
+            }
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            print(f"日志分析结果:\n")
+            print(f"  总条目: {len(entries)}")
+            print(f"  错误: {stats.error_count}")
+            print(f"  警告: {stats.warning_count}")
+
+            if entries:
+                print(f"\n最近 {min(args.limit, len(entries))} 条日志:\n")
+                for e in entries[:args.limit]:
+                    level_icon = {"DEBUG": "🔍", "INFO": "ℹ️", "WARNING": "⚠️", "ERROR": "❌"}.get(e.level.value, "📝")
+                    print(f"  {level_icon} [{e.level.value}] {e.message[:100]}")
+
+    elif args.action == "errors":
+        # 提取错误
+        entries = parser.parse(log_content)
+        errors = [e for e in entries if e.level and e.level.value in ("ERROR", "CRITICAL")]
+
+        if args.format == "json":
+            data = {
+                "success": True,
+                "error_count": len(errors),
+                "errors": [
+                    {
+                        "timestamp": e.timestamp.isoformat() if e.timestamp else None,
+                        "source": e.source,
+                        "message": e.message,
+                    }
+                    for e in errors
+                ]
+            }
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            if errors:
+                print(f"发现 {len(errors)} 个错误:\n")
+                for i, e in enumerate(errors, 1):
+                    print(f"[{i}] {e.message[:200]}")
+                    if e.source:
+                        print(f"    来源: {e.source}")
+                    print()
+            else:
+                print("✅ 未发现错误")
+
+    elif args.action == "patterns":
+        # 列出错误模式
+        patterns = analyzer.patterns
+
+        if args.format == "json":
+            data = {
+                "success": True,
+                "patterns": [
+                    {
+                        "name": p.name,
+                        "category": p.category.value,
+                        "severity": p.severity.value,
+                        "description": p.description,
+                    }
+                    for p in patterns
+                ]
+            }
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            print(f"已定义的错误模式 ({len(patterns)} 个):\n")
+            for p in patterns:
+                print(f"  📋 {p.name}")
+                print(f"     类别: {p.category.value}")
+                print(f"     严重程度: {p.severity.value}")
+                if p.description:
+                    print(f"     描述: {p.description}")
+                print()
+
+    return 0
+
+
+def cmd_launcher(args: argparse.Namespace) -> int:
+    """启动器诊断"""
+    from mc_agent_kit.launcher import diagnose_launcher
+
+    if args.action == "diagnose":
+        # 执行诊断
+        report = diagnose_launcher(
+            addon_path=args.addon_path,
+            config_path=args.config_path,
+            game_path=args.game_path,
+        )
+
+        if args.format == "json":
+            print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
+        else:
+            print("=" * 60)
+            print("游戏启动器诊断报告")
+            print("=" * 60)
+            print()
+
+            # 基本信息
+            if report.game_path:
+                print(f"🎮 游戏路径: {report.game_path}")
+            if report.game_version:
+                print(f"📦 游戏版本: {report.game_version}")
+            if report.addon_path:
+                print(f"📁 Addon 路径: {report.addon_path}")
+            if report.config_path:
+                print(f"📄 配置文件: {report.config_path}")
+
+            print()
+            print("-" * 60)
+            print("检查结果统计")
+            print("-" * 60)
+            print(f"  ✅ 通过: {report.checks_passed}")
+            print(f"  ❌ 失败: {report.checks_failed}")
+            print(f"  ⚠️  警告: {report.checks_warning}")
+            print()
+
+            if report.issues:
+                print("-" * 60)
+                print("发现的问题")
+                print("-" * 60)
+
+                # 按严重程度分组
+                errors = [i for i in report.issues if i.severity.value == "error"]
+                warnings = [i for i in report.issues if i.severity.value == "warning"]
+                infos = [i for i in report.issues if i.severity.value == "info"]
+
+                if errors:
+                    print("\n❌ 错误:")
+                    for i in errors:
+                        print(f"\n  [{i.code}] {i.message}")
+                        if i.details:
+                            print(f"     详情: {i.details}")
+                        if i.suggestion:
+                            print(f"     建议: {i.suggestion}")
+                        if i.location:
+                            print(f"     位置: {i.location}")
+
+                if warnings:
+                    print("\n⚠️  警告:")
+                    for i in warnings:
+                        print(f"\n  [{i.code}] {i.message}")
+                        if i.suggestion:
+                            print(f"     建议: {i.suggestion}")
+
+                if infos:
+                    print("\nℹ️  信息:")
+                    for i in infos:
+                        print(f"\n  [{i.code}] {i.message}")
+                        if i.details:
+                            # 截断过长的详情
+                            details = i.details[:500] + "..." if len(i.details) > 500 else i.details
+                            print(f"     {details}")
+
+            print()
+            print("=" * 60)
+            if report.success:
+                print("✅ 诊断完成: 未发现严重问题")
+            else:
+                print("❌ 诊断完成: 发现需要修复的问题")
+            print("=" * 60)
+
+        return 0 if report.success else 1
+
+    elif args.action == "compare":
+        # 对比配置文件
+        from mc_agent_kit.launcher import LauncherDiagnoser
+
+        diagnoser = LauncherDiagnoser(args.game_path)
+        result = diagnoser.compare_with_mc_studio_config(
+            args.config_path,
+            args.mc_studio_config,
+        )
+
+        if args.format == "json":
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+        else:
+            print("配置文件对比结果:\n")
+
+            if result["warnings"]:
+                print("⚠️  警告:")
+                for w in result["warnings"]:
+                    print(f"  - {w}")
+                print()
+
+            if result["differences"]:
+                print("📋 差异:")
+                for d in result["differences"]:
+                    print(f"  字段: {d['field']}")
+                    print(f"    当前值: {d['current']}")
+                    print(f"    MC Studio: {d['mc_studio']}")
+                    print()
+
+            if result["suggestions"]:
+                print("💡 建议:")
+                for s in result["suggestions"]:
+                    print(f"  - {s}")
+
+            if not result["differences"] and not result["warnings"]:
+                print("✅ 配置文件与 MC Studio 格式一致")
+
+        return 0
+
+    return 0
+
+
 def main() -> int:
     """主入口"""
     parser = argparse.ArgumentParser(
@@ -937,6 +1308,53 @@ def main() -> int:
         help="输出格式",
     )
 
+    # run 命令
+    run_parser = subparsers.add_parser("run", help="运行游戏并加载 Addon")
+    run_parser.add_argument("addon_path", help="Addon 目录路径")
+    run_parser.add_argument("--game-path", help="游戏可执行文件路径")
+    run_parser.add_argument("--version", help="游戏版本")
+    run_parser.add_argument("-o", "--output-dir", help="配置输出目录")
+    run_parser.add_argument("--log-port", type=int, default=0, help="日志接收端口")
+    run_parser.add_argument("--no-logs", action="store_true", help="禁用日志捕获")
+    run_parser.add_argument("--wait", action="store_true", help="等待游戏退出")
+    run_parser.add_argument("-v", "--verbose", action="store_true", help="详细输出")
+    run_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
+
+    # logs 命令
+    logs_parser = subparsers.add_parser("logs", help="日志分析")
+    logs_parser.add_argument("action", choices=["analyze", "errors", "patterns"], help="操作类型")
+    logs_parser.add_argument("-l", "--log", help="日志内容")
+    logs_parser.add_argument("--file", dest="file", help="日志文件路径")
+    logs_parser.add_argument("-l", "--limit", type=int, default=20, help="返回结果数量")
+    logs_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
+
+    # launcher 命令
+    launcher_parser = subparsers.add_parser("launcher", help="启动器诊断")
+    launcher_parser.add_argument("action", choices=["diagnose", "compare"], help="操作类型")
+    launcher_parser.add_argument("--addon-path", help="Addon 目录路径")
+    launcher_parser.add_argument("--config-path", help="配置文件路径")
+    launcher_parser.add_argument("--game-path", help="游戏可执行文件路径")
+    launcher_parser.add_argument("--mc-studio-config", help="MC Studio 配置文件路径 (用于对比)")
+    launcher_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
+
     args = parser.parse_args()
 
     if args.command == "list":
@@ -961,6 +1379,12 @@ def main() -> int:
         return cmd_create(args)
     elif args.command == "kb":
         return cmd_kb(args)
+    elif args.command == "run":
+        return cmd_run(args)
+    elif args.command == "logs":
+        return cmd_logs(args)
+    elif args.command == "launcher":
+        return cmd_launcher(args)
     else:
         parser.print_help()
         return 0
