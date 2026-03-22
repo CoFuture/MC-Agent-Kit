@@ -1025,8 +1025,147 @@ def cmd_logs(args: argparse.Namespace) -> int:
 def cmd_launcher(args: argparse.Namespace) -> int:
     """启动器诊断"""
     from mc_agent_kit.launcher import diagnose_launcher, fix_config
+    from mc_agent_kit.launcher.auto_fixer import analyze_addon_memory, get_memory_optimization_tips
 
-    if args.action == "diagnose":
+    if args.action == "analyze":
+        # 内存分析
+        if not args.addon_path:
+            if args.format == "json":
+                print(json.dumps({"success": False, "error": "请提供 --addon-path 参数"}, ensure_ascii=False))
+            else:
+                print("错误：请提供 --addon-path 参数")
+            return 1
+
+        report = analyze_addon_memory(args.addon_path)
+
+        if args.format == "json":
+            print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
+        else:
+            print("=" * 60)
+            print("Addon 内存分析报告")
+            print("=" * 60)
+            print()
+            print(f"Addon 路径: {report.addon_path}")
+            print(f"发现问题: {report.total_issues}")
+            print(f"  严重问题: {report.critical_issues}")
+            print(f"  可自动修复: {report.auto_fixable_issues}")
+            print()
+
+            if report.suggestions:
+                print("-" * 60)
+                print("修复建议")
+                print("-" * 60)
+
+                # 按严重程度分组
+                critical = [s for s in report.suggestions if s.severity.value in ("critical", "high")]
+                medium = [s for s in report.suggestions if s.severity.value == "medium"]
+                low = [s for s in report.suggestions if s.severity.value == "low"]
+
+                if critical:
+                    print("\n❌ 严重问题:")
+                    for s in critical:
+                        print(f"\n  [{s.fix_type.value}] {s.title}")
+                        print(f"  {s.description}")
+                        if s.current_value and s.suggested_value:
+                            print(f"  当前: {s.current_value} → 建议: {s.suggested_value}")
+                        if s.estimated_savings:
+                            print(f"  预计节省: {s.estimated_savings}")
+                        if s.fix_command:
+                            print(f"  修复方法: {s.fix_command}")
+
+                if medium:
+                    print("\n⚠️  中等问题:")
+                    for s in medium:
+                        print(f"\n  [{s.fix_type.value}] {s.title}")
+                        print(f"  {s.description}")
+
+                if low:
+                    print("\nℹ️  低优先级:")
+                    for s in low:
+                        print(f"\n  [{s.fix_type.value}] {s.title}")
+
+            if report.errors:
+                print("\n❌ 错误:")
+                for e in report.errors:
+                    print(f"  - {e}")
+
+            print()
+            print("=" * 60)
+            if report.has_critical_issues:
+                print("⚠️  发现严重内存问题，建议优先修复")
+            elif report.total_issues > 0:
+                print("✅ 分析完成，发现可优化的项目")
+            else:
+                print("✅ 分析完成，未发现内存问题")
+            print("=" * 60)
+
+        return 0 if not report.has_critical_issues else 1
+
+    elif args.action == "fix":
+        # 内存自动修复（基于配置文件）
+        report = fix_config(
+            args.config_path,
+            args.output_path,
+        )
+
+        if args.format == "json":
+            print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
+        else:
+            print("配置文件修复结果:\n")
+
+            if report.fixes:
+                print(f"应用的修复 ({len(report.fixes)} 个):")
+                for fix in report.fixes:
+                    print(f"  - {fix.field}: {fix.description}")
+                    if fix.auto_fixable:
+                        print(f"    {fix.current_value} → {fix.suggested_value}")
+                print()
+
+            if report.errors:
+                print("❌ 错误:")
+                for e in report.errors:
+                    print(f"  - {e}")
+                print()
+
+            if report.warnings:
+                print("⚠️  警告:")
+                for w in report.warnings:
+                    print(f"  - {w}")
+                print()
+
+            if report.fixed:
+                print("✅ 配置文件修复完成")
+            else:
+                print("❌ 配置文件修复失败")
+
+        return 0 if report.fixed else 1
+
+    elif args.action == "tips":
+        # 获取优化技巧
+        tips = get_memory_optimization_tips()
+
+        if args.format == "json":
+            print(json.dumps({"tips": tips}, ensure_ascii=False, indent=2))
+        else:
+            print("内存优化技巧:\n")
+
+            # 按类别分组
+            by_category: dict[str, list[dict]] = {}
+            for tip in tips:
+                cat = tip["category"]
+                if cat not in by_category:
+                    by_category[cat] = []
+                by_category[cat].append(tip)
+
+            for category, category_tips in by_category.items():
+                print(f"\n[{category}]")
+                for tip in category_tips:
+                    print(f"\n  💡 {tip['tip']}")
+                    print(f"     原因: {tip['reason']}")
+
+        return 0
+
+    elif args.action == "diagnose":
         # 执行诊断
         report = diagnose_launcher(
             addon_path=args.addon_path,
@@ -1185,6 +1324,166 @@ def cmd_launcher(args: argparse.Namespace) -> int:
                 print("❌ 配置文件修复失败")
 
         return 0 if report.fixed else 1
+
+    return 0
+
+
+def cmd_stats(args: argparse.Namespace) -> int:
+    """API 使用统计"""
+    from mc_agent_kit.stats import ApiUsageTracker
+
+    # 初始化追踪器
+    data_path = args.data_path or "data/api_stats.json"
+    tracker = ApiUsageTracker(data_path)
+
+    if args.action == "summary":
+        # 获取统计摘要
+        summary = tracker.get_summary()
+
+        if args.format == "json":
+            print(json.dumps(summary, ensure_ascii=False, indent=2))
+        else:
+            print("API 使用统计摘要\n")
+            print("=" * 50)
+            print(f"总 API 数: {summary['total_apis']}")
+            print(f"总调用次数: {summary['total_calls']}")
+            print(f"成功次数: {summary['total_success']}")
+            print(f"错误次数: {summary['total_errors']}")
+            print(f"成功率: {summary['success_rate']:.2%}")
+
+            if summary['hot_apis']:
+                print("\n热门 API (Top 5):")
+                for i, api in enumerate(summary['hot_apis'], 1):
+                    print(f"  {i}. {api['api_name']} ({api['total_calls']} 次调用)")
+
+            if summary['problematic_apis']:
+                print("\n问题 API (错误率高):")
+                for api in summary['problematic_apis']:
+                    print(f"  - {api['api_name']} (错误率: {api['error_rate']:.2%})")
+
+    elif args.action == "hot":
+        # 获取热门 API
+        hot_apis = tracker.get_hot_apis(limit=args.limit)
+
+        if args.format == "json":
+            data = {"apis": [api.to_dict() for api in hot_apis]}
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            print(f"热门 API (Top {args.limit})\n")
+            if hot_apis:
+                for i, api in enumerate(hot_apis, 1):
+                    print(f"{i}. {api.api_name}")
+                    print(f"   调用次数: {api.total_calls}")
+                    print(f"   成功率: {api.success_rate:.2%}")
+                    if api.last_used:
+                        print(f"   最近使用: {api.last_used}")
+                    print()
+            else:
+                print("暂无数据")
+
+    elif args.action == "problems":
+        # 获取问题 API
+        problematic = tracker.get_problematic_apis(
+            min_calls=args.min_calls,
+            error_rate_threshold=args.error_rate,
+            limit=args.limit,
+        )
+
+        if args.format == "json":
+            data = {
+                "min_calls": args.min_calls,
+                "error_rate_threshold": args.error_rate,
+                "apis": [api.to_dict() for api in problematic],
+            }
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            print(f"问题 API (最小调用: {args.min_calls}, 错误率 >= {args.error_rate:.0%})\n")
+            if problematic:
+                for i, api in enumerate(problematic, 1):
+                    print(f"{i}. {api.api_name}")
+                    print(f"   调用次数: {api.total_calls}")
+                    print(f"   错误率: {api.error_rate:.2%}")
+                    if api.common_errors:
+                        print(f"   常见错误: {', '.join(api.common_errors[:3])}")
+                    print()
+            else:
+                print("暂无问题 API")
+
+    elif args.action == "module":
+        # 按模块分组统计
+        by_module = tracker.get_stats_by_module()
+        module_name = args.module
+
+        if module_name:
+            # 指定模块
+            apis = by_module.get(module_name, [])
+
+            if args.format == "json":
+                data = {
+                    "module": module_name,
+                    "apis": [api.to_dict() for api in apis],
+                }
+                print(json.dumps(data, ensure_ascii=False, indent=2))
+            else:
+                print(f"模块 '{module_name}' 的 API 统计\n")
+                if apis:
+                    for api in apis:
+                        print(f"  - {api.api_name}: {api.total_calls} 次调用")
+                else:
+                    print("  该模块暂无数据")
+        else:
+            # 所有模块概览
+            if args.format == "json":
+                data = {
+                    "modules": {
+                        mod: [api.to_dict() for api in apis]
+                        for mod, apis in by_module.items()
+                    }
+                }
+                print(json.dumps(data, ensure_ascii=False, indent=2))
+            else:
+                print("模块统计概览\n")
+                if by_module:
+                    for module, apis in sorted(by_module.items()):
+                        total_calls = sum(api.total_calls for api in apis)
+                        print(f"  {module}: {len(apis)} 个 API, {total_calls} 次调用")
+                else:
+                    print("  暂无数据")
+
+    elif args.action == "api":
+        # 指定 API 的详细信息
+        api_name = args.api_name
+        if not api_name:
+            if args.format == "json":
+                print(json.dumps({"error": "请提供 --api-name 参数"}, ensure_ascii=False))
+            else:
+                print("错误：请提供 --api-name 参数")
+            return 1
+
+        stats = tracker.get_stats(api_name)
+
+        if args.format == "json":
+            if stats:
+                print(json.dumps(stats.to_dict(), ensure_ascii=False, indent=2))
+            else:
+                print(json.dumps({"error": f"API '{api_name}' 无统计数据"}, ensure_ascii=False))
+        else:
+            if stats:
+                print(f"API: {api_name}\n")
+                print(f"  调用次数: {stats.total_calls}")
+                print(f"  成功次数: {stats.success_count}")
+                print(f"  错误次数: {stats.error_count}")
+                print(f"  成功率: {stats.success_rate:.2%}")
+                if stats.last_used:
+                    print(f"  最近使用: {stats.last_used}")
+                if stats.avg_duration_ms:
+                    print(f"  平均耗时: {stats.avg_duration_ms:.2f} ms")
+                if stats.common_errors:
+                    print("\n  常见错误:")
+                    for e in stats.common_errors[:5]:
+                        print(f"    - {e}")
+            else:
+                print(f"API '{api_name}' 无统计数据")
 
     return 0
 
@@ -1384,13 +1683,30 @@ def main() -> int:
 
     # launcher 命令
     launcher_parser = subparsers.add_parser("launcher", help="启动器诊断")
-    launcher_parser.add_argument("action", choices=["diagnose", "compare", "fix"], help="操作类型")
+    launcher_parser.add_argument("action", choices=["diagnose", "compare", "fix", "analyze", "tips"], help="操作类型")
     launcher_parser.add_argument("--addon-path", help="Addon 目录路径")
     launcher_parser.add_argument("--config-path", help="配置文件路径")
     launcher_parser.add_argument("--game-path", help="游戏可执行文件路径")
     launcher_parser.add_argument("--mc-studio-config", help="MC Studio 配置文件路径 (用于对比)")
     launcher_parser.add_argument("--output-path", help="修复后的配置输出路径")
     launcher_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
+
+    # stats 命令
+    stats_parser = subparsers.add_parser("stats", help="API 使用统计")
+    stats_parser.add_argument("action", choices=["summary", "hot", "problems", "module", "api"], help="操作类型")
+    stats_parser.add_argument("--api-name", help="API 名称 (用于 api 操作)")
+    stats_parser.add_argument("--module", help="模块名称 (用于 module 操作)")
+    stats_parser.add_argument("-l", "--limit", type=int, default=10, help="返回结果数量")
+    stats_parser.add_argument("--min-calls", type=int, default=5, help="最小调用次数阈值")
+    stats_parser.add_argument("--error-rate", type=float, default=0.3, help="错误率阈值")
+    stats_parser.add_argument("--data-path", help="统计数据文件路径")
+    stats_parser.add_argument(
         "--format",
         dest="format",
         choices=["text", "json"],
@@ -1428,6 +1744,8 @@ def main() -> int:
         return cmd_logs(args)
     elif args.command == "launcher":
         return cmd_launcher(args)
+    elif args.command == "stats":
+        return cmd_stats(args)
     else:
         parser.print_help()
         return 0
