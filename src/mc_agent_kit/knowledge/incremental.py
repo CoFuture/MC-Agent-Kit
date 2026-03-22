@@ -220,7 +220,7 @@ class IncrementalUpdater:
                 content = file_path.read_text(encoding="utf-8")
 
                 # 创建文档对象
-                from .vector_store import Document
+                from mc_agent_kit.retrieval.vector_store import Document
                 doc = Document(
                     id=c.path,
                     content=content,
