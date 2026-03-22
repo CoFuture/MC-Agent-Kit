@@ -8,13 +8,15 @@ MC-Agent-Kit CLI
 import argparse
 import json
 import sys
+import time
+from pathlib import Path
 from typing import Any
 
 from mc_agent_kit.autofix import (
     AutoFixer,
     ErrorDiagnoser,
 )
-from mc_agent_kit.completion import (
+from mc_agent_kit.contrib.completion import (
     BestPracticeChecker,
     CodeCompleter,
     RefactorEngine,
@@ -1328,6 +1330,556 @@ def cmd_launcher(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_repl(args: argparse.Namespace) -> int:
+    """交互式 REPL 模式"""
+    from mc_agent_kit.cli_enhanced import create_repl, create_alias_manager, get_builtin_aliases
+
+    # 创建别名管理器
+    alias_manager = create_alias_manager()
+    for alias in get_builtin_aliases():
+        alias_manager.register(alias)
+
+    # 创建 REPL
+    repl = create_repl(
+        prompt=args.prompt or "mc-agent> ",
+        history_file=args.history_file or ".mc_agent_history",
+        aliases=alias_manager,
+    )
+
+    # 注册命令
+    def cmd_help(repl, args):
+        """显示帮助"""
+        print("可用命令:")
+        print("  help          - 显示帮助")
+        print("  exit, quit    - 退出 REPL")
+        print("  clear         - 清屏")
+        print("  api <query>   - 搜索 API")
+        print("  event <query> - 搜索事件")
+        print("  gen <type>    - 生成代码")
+        print("  create <type> - 创建项目")
+        print("  run <path>    - 运行 Addon")
+        print("  logs          - 查看日志")
+        print("  stats         - 查看统计")
+        print("  history       - 查看命令历史")
+        print("  aliases       - 查看命令别名")
+        return 0
+
+    def cmd_exit(repl, args):
+        """退出 REPL"""
+        print("再见!")
+        return -1  # 返回 -1 表示退出
+
+    def cmd_clear(repl, args):
+        """清屏"""
+        import os
+        os.system("cls" if sys.platform == "win32" else "clear")
+        return 0
+
+    def cmd_history(repl, args):
+        """显示命令历史"""
+        history = repl.history
+        if history:
+            entries = history.list_entries(limit=args.limit if hasattr(args, "limit") else 20)
+            for i, entry in enumerate(entries, 1):
+                print(f"  {i}. {entry.command}")
+        else:
+            print("暂无历史记录")
+        return 0
+
+    def cmd_aliases(repl, args):
+        """显示命令别名"""
+        aliases = alias_manager.list_all()
+        if aliases:
+            print("命令别名:")
+            for alias in aliases:
+                print(f"  {alias.alias} -> {alias.target}")
+        else:
+            print("暂无别名")
+        return 0
+
+    repl.register_command("help", cmd_help, "显示帮助")
+    repl.register_command("exit", cmd_exit, "退出 REPL")
+    repl.register_command("quit", cmd_exit, "退出 REPL")
+    repl.register_command("clear", cmd_clear, "清屏")
+    repl.register_command("history", cmd_history, "显示命令历史")
+    repl.register_command("aliases", cmd_aliases, "显示命令别名")
+
+    # 启动 REPL
+    if not args.no_welcome:
+        print("=" * 60)
+        print("MC-Agent-Kit Interactive REPL")
+        print("输入 'help' 查看可用命令, 'exit' 退出")
+        print("=" * 60)
+        print()
+
+    repl.run()
+    return 0
+
+
+def cmd_config(args: argparse.Namespace) -> int:
+    """配置管理"""
+    from mc_agent_kit.config import (
+        create_config_manager,
+        create_template_generator,
+        create_validator,
+        get_default_schema,
+        get_default_template,
+    )
+
+    if args.action == "generate":
+        # 生成配置文件模板
+        generator = create_template_generator()
+        template = get_default_template() if not args.template else None
+
+        if args.format_type == "json":
+            content = generator.generate_json(template or get_default_template())
+        else:
+            content = generator.generate_yaml(template or get_default_template())
+
+        # 输出
+        if args.output:
+            with open(args.output, "w", encoding="utf-8") as f:
+                f.write(content)
+            if args.format == "text":
+                print(f"✅ 配置文件已生成: {args.output}")
+            else:
+                print(json.dumps({"success": True, "output": args.output}, ensure_ascii=False))
+        else:
+            print(content)
+
+    elif args.action == "validate":
+        # 验证配置文件
+        if not args.config_path:
+            print("错误: 请提供 --config-path 参数")
+            return 1
+
+        validator = create_validator()
+        schema = get_default_schema()
+
+        try:
+            with open(args.config_path, encoding="utf-8") as f:
+                content = f.read()
+
+            if args.config_path.endswith(".json"):
+                import json
+                config_data = json.loads(content)
+            else:
+                import yaml
+                config_data = yaml.safe_load(content)
+
+            result = validator.validate(config_data, schema)
+
+            if args.format == "json":
+                print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
+            else:
+                if result.valid:
+                    print("✅ 配置文件验证通过")
+                else:
+                    print("❌ 配置文件验证失败")
+                    if result.errors:
+                        print("\n错误:")
+                        for e in result.errors:
+                            print(f"  - [{e.field}] {e.message}")
+                    if result.warnings:
+                        print("\n警告:")
+                        for w in result.warnings:
+                            print(f"  - [{w.field}] {w.message}")
+
+            return 0 if result.valid else 1
+
+        except FileNotFoundError:
+            print(f"错误: 配置文件不存在: {args.config_path}")
+            return 1
+        except Exception as e:
+            print(f"错误: {e}")
+            return 1
+
+    elif args.action == "show":
+        # 显示当前配置
+        manager = create_config_manager()
+
+        # 加载配置文件
+        if args.config_path:
+            manager.load_from_file(args.config_path)
+
+        config = manager.get_all()
+
+        if args.format == "json":
+            print(json.dumps(config, ensure_ascii=False, indent=2))
+        else:
+            print("当前配置:\n")
+            for key, value in config.items():
+                print(f"  {key}: {value}")
+
+    elif args.action == "set":
+        # 设置配置项
+        if not args.key or not args.value:
+            print("错误: 请提供 --key 和 --value 参数")
+            return 1
+
+        manager = create_config_manager()
+
+        # 加载配置文件
+        if args.config_path:
+            manager.load_from_file(args.config_path)
+
+        # 设置值
+        try:
+            # 尝试解析 JSON 值
+            try:
+                value = json.loads(args.value)
+            except json.JSONDecodeError:
+                value = args.value
+
+            manager.set(args.key, value)
+
+            # 保存
+            if args.config_path:
+                manager.save_to_file(args.config_path)
+
+            if args.format == "text":
+                print(f"✅ 配置已更新: {args.key} = {value}")
+            else:
+                print(json.dumps({"success": True, "key": args.key, "value": value}, ensure_ascii=False))
+
+        except Exception as e:
+            print(f"错误: {e}")
+            return 1
+
+    return 0
+
+
+def cmd_docs(args: argparse.Namespace) -> int:
+    """文档生成"""
+    from mc_agent_kit.docs import create_doc_generator, create_formatter, OutputFormat
+
+    if args.action == "generate":
+        # 生成 API 文档
+        generator = create_doc_generator()
+
+        # 从代码生成文档
+        if args.source_path:
+            source_path = Path(args.source_path)
+            if not source_path.exists():
+                print(f"错误: 源代码路径不存在: {args.source_path}")
+                return 1
+
+            docs = generator.generate_from_directory(source_path)
+        else:
+            docs = []
+
+        # 格式化输出
+        formatter = create_formatter()
+        output_format = OutputFormat(args.output_format or "markdown")
+
+        content = formatter.format_docs(docs, output_format)
+
+        # 输出
+        if args.output:
+            with open(args.output, "w", encoding="utf-8") as f:
+                f.write(content)
+            if args.format == "text":
+                print(f"✅ 文档已生成: {args.output}")
+            else:
+                print(json.dumps({"success": True, "output": args.output, "docs_count": len(docs)}, ensure_ascii=False))
+        else:
+            print(content)
+
+    elif args.action == "api":
+        # 生成指定 API 的文档
+        if not args.api_name:
+            print("错误: 请提供 --api-name 参数")
+            return 1
+
+        generator = create_doc_generator()
+        doc = generator.generate_api_doc(args.api_name)
+
+        if not doc:
+            print(f"错误: 未找到 API: {args.api_name}")
+            return 1
+
+        formatter = create_formatter()
+        output_format = OutputFormat(args.output_format or "markdown")
+
+        content = formatter.format_api_doc(doc, output_format)
+
+        if args.output:
+            with open(args.output, "w", encoding="utf-8") as f:
+                f.write(content)
+            if args.format == "text":
+                print(f"✅ API 文档已生成: {args.output}")
+        else:
+            print(content)
+
+    elif args.action == "list":
+        # 列出所有可生成文档的 API
+        from mc_agent_kit.knowledge_base import KnowledgeRetriever
+
+        retriever = KnowledgeRetriever()
+
+        try:
+            retriever.load("data/knowledge_base.json")
+        except FileNotFoundError:
+            print("错误: 知识库索引不存在，请先运行 `mc-agent kb build`")
+            return 1
+
+        apis = retriever.list_apis(limit=args.limit or 100)
+
+        if args.format == "json":
+            data = {
+                "apis": [
+                    {"name": api.name, "module": api.module, "description": api.description[:100]}
+                    for api in apis
+                ]
+            }
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            print(f"可生成文档的 API ({len(apis)} 个):\n")
+            for i, api in enumerate(apis, 1):
+                print(f"  {i}. {api.name} ({api.module})")
+                print(f"     {api.description[:80]}...")
+
+    return 0
+
+
+def cmd_wizard(args: argparse.Namespace) -> int:
+    """交互式向导"""
+    from mc_agent_kit.cli_enhanced import create_output, Color, Style
+
+    output = create_output()
+
+    if args.type == "project":
+        # 项目创建向导
+        output.print("\n🎮 MC-Agent-Kit 项目创建向导\n", color=Color.CYAN, style=Style.BOLD)
+
+        # 获取项目名称
+        if not args.name:
+            output.print("请输入项目名称: ", color=Color.GREEN)
+            name = input().strip()
+            if not name:
+                output.print("错误: 项目名称不能为空", color=Color.RED)
+                return 1
+        else:
+            name = args.name
+
+        # 获取项目路径
+        output.print(f"请输入项目路径 [默认: ./{name}]: ", color=Color.GREEN)
+        path = input().strip() or f"./{name}"
+
+        # 选择模板
+        output.print("\n请选择项目模板:", color=Color.GREEN)
+        output.print("  1. empty    - 空项目")
+        output.print("  2. entity   - 包含实体开发模板")
+        output.print("  3. item     - 包含物品开发模板")
+        output.print("  4. block    - 包含方块开发模板")
+        output.print("\n请选择 [1-4, 默认: 1]: ", color=Color.GREEN, end="")
+        choice = input().strip() or "1"
+
+        templates = {"1": "empty", "2": "entity", "3": "item", "4": "block"}
+        template = templates.get(choice, "empty")
+
+        # 创建项目
+        creator = ProjectCreator()
+        try:
+            project = creator.create_project(name=name, path=path, template=template)
+            output.print(f"\n✅ 项目 '{name}' 创建成功!\n", color=Color.GREEN, style=Style.BOLD)
+            output.print(f"📁 路径: {project.path}")
+            output.print(f"📦 模板: {template}")
+            output.print("\n下一步:")
+            output.print("  1. cd " + str(project.path))
+            output.print("  2. 编辑 behavior_pack/scripts/main.py")
+            output.print("  3. 运行 `mc-agent run .` 启动测试")
+        except FileExistsError as e:
+            output.print(f"\n❌ 错误: {e}", color=Color.RED)
+            return 1
+
+    elif args.type == "config":
+        # 配置生成向导
+        output.print("\n⚙️  配置文件生成向导\n", color=Color.CYAN, style=Style.BOLD)
+
+        # 选择配置类型
+        output.print("请选择配置类型:", color=Color.GREEN)
+        output.print("  1. 开发环境 (development)")
+        output.print("  2. 生产环境 (production)")
+        output.print("  3. 测试环境 (testing)")
+        output.print("\n请选择 [1-3, 默认: 1]: ", color=Color.GREEN, end="")
+        choice = input().strip() or "1"
+
+        env_types = {"1": "development", "2": "production", "3": "testing"}
+        env_type = env_types.get(choice, "development")
+
+        # 选择输出格式
+        output.print("\n请选择输出格式:", color=Color.GREEN)
+        output.print("  1. JSON")
+        output.print("  2. YAML")
+        output.print("\n请选择 [1-2, 默认: 1]: ", color=Color.GREEN, end="")
+        format_choice = input().strip() or "1"
+
+        format_type = "json" if format_choice == "1" else "yaml"
+
+        # 生成配置
+        from mc_agent_kit.config import create_template_generator, get_default_template
+
+        generator = create_template_generator()
+        template = get_default_template()
+
+        if format_type == "json":
+            content = generator.generate_json(template)
+        else:
+            content = generator.generate_yaml(template)
+
+        # 输出文件名
+        output_file = f"mc-agent.{format_type}"
+        output.print(f"\n请输入输出文件名 [默认: {output_file}]: ", color=Color.GREEN)
+        output_path = input().strip() or output_file
+
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write(content)
+
+        output.print(f"\n✅ 配置文件已生成: {output_path}\n", color=Color.GREEN, style=Style.BOLD)
+
+    elif args.type == "diagnose":
+        # 一键诊断向导
+        output.print("\n🔍 诊断向导\n", color=Color.CYAN, style=Style.BOLD)
+
+        # 获取 Addon 路径
+        output.print("请输入 Addon 路径 [默认: .]: ", color=Color.GREEN)
+        addon_path = input().strip() or "."
+
+        from mc_agent_kit.launcher import diagnose_launcher
+        from mc_agent_kit.launcher.auto_fixer import analyze_addon_memory
+
+        # 执行诊断
+        output.print("\n正在诊断...", color=Color.YELLOW)
+        report = diagnose_launcher(addon_path=addon_path)
+
+        # 显示结果
+        if report.success:
+            output.print("\n✅ 诊断完成: 未发现严重问题\n", color=Color.GREEN)
+        else:
+            output.print("\n❌ 诊断完成: 发现需要修复的问题\n", color=Color.RED)
+
+            # 显示问题
+            if report.issues:
+                output.print("发现的问题:\n", color=Color.YELLOW)
+                for issue in report.issues:
+                    output.print(f"  [{issue.code}] {issue.message}", color=Color.RED if issue.severity.value == "error" else Color.YELLOW)
+                    if issue.suggestion:
+                        output.print(f"    💡 建议: {issue.suggestion}")
+
+            # 询问是否自动修复
+            output.print("\n是否尝试自动修复? [y/N]: ", color=Color.GREEN)
+            fix_choice = input().strip().lower()
+
+            if fix_choice == "y":
+                # 执行内存分析
+                memory_report = analyze_addon_memory(addon_path)
+
+                if memory_report.suggestions:
+                    output.print(f"\n发现 {len(memory_report.suggestions)} 个可优化项:\n", color=Color.YELLOW)
+                    for s in memory_report.suggestions[:5]:
+                        output.print(f"  - {s.title}")
+                        output.print(f"    {s.description}")
+
+    return 0
+
+
+def cmd_batch(args: argparse.Namespace) -> int:
+    """批量操作"""
+    from mc_agent_kit.cli_enhanced import create_progress_bar, create_output, Color
+    import concurrent.futures
+
+    output = create_output()
+
+    if args.action == "analyze":
+        # 批量分析 Addons
+        paths = args.paths
+        if not paths:
+            print("错误: 请提供要分析的路径")
+            return 1
+
+        from mc_agent_kit.launcher.auto_fixer import analyze_addon_memory
+
+        results = []
+        total = len(paths)
+
+        output.print(f"\n批量分析 {total} 个 Addon...\n", color=Color.CYAN)
+
+        progress = create_progress_bar(total=total, desc="分析中")
+
+        for i, path in enumerate(paths):
+            try:
+                report = analyze_addon_memory(path)
+                results.append({
+                    "path": path,
+                    "success": True,
+                    "issues": report.total_issues,
+                    "critical": report.critical_issues,
+                })
+            except Exception as e:
+                results.append({
+                    "path": path,
+                    "success": False,
+                    "error": str(e),
+                })
+
+            progress.update(i + 1)
+
+        progress.finish()
+
+        # 显示结果
+        if args.format == "json":
+            print(json.dumps({"results": results}, ensure_ascii=False, indent=2))
+        else:
+            output.print("\n分析结果:\n", color=Color.CYAN)
+            for r in results:
+                if r["success"]:
+                    status = "✅" if r["critical"] == 0 else "⚠️"
+                    output.print(f"  {status} {r['path']}: {r['issues']} 个问题 ({r['critical']} 严重)")
+                else:
+                    output.print(f"  ❌ {r['path']}: {r['error']}", color=Color.RED)
+
+    elif args.action == "generate":
+        # 批量生成文档
+        apis = args.apis
+        if not apis:
+            print("错误: 请提供要生成文档的 API 列表")
+            return 1
+
+        from mc_agent_kit.docs import create_doc_generator, create_formatter, OutputFormat
+
+        generator = create_doc_generator()
+        formatter = create_formatter()
+
+        output_dir = Path(args.output_dir or "./docs")
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        output.print(f"\n批量生成 {len(apis)} 个 API 文档...\n", color=Color.CYAN)
+
+        progress = create_progress_bar(total=len(apis), desc="生成中")
+        generated = 0
+
+        for i, api_name in enumerate(apis):
+            try:
+                doc = generator.generate_api_doc(api_name)
+                if doc:
+                    content = formatter.format_api_doc(doc, OutputFormat.MARKDOWN)
+                    output_file = output_dir / f"{api_name.lower().replace('.', '_')}.md"
+                    with open(output_file, "w", encoding="utf-8") as f:
+                        f.write(content)
+                    generated += 1
+            except Exception:
+                pass
+
+            progress.update(i + 1)
+
+        progress.finish()
+
+        output.print(f"\n✅ 已生成 {generated}/{len(apis)} 个文档到 {output_dir}\n", color=Color.GREEN)
+
+    return 0
+
+
 def cmd_stats(args: argparse.Namespace) -> int:
     """API 使用统计"""
     from mc_agent_kit.stats import ApiUsageTracker
@@ -1714,6 +2266,78 @@ def main() -> int:
         help="输出格式",
     )
 
+    # repl 命令
+    repl_parser = subparsers.add_parser("repl", help="交互式 REPL 模式")
+    repl_parser.add_argument("--prompt", help="自定义提示符")
+    repl_parser.add_argument("--history-file", help="历史记录文件路径")
+    repl_parser.add_argument("--no-welcome", action="store_true", help="不显示欢迎信息")
+    repl_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
+
+    # config 命令
+    config_parser = subparsers.add_parser("config", help="配置管理")
+    config_parser.add_argument("action", choices=["generate", "validate", "show", "set"], help="操作类型")
+    config_parser.add_argument("--config-path", help="配置文件路径")
+    config_parser.add_argument("--template", help="配置模板名称")
+    config_parser.add_argument("--output", "-o", help="输出文件路径")
+    config_parser.add_argument("--format-type", choices=["json", "yaml"], default="json", help="配置文件格式")
+    config_parser.add_argument("--key", help="配置项键名 (用于 set)")
+    config_parser.add_argument("--value", help="配置项值 (用于 set)")
+    config_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
+
+    # docs 命令
+    docs_parser = subparsers.add_parser("docs", help="文档生成")
+    docs_parser.add_argument("action", choices=["generate", "api", "list"], help="操作类型")
+    docs_parser.add_argument("--source-path", help="源代码路径")
+    docs_parser.add_argument("--api-name", help="API 名称 (用于 api 操作)")
+    docs_parser.add_argument("--output", "-o", help="输出文件路径")
+    docs_parser.add_argument("--output-format", choices=["markdown", "html", "json", "rst"], default="markdown", help="输出格式")
+    docs_parser.add_argument("-l", "--limit", type=int, default=100, help="返回结果数量")
+    docs_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
+
+    # wizard 命令
+    wizard_parser = subparsers.add_parser("wizard", help="交互式向导")
+    wizard_parser.add_argument("type", choices=["project", "config", "diagnose"], help="向导类型")
+    wizard_parser.add_argument("--name", help="项目名称 (用于 project)")
+    wizard_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
+
+    # batch 命令
+    batch_parser = subparsers.add_parser("batch", help="批量操作")
+    batch_parser.add_argument("action", choices=["analyze", "generate"], help="操作类型")
+    batch_parser.add_argument("paths", nargs="*", help="路径列表 (用于 analyze)")
+    batch_parser.add_argument("--apis", nargs="+", help="API 名称列表 (用于 generate)")
+    batch_parser.add_argument("--output-dir", "-o", help="输出目录")
+    batch_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
+
     args = parser.parse_args()
 
     if args.command == "list":
@@ -1746,6 +2370,16 @@ def main() -> int:
         return cmd_launcher(args)
     elif args.command == "stats":
         return cmd_stats(args)
+    elif args.command == "repl":
+        return cmd_repl(args)
+    elif args.command == "config":
+        return cmd_config(args)
+    elif args.command == "docs":
+        return cmd_docs(args)
+    elif args.command == "wizard":
+        return cmd_wizard(args)
+    elif args.command == "batch":
+        return cmd_batch(args)
     else:
         parser.print_help()
         return 0

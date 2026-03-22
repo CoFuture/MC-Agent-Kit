@@ -4,18 +4,13 @@ MC-Agent-Kit: AI Agent 辅助 Minecraft ModSDK 开发工具包
 提供自动化游戏启动、日志捕获、知识库检索、Agent Skills 等功能。
 """
 
-__version__ = "1.13.0"
+__version__ = "1.24.0"
 
-from . import contrib, knowledge, knowledge_base, launcher, log_capture, retrieval, scaffold, skills
-
-# 向后兼容：将 contrib 子模块暴露在顶层
-from .contrib import completion, performance, plugin
-
-# 其他核心模块
-from . import autofix, execution, generator
+# Import modules lazily to avoid circular imports
+# Core modules are imported on-demand in CLI
 
 __all__ = [
-    # 核心模块
+    # Core modules
     "knowledge_base",
     "knowledge",
     "launcher",
@@ -26,9 +21,25 @@ __all__ = [
     "generator",
     "autofix",
     "execution",
-    # 贡献模块
+    # Contrib modules
     "contrib",
     "completion",
     "performance",
     "plugin",
+    # New modules
+    "cli_enhanced",
+    "config",
+    "docs",
+    "stats",
 ]
+
+
+def __getattr__(name: str):
+    """Lazy import modules to avoid circular imports."""
+    if name in ("knowledge_base", "knowledge", "launcher", "log_capture", 
+                "skills", "scaffold", "retrieval", "generator", "autofix", 
+                "execution", "contrib", "cli_enhanced", "config", "docs", "stats"):
+        return __import__(f"mc_agent_kit.{name}", fromlist=[name])
+    if name in ("completion", "performance", "plugin"):
+        return __import__(f"mc_agent_kit.contrib.{name}", fromlist=[name])
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
