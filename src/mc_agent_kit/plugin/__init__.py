@@ -5,15 +5,15 @@ This module re-exports from contrib.plugin for backwards compatibility.
 
 from mc_agent_kit.contrib.plugin.base import (
     PluginBase,
+    PluginInfo,
     PluginMetadata,
+    PluginPriority,
     PluginResult,
     PluginState,
-    PluginPriority,
-    PluginInfo,
 )
 from mc_agent_kit.contrib.plugin.loader import (
-    PluginRegistry,
     PluginLoader,
+    PluginRegistry,
 )
 from mc_agent_kit.contrib.plugin.manager import (
     PluginManager,

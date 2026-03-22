@@ -9,12 +9,12 @@ This module provides persistent command history with:
 
 from __future__ import annotations
 
+import json
+import re
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-import json
-import re
 
 
 @dataclass
@@ -220,12 +220,14 @@ class CommandHistory:
         if regex:
             try:
                 pattern = re.compile(query, 0 if self.config.case_sensitive_search else re.IGNORECASE)
-                matcher = lambda cmd: bool(pattern.search(cmd))
+                def matcher(cmd):
+                    return bool(pattern.search(cmd))
             except re.error:
                 return results
         else:
             query_lower = query.lower() if not self.config.case_sensitive_search else query
-            matcher = lambda cmd: query_lower in (cmd.lower() if not self.config.case_sensitive_search else cmd)
+            def matcher(cmd):
+                return query_lower in (cmd.lower() if not self.config.case_sensitive_search else cmd)
 
         for entry in reversed(self._entries):
             if session_id and entry.session_id != session_id:
@@ -340,7 +342,7 @@ class CommandHistory:
             return False
 
         try:
-            with open(load_path, "r", encoding="utf-8") as f:
+            with open(load_path, encoding="utf-8") as f:
                 data = json.load(f)
 
             if data.get("version") == 1:

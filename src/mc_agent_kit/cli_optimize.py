@@ -9,10 +9,9 @@ CLI 性能优化模块
 """
 
 import importlib
-import sys
 import time
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any
 
 
 @dataclass
@@ -44,14 +43,14 @@ class LazyLoader:
 
     使用示例:
         loader = LazyLoader()
-        
+
         # 注册懒加载模块
         loader.register("knowledge", "mc_agent_kit.knowledge_base")
         loader.register("launcher", "mc_agent_kit.launcher")
-        
+
         # 获取模块（首次调用时加载）
         kb = loader.get("knowledge")
-        
+
         # 检查加载状态
         print(loader.get_loaded_modules())
     """
@@ -175,13 +174,13 @@ class ShellCompletion:
 
     使用示例:
         completion = ShellCompletion()
-        
+
         # 获取命令补全
         suggestions = completion.get_suggestions("mc-agent", "")
-        
+
         # 生成 bash 补全脚本
         script = completion.generate_bash_script("mc-agent")
-        
+
         # 生成 zsh 补全脚本
         script = completion.generate_zsh_script("mc-agent")
     """
@@ -271,7 +270,7 @@ class ShellCompletion:
 
         # 解析已输入的命令
         parts = current.split()
-        
+
         if len(parts) <= 1:
             # 补全命令
             suggestions.extend(self._get_command_suggestions(parts[-1] if parts else ""))
@@ -307,7 +306,7 @@ class ShellCompletion:
     def _get_option_suggestions(self, prefix: str) -> list[CompletionSuggestion]:
         """获取选项补全建议"""
         suggestions = []
-        
+
         # 处理 -- 前缀
         if prefix.startswith("--"):
             name_prefix = prefix[2:]  # 移除 -- 前缀
@@ -325,7 +324,7 @@ class ShellCompletion:
         else:
             # 无前缀，返回所有选项
             suggestions.extend(self._global_options)
-        
+
         return suggestions
 
     def generate_bash_script(self, prog: str) -> str:
@@ -632,7 +631,7 @@ def measure_startup() -> CLIStartupMetrics:
     # 模拟解析器创建
     parser_start = time.time()
     import argparse
-    parser = argparse.ArgumentParser()
+    argparse.ArgumentParser()
     metrics.parser_time_ms = (time.time() - parser_start) * 1000
 
     metrics.total_time_ms = (time.time() - start_time) * 1000

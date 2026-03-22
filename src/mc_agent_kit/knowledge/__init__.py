@@ -11,12 +11,12 @@ from .examples_enhanced import (
     DifficultyLevel,
     ExampleCategory,
     ExampleManagerConfig,
-    SearchResult as ExampleSearchResult,
     create_example_manager,
 )
+from .examples_enhanced import (
+    SearchResult as ExampleSearchResult,
+)
 from .incremental import ChangeReport, DocumentChange, IncrementalUpdater
-from .knowledge_base import KnowledgeBase
-from .retrieval import CodeExampleSearchResult, KnowledgeRetrieval, SearchResult as RetrievalSearchResult, create_retrieval
 
 # Iteration #34: 缓存模块
 from .index_cache import (
@@ -26,6 +26,9 @@ from .index_cache import (
     KnowledgeIndexCache,
     create_index_cache,
 )
+from .knowledge_base import KnowledgeBase
+from .retrieval import CodeExampleSearchResult, KnowledgeRetrieval, create_retrieval
+from .retrieval import SearchResult as RetrievalSearchResult
 from .search_cache import (
     SearchCacheEntry,
     SearchCacheStats,

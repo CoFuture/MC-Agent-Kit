@@ -8,21 +8,20 @@ from __future__ import annotations
 
 import json
 import threading
-import time
 from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from mc_agent_kit.ux.enhancer import (
     MessageType,
-    OutputFormat,
     UserMessage,
     UserMessageBuilder,
+)
+from mc_agent_kit.ux.enhancer import (
     UserExperienceEnhancer as BaseEnhancer,
 )
-
 
 # === 本地化支持 ===
 

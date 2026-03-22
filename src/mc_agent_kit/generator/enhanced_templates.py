@@ -4,11 +4,8 @@
 提供实体行为、物品逻辑、方块逻辑等更多模板。
 """
 
-from dataclasses import dataclass, field
-from typing import Any
 
 from .templates import CodeTemplate, TemplateParameter, TemplateType
-
 
 # 实体行为模板
 ENTITY_BEHAVIOR_TEMPLATE = CodeTemplate(

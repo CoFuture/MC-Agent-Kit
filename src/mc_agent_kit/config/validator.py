@@ -9,10 +9,11 @@ This module provides configuration validation with:
 
 from __future__ import annotations
 
+import re
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Pattern
-import re
+from typing import Any
 
 
 class ValidationLevel(Enum):

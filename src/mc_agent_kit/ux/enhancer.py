@@ -41,7 +41,7 @@ class UserMessage:
     def to_text(self) -> str:
         """转换为文本格式"""
         lines = []
-        
+
         # 图标
         icons = {
             MessageType.SUCCESS: "✅",
@@ -51,38 +51,38 @@ class UserMessage:
             MessageType.HINT: "💡",
         }
         icon = icons.get(self.type, "")
-        
+
         # 标题
         lines.append(f"{icon} {self.title}")
-        
+
         # 内容
         if self.content:
             lines.append(f"   {self.content}")
-        
+
         # 详情
         if self.details:
             lines.append("")
             for detail in self.details:
                 lines.append(f"   • {detail}")
-        
+
         # 建议
         if self.suggestions:
             lines.append("")
             lines.append("   建议:")
             for i, suggestion in enumerate(self.suggestions, 1):
                 lines.append(f"     {i}. {suggestion}")
-        
+
         # 代码示例
         if self.code_example:
             lines.append("")
             lines.append("   示例:")
             for line in self.code_example.split("\n"):
                 lines.append(f"     {line}")
-        
+
         # 了解更多
         if self.learn_more:
             lines.append(f"\n   📚 了解更多: {self.learn_more}")
-        
+
         return "\n".join(lines)
 
     def to_json(self) -> dict[str, Any]:
@@ -101,7 +101,7 @@ class UserMessage:
     def to_markdown(self) -> str:
         """转换为 Markdown 格式"""
         lines = []
-        
+
         # 标题
         type_emoji = {
             MessageType.SUCCESS: "✅",
@@ -111,39 +111,39 @@ class UserMessage:
             MessageType.HINT: "💡",
         }
         lines.append(f"## {type_emoji.get(self.type, '')} {self.title}")
-        
+
         # 内容
         if self.content:
             lines.append(f"\n{self.content}")
-        
+
         # 详情
         if self.details:
             lines.append("\n**详情:**")
             for detail in self.details:
                 lines.append(f"- {detail}")
-        
+
         # 建议
         if self.suggestions:
             lines.append("\n**建议:**")
             for i, suggestion in enumerate(self.suggestions, 1):
                 lines.append(f"{i}. {suggestion}")
-        
+
         # 代码示例
         if self.code_example:
             lines.append("\n**示例:**")
             lines.append(f"```python\n{self.code_example}\n```")
-        
+
         # 了解更多
         if self.learn_more:
             lines.append(f"\n📚 **了解更多:** {self.learn_more}")
-        
+
         return "\n".join(lines)
 
 
 class UserMessageBuilder:
     """
     用户消息构建器
-    
+
     提供流式 API 构建用户友好的消息
     """
 
@@ -193,7 +193,7 @@ class UserMessageBuilder:
 class UserExperienceEnhancer:
     """
     用户体验增强器
-    
+
     提供各种场景下的友好消息生成
     """
 
@@ -337,7 +337,7 @@ def on_server_start():
 class CLIOutputFormatter:
     """
     CLI 输出格式化器
-    
+
     提供统一的 CLI 输出格式化方法
     """
 
@@ -349,35 +349,35 @@ class CLIOutputFormatter:
     ) -> str:
         """
         格式化表格输出
-        
+
         Args:
             headers: 表头
             rows: 数据行
             title: 标题（可选）
-            
+
         Returns:
             格式化的表格字符串
         """
         lines = []
-        
+
         if title:
             lines.append(f"\n{title}")
             lines.append("=" * len(title))
-        
+
         # 计算列宽
         col_widths = [len(h) for h in headers]
         for row in rows:
             for i, cell in enumerate(row):
                 if i < len(col_widths):
                     col_widths[i] = max(col_widths[i], len(str(cell)))
-        
+
         # 表头
         header_line = " | ".join(
             h.ljust(col_widths[i]) for i, h in enumerate(headers)
         )
         lines.append(header_line)
         lines.append("-" * len(header_line))
-        
+
         # 数据行
         for row in rows:
             row_line = " | ".join(
@@ -385,7 +385,7 @@ class CLIOutputFormatter:
                 for i, cell in enumerate(row)
             )
             lines.append(row_line)
-        
+
         return "\n".join(lines)
 
     @staticmethod
@@ -396,27 +396,27 @@ class CLIOutputFormatter:
     ) -> str:
         """
         格式化列表输出
-        
+
         Args:
             items: 列表项
             title: 标题（可选）
             numbered: 是否编号
-            
+
         Returns:
             格式化的列表字符串
         """
         lines = []
-        
+
         if title:
             lines.append(f"\n{title}")
             lines.append("-" * len(title))
-        
+
         for i, item in enumerate(items, 1):
             if numbered:
                 lines.append(f"  {i}. {item}")
             else:
                 lines.append(f"  • {item}")
-        
+
         return "\n".join(lines)
 
     @staticmethod
@@ -426,22 +426,22 @@ class CLIOutputFormatter:
     ) -> str:
         """
         格式化键值对输出
-        
+
         Args:
             data: 键值对数据
             title: 标题（可选）
-            
+
         Returns:
             格式化的键值对字符串
         """
         lines = []
-        
+
         if title:
             lines.append(f"\n{title}")
             lines.append("-" * len(title))
-        
+
         max_key_len = max(len(str(k)) for k in data.keys())
-        
+
         for key, value in data.items():
             key_str = str(key).ljust(max_key_len)
             if isinstance(value, list):
@@ -450,7 +450,7 @@ class CLIOutputFormatter:
                 lines.append(f"  {key_str}: {{...}}")
             else:
                 lines.append(f"  {key_str}: {value}")
-        
+
         return "\n".join(lines)
 
 

@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from mc_agent_kit.knowledge.parsers import CodeExample, CodeExtractor, MarkdownParser
-from mc_agent_kit.retrieval.hybrid_search import HybridSearchEngine, HybridSearchResult
+from mc_agent_kit.retrieval.hybrid_search import HybridSearchEngine
 
 
 @dataclass
@@ -543,7 +543,7 @@ class EnhancedKnowledgeRetrieval(KnowledgeRetrieval):
                         continue
 
                 score = self._calculate_score(query_lower, api)
-                
+
                 # 精确匹配加分
                 if query_lower == name.lower():
                     score += 2.0
@@ -567,7 +567,7 @@ class EnhancedKnowledgeRetrieval(KnowledgeRetrieval):
         if search_type in ("event", "all"):
             for name, event in self._event_index.items():
                 score = self._calculate_score(query_lower, event)
-                
+
                 # 精确匹配加分
                 if query_lower == name.lower():
                     score += 2.0

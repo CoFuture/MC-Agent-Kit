@@ -11,8 +11,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
 from pathlib import Path
+from typing import Any
 
 
 class OutputFormat(Enum):
@@ -85,7 +85,7 @@ class DocFormatter:
 
         # Header
         if self.config.include_version and "version" in data:
-            lines.append(f"# API Documentation")
+            lines.append("# API Documentation")
             lines.append("")
             lines.append(f"**Version**: {data['version']}")
             lines.append("")
@@ -215,7 +215,7 @@ class DocFormatter:
             "</head>",
             "<body>",
             "",
-            f"  <h1>API Documentation</h1>",
+            "  <h1>API Documentation</h1>",
             "",
         ]
 

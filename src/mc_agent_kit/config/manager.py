@@ -9,13 +9,15 @@ This module provides configuration management with:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Callable
-from enum import Enum
 import json
 import os
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from pathlib import Path
+from typing import Any
+
 import yaml
 
 
@@ -232,7 +234,7 @@ class ConfigManager:
             return False
 
         try:
-            with open(load_path, "r", encoding="utf-8") as f:
+            with open(load_path, encoding="utf-8") as f:
                 if load_path.suffix in (".yaml", ".yml"):
                     data = yaml.safe_load(f) or {}
                 else:

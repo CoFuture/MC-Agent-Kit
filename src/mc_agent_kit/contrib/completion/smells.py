@@ -1,9 +1,8 @@
 """Code smell detection for MC-Agent-Kit."""
 
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Optional
 import re
+from dataclasses import dataclass
+from enum import Enum
 
 
 class SmellType(Enum):
@@ -38,10 +37,10 @@ class CodeSmell:
     type: SmellType
     severity: SmellSeverity
     message: str
-    line: Optional[int] = None
-    column: Optional[int] = None
+    line: int | None = None
+    column: int | None = None
     category: SmellCategory = SmellCategory.STYLE
-    suggestion: Optional[str] = None
+    suggestion: str | None = None
 
 
 @dataclass
@@ -58,7 +57,7 @@ class SmellDetectorConfig:
 class SmellDetector:
     """Detector for code smells."""
 
-    def __init__(self, config: Optional[SmellDetectorConfig] = None):
+    def __init__(self, config: SmellDetectorConfig | None = None):
         """Initialize the detector.
 
         Args:

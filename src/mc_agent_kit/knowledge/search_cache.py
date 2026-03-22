@@ -12,9 +12,10 @@ import hashlib
 import json
 import time
 from collections import OrderedDict
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 
 @dataclass
@@ -50,16 +51,16 @@ class SearchResultCache:
 
     使用示例:
         cache = SearchResultCache(max_size=500, ttl_seconds=3600)
-        
+
         # 预热缓存
         cache.warmup(queries=["创建实体", "获取玩家"], search_fn=my_search)
-        
+
         # 搜索（自动缓存）
         results = cache.get_or_compute(
             query="如何创建实体",
             compute_fn=lambda: kb.search("如何创建实体")
         )
-        
+
         # 查看统计
         print(cache.get_stats())
     """

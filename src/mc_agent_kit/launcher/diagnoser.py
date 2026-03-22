@@ -8,7 +8,6 @@ import json
 import os
 from dataclasses import dataclass, field
 from enum import Enum
-from pathlib import Path
 from typing import Any
 
 
@@ -366,7 +365,7 @@ class LauncherDiagnoser:
                     severity=DiagnosticSeverity.WARNING,
                     code="ADDON_STRUCTURE_UNKNOWN",
                     message="Addon 目录结构不标准",
-                    details=f"未找到 behavior_pack 或 resource_pack 目录",
+                    details="未找到 behavior_pack 或 resource_pack 目录",
                     suggestion="标准结构应包含 behavior_pack/ 和 resource_pack/ 目录",
                     location=addon_path,
                 ))
@@ -1389,7 +1388,7 @@ class AddonResourceAnalyzer:
                     file_path = os.path.join(root, file)
 
                     try:
-                        with open(file_path, "r", encoding="utf-8") as f:
+                        with open(file_path, encoding="utf-8") as f:
                             lines = f.readlines()
 
                         result["total_scripts"] += 1

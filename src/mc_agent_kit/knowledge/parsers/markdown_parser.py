@@ -169,7 +169,7 @@ class MarkdownParser:
         """提取代码块"""
         blocks = []
         for match in self.code_block_pattern.finditer(content):
-            language = match.group(1)
+            match.group(1)
             code = match.group(2).strip()
             if code:
                 blocks.append(code)

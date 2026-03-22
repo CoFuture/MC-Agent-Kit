@@ -1,14 +1,12 @@
 """Plugin manager for MC-Agent-Kit."""
 
 from dataclasses import dataclass, field
-from typing import Any, Optional
 from pathlib import Path
+from typing import Any
 
 from mc_agent_kit.contrib.plugin.base import (
     PluginBase,
     PluginInfo,
-    PluginMetadata,
-    PluginPriority,
     PluginResult,
     PluginState,
 )
@@ -27,7 +25,7 @@ class PluginManagerConfig:
 class PluginManager:
     """High-level plugin manager."""
 
-    def __init__(self, config: Optional[PluginManagerConfig] = None):
+    def __init__(self, config: PluginManagerConfig | None = None):
         """Initialize the manager.
 
         Args:
@@ -63,7 +61,7 @@ class PluginManager:
 
         return found
 
-    def load(self, path: Path) -> Optional[PluginInfo]:
+    def load(self, path: Path) -> PluginInfo | None:
         """Load a plugin from a path.
 
         Args:
@@ -137,7 +135,7 @@ class PluginManager:
         plugin = self._plugins[name]
         return plugin.disable()
 
-    def execute(self, name: str, **kwargs: Any) -> Optional[PluginResult]:
+    def execute(self, name: str, **kwargs: Any) -> PluginResult | None:
         """Execute a plugin.
 
         Args:
@@ -159,7 +157,7 @@ class PluginManager:
 
         return plugin.execute(**kwargs)
 
-    def get(self, name: str) -> Optional[PluginBase]:
+    def get(self, name: str) -> PluginBase | None:
         """Get a plugin by name.
 
         Args:

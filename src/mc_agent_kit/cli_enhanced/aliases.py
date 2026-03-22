@@ -9,11 +9,10 @@ This module provides:
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-import json
-import re
 
 
 @dataclass
@@ -244,7 +243,7 @@ class AliasManager:
             return False
 
         try:
-            with open(load_path, "r", encoding="utf-8") as f:
+            with open(load_path, encoding="utf-8") as f:
                 data = json.load(f)
 
             if data.get("version") == 1:

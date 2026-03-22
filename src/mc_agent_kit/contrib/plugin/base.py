@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 
 class PluginState(Enum):
@@ -30,12 +30,12 @@ class PluginMetadata:
     name: str
     version: str
     description: str = ""
-    author: Optional[str] = None
+    author: str | None = None
     dependencies: list[str] = field(default_factory=list)
     capabilities: list[str] = field(default_factory=list)
     priority: PluginPriority = PluginPriority.NORMAL
-    min_version: Optional[str] = None
-    max_version: Optional[str] = None
+    min_version: str | None = None
+    max_version: str | None = None
 
 
 @dataclass
@@ -43,7 +43,7 @@ class PluginResult:
     """Result of plugin execution."""
     success: bool
     data: Any = None
-    error: Optional[str] = None
+    error: str | None = None
     message: str = ""
 
 
@@ -52,8 +52,8 @@ class PluginInfo:
     """Plugin information."""
     metadata: PluginMetadata
     state: PluginState
-    path: Optional[str] = None
-    error: Optional[str] = None
+    path: str | None = None
+    error: str | None = None
 
 
 class PluginBase(ABC):

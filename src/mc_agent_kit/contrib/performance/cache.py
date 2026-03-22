@@ -1,9 +1,9 @@
 """Cache utilities for MC-Agent-Kit."""
 
-from dataclasses import dataclass, field
-from typing import Any, Optional
-from collections import OrderedDict
 import time
+from collections import OrderedDict
+from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass
@@ -12,14 +12,14 @@ class CacheEntry:
     key: str
     value: Any
     created_at: float = field(default_factory=time.time)
-    ttl: Optional[float] = None
+    ttl: float | None = None
     hits: int = 0
 
 
 class LRUCache:
     """Simple LRU cache implementation."""
 
-    def __init__(self, max_size: int = 100, ttl: Optional[float] = None):
+    def __init__(self, max_size: int = 100, ttl: float | None = None):
         """Initialize the LRU cache.
 
         Args:
@@ -30,7 +30,7 @@ class LRUCache:
         self._ttl = ttl
         self._cache: OrderedDict[str, CacheEntry] = OrderedDict()
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Get a value from the cache.
 
         Args:
@@ -109,7 +109,7 @@ class KnowledgeCache:
         self._hits = 0
         self._misses = 0
 
-    def get(self, query: str) -> Optional[Any]:
+    def get(self, query: str) -> Any | None:
         """Get cached result for a query.
 
         Args:

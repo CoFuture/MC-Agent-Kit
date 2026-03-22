@@ -1,9 +1,10 @@
 """Code generation optimization for MC-Agent-Kit."""
 
-from dataclasses import dataclass, field
-from typing import Any, Optional, Callable
-import time
 import hashlib
+import time
+from collections.abc import Callable
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -40,7 +41,7 @@ class TemplatePool:
         self._templates[name] = template
         self._load_times[name] = time.time()
 
-    def get(self, name: str) -> Optional[Any]:
+    def get(self, name: str) -> Any | None:
         """Get a template by name.
 
         Args:
@@ -103,7 +104,7 @@ class CodeGenOptimizer:
         self,
         template_name: str,
         generator: Callable[[dict], Any],
-        params: Optional[dict] = None,
+        params: dict | None = None,
         use_cache: bool = True,
     ) -> Any:
         """Generate code with optional caching.
@@ -159,7 +160,7 @@ class CodeGenOptimizer:
 
         return result
 
-    def invalidate_cache(self, template_name: Optional[str] = None) -> None:
+    def invalidate_cache(self, template_name: str | None = None) -> None:
         """Invalidate cache entries.
 
         Args:

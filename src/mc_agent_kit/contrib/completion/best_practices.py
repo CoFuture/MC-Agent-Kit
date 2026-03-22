@@ -1,9 +1,7 @@
 """Best practices checker for MC-Agent-Kit."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
-import re
 
 
 class PracticeCategory(Enum):
@@ -32,8 +30,8 @@ class BestPractice:
     category: PracticeCategory
     description: str
     severity: PracticeSeverity = PracticeSeverity.WARNING
-    rationale: Optional[str] = None
-    examples: Optional[list[str]] = None
+    rationale: str | None = None
+    examples: list[str] | None = None
 
 
 @dataclass
@@ -42,8 +40,8 @@ class BestPracticeResult:
     practice: BestPractice
     passed: bool
     message: str
-    line: Optional[int] = None
-    column: Optional[int] = None
+    line: int | None = None
+    column: int | None = None
 
 
 # Built-in best practices
@@ -102,7 +100,7 @@ BUILTIN_PRACTICES = [
 class BestPracticeChecker:
     """Checker for best practices."""
 
-    def __init__(self, practices: Optional[list[BestPractice]] = None):
+    def __init__(self, practices: list[BestPractice] | None = None):
         """Initialize the checker.
 
         Args:
@@ -171,7 +169,7 @@ class BestPracticeChecker:
 
         return results
 
-    def get_practice(self, practice_id: str) -> Optional[BestPractice]:
+    def get_practice(self, practice_id: str) -> BestPractice | None:
         """Get a practice by ID.
 
         Args:

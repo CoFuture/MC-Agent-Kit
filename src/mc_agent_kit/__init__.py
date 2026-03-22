@@ -36,8 +36,8 @@ __all__ = [
 
 def __getattr__(name: str):
     """Lazy import modules to avoid circular imports."""
-    if name in ("knowledge_base", "knowledge", "launcher", "log_capture", 
-                "skills", "scaffold", "retrieval", "generator", "autofix", 
+    if name in ("knowledge_base", "knowledge", "launcher", "log_capture",
+                "skills", "scaffold", "retrieval", "generator", "autofix",
                 "execution", "contrib", "cli_enhanced", "config", "docs", "stats"):
         return __import__(f"mc_agent_kit.{name}", fromlist=[name])
     if name in ("completion", "performance", "plugin"):

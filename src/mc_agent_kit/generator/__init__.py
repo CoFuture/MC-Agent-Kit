@@ -9,8 +9,8 @@ from .code_gen import CodeGenerator, generate_api_call, generate_event_listener
 from .enhanced_templates import (
     BLOCK_LOGIC_TEMPLATE,
     DATA_SYNC_TEMPLATE,
-    ENTITY_BEHAVIOR_TEMPLATE,
     ENHANCED_TEMPLATES,
+    ENTITY_BEHAVIOR_TEMPLATE,
     ITEM_LOGIC_TEMPLATE,
 )
 from .event_gen import EventGenerator, EventListenerConfig

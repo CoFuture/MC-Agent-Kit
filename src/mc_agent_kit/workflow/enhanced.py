@@ -8,10 +8,10 @@ from __future__ import annotations
 
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
 from enum import Enum
-from typing import Any, Callable
+from typing import Any
 
 from mc_agent_kit.workflow.end_to_end import (
     EndToEndWorkflow,
@@ -142,7 +142,7 @@ class WorkflowControl:
 class EnhancedWorkflow(EndToEndWorkflow):
     """
     增强的工作流管理器
-    
+
     在基础工作流上添加：
     - 重试机制
     - 跳过条件
@@ -172,7 +172,7 @@ class EnhancedWorkflow(EndToEndWorkflow):
     ) -> None:
         """
         添加跳过条件
-        
+
         Args:
             step: 要跳过的步骤
             condition: 判断条件函数，返回 True 表示跳过
@@ -224,11 +224,11 @@ class EnhancedWorkflow(EndToEndWorkflow):
     ) -> WorkflowStepResult:
         """
         带重试的执行步骤
-        
+
         Args:
             step_func: 步骤执行函数
             step: 步骤类型
-            
+
         Returns:
             步骤结果
         """
@@ -281,11 +281,11 @@ class EnhancedWorkflow(EndToEndWorkflow):
     def _check_skip(self, step: WorkflowStep, context: dict[str, Any]) -> WorkflowStepResult | None:
         """
         检查是否应该跳过步骤
-        
+
         Args:
             step: 步骤类型
             context: 执行上下文
-            
+
         Returns:
             如果跳过，返回跳过结果；否则返回 None
         """
@@ -310,14 +310,14 @@ class EnhancedWorkflow(EndToEndWorkflow):
     ) -> WorkflowResult:
         """
         运行完整开发闭环（增强版）
-        
+
         支持重试、跳过、进度回调和暂停/恢复
-        
+
         Args:
             search_query: 搜索查询（可选）
             addon_path: Addon 路径（可选）
             log_content: 日志内容（可选）
-            
+
         Returns:
             工作流结果
         """

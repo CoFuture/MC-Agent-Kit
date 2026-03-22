@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
 
 
 class CompletionKind(Enum):
@@ -24,10 +23,10 @@ class Completion:
     """A single completion item."""
     label: str
     kind: CompletionKind
-    detail: Optional[str] = None
-    documentation: Optional[str] = None
-    insert_text: Optional[str] = None
-    sort_text: Optional[str] = None
+    detail: str | None = None
+    documentation: str | None = None
+    insert_text: str | None = None
+    sort_text: str | None = None
 
 
 @dataclass
@@ -36,8 +35,8 @@ class CompletionContext:
     code: str
     cursor_line: int = 1
     cursor_column: int = 0
-    prefix: Optional[str] = None
-    file_path: Optional[str] = None
+    prefix: str | None = None
+    file_path: str | None = None
 
 
 @dataclass
@@ -68,7 +67,7 @@ class CodeCompleter:
         code: str,
         cursor_line: int = 1,
         cursor_column: int = 0,
-        prefix: Optional[str] = None,
+        prefix: str | None = None,
     ) -> CompletionResult:
         """Get completion suggestions.
 

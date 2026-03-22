@@ -1,8 +1,7 @@
 """Code refactoring suggestions for MC-Agent-Kit."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
 
 from mc_agent_kit.contrib.completion.smells import CodeSmell
 
@@ -24,9 +23,9 @@ class RefactorSuggestion:
     """A refactoring suggestion."""
     type: RefactorType
     message: str
-    line: Optional[int] = None
-    original_code: Optional[str] = None
-    suggested_code: Optional[str] = None
+    line: int | None = None
+    original_code: str | None = None
+    suggested_code: str | None = None
     auto_applicable: bool = False
 
 
@@ -40,7 +39,7 @@ class RefactorEngine:
     def suggest(
         self,
         code: str,
-        smells: Optional[list[CodeSmell]] = None,
+        smells: list[CodeSmell] | None = None,
     ) -> list[RefactorSuggestion]:
         """Generate refactoring suggestions.
 

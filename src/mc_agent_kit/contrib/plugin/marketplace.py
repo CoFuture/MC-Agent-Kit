@@ -2,8 +2,6 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional, Callable
-import time
 
 
 class PluginCategory(Enum):
@@ -30,16 +28,16 @@ class PluginMarketInfo:
     name: str
     version: str
     description: str = ""
-    author: Optional[str] = None
+    author: str | None = None
     category: PluginCategory = PluginCategory.OTHER
     status: PluginStatus = PluginStatus.AVAILABLE
     downloads: int = 0
     rating: float = 0.0
     tags: list[str] = field(default_factory=list)
     dependencies: list[str] = field(default_factory=list)
-    homepage: Optional[str] = None
-    repository: Optional[str] = None
-    license: Optional[str] = None
+    homepage: str | None = None
+    repository: str | None = None
+    license: str | None = None
 
 
 @dataclass
@@ -61,7 +59,7 @@ class MarketplaceConfig:
 class PluginMarketplace:
     """Plugin marketplace for discovering and installing plugins."""
 
-    def __init__(self, config: Optional[MarketplaceConfig] = None):
+    def __init__(self, config: MarketplaceConfig | None = None):
         """Initialize the marketplace.
 
         Args:
@@ -69,7 +67,7 @@ class PluginMarketplace:
         """
         self._config = config or MarketplaceConfig()
         self._plugins: dict[str, PluginMarketInfo] = {}
-        self._last_sync: Optional[float] = None
+        self._last_sync: float | None = None
 
         # Register some example plugins
         self._register_examples()
@@ -116,8 +114,8 @@ class PluginMarketplace:
     def search(
         self,
         query: str,
-        category: Optional[PluginCategory] = None,
-        tags: Optional[list[str]] = None,
+        category: PluginCategory | None = None,
+        tags: list[str] | None = None,
         limit: int = 10,
     ) -> list[SearchResult]:
         """Search for plugins.
@@ -167,7 +165,7 @@ class PluginMarketplace:
         results.sort(key=lambda r: r.score, reverse=True)
         return results[:limit]
 
-    def get_plugin(self, name: str) -> Optional[PluginMarketInfo]:
+    def get_plugin(self, name: str) -> PluginMarketInfo | None:
         """Get plugin by name.
 
         Args:
@@ -178,7 +176,7 @@ class PluginMarketplace:
         """
         return self._plugins.get(name)
 
-    def list_all(self, category: Optional[PluginCategory] = None) -> list[PluginMarketInfo]:
+    def list_all(self, category: PluginCategory | None = None) -> list[PluginMarketInfo]:
         """List all plugins.
 
         Args:

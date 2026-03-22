@@ -4,8 +4,8 @@
 提供文档解析和内容提取功能。
 """
 
+from .code_extractor import CodeExample, CodeExtractor
 from .markdown_parser import MarkdownParser
-from .code_extractor import CodeExtractor, CodeExample
 
 __all__ = [
     "MarkdownParser",

@@ -10,12 +10,11 @@ This module provides an interactive command-line interface with:
 
 from __future__ import annotations
 
+import shlex
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Callable, Any
-from datetime import datetime
-import re
-import shlex
+from typing import Any
 
 
 class ReplState(Enum):

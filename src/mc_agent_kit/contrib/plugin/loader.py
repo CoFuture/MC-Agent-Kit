@@ -1,16 +1,14 @@
 """Plugin loader for MC-Agent-Kit."""
 
-from dataclasses import dataclass, field
-from typing import Any, Optional, Type
 import importlib
 import importlib.util
+from dataclasses import dataclass
 from pathlib import Path
 
 from mc_agent_kit.contrib.plugin.base import (
     PluginBase,
     PluginInfo,
     PluginMetadata,
-    PluginPriority,
     PluginState,
 )
 
@@ -19,7 +17,7 @@ from mc_agent_kit.contrib.plugin.base import (
 class PluginRegistryEntry:
     """Entry in the plugin registry."""
     info: PluginInfo
-    instance: Optional[PluginBase] = None
+    instance: PluginBase | None = None
 
 
 class PluginRegistry:
@@ -71,7 +69,7 @@ class PluginRegistry:
         del self._plugins[name]
         return True
 
-    def get(self, name: str) -> Optional[PluginBase]:
+    def get(self, name: str) -> PluginBase | None:
         """Get a plugin by name.
 
         Args:
@@ -103,7 +101,7 @@ class PluginRegistry:
         """
         return [entry.info for entry in self._plugins.values()]
 
-    def has_dependency_cycle(self, plugin_name: str, visited: Optional[set] = None) -> bool:
+    def has_dependency_cycle(self, plugin_name: str, visited: set | None = None) -> bool:
         """Check for dependency cycles.
 
         Args:
@@ -135,7 +133,7 @@ class PluginRegistry:
 class PluginLoader:
     """Loader for plugins from files."""
 
-    def __init__(self, registry: Optional[PluginRegistry] = None):
+    def __init__(self, registry: PluginRegistry | None = None):
         """Initialize the loader.
 
         Args:
@@ -143,7 +141,7 @@ class PluginLoader:
         """
         self._registry = registry or PluginRegistry()
 
-    def load_from_file(self, path: Path) -> Optional[PluginBase]:
+    def load_from_file(self, path: Path) -> PluginBase | None:
         """Load a plugin from a file.
 
         Args:
@@ -202,7 +200,7 @@ class PluginLoader:
 
         return plugins
 
-    def load_from_manifest(self, manifest_path: Path) -> Optional[PluginBase]:
+    def load_from_manifest(self, manifest_path: Path) -> PluginBase | None:
         """Load a plugin from a manifest file.
 
         Args:
@@ -219,7 +217,7 @@ class PluginLoader:
         with open(manifest_path) as f:
             data = json.load(f)
 
-        metadata = PluginMetadata(
+        PluginMetadata(
             name=data.get("name", "unknown"),
             version=data.get("version", "1.0.0"),
             description=data.get("description", ""),

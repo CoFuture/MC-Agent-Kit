@@ -28,10 +28,7 @@ from mc_agent_kit.skills import (
     register_modsdk_skills,
 )
 from mc_agent_kit.ux import (
-    CLIOutputFormatter,
-    MessageType,
     UserExperienceEnhancer,
-    UserMessage,
 )
 
 
@@ -591,14 +588,14 @@ def cmd_create(args: argparse.Namespace) -> int:
                 print(json.dumps(data, ensure_ascii=False, indent=2))
             else:
                 print(f"✅ 项目 '{args.name}' 创建成功!")
-                print(f"\n目录结构:")
+                print("\n目录结构:")
                 print(f"  📁 {project.path}")
-                print(f"    📁 behavior_pack/")
-                print(f"      📄 manifest.json")
-                print(f"      📁 scripts/")
-                print(f"    📁 resource_pack/")
-                print(f"      📄 manifest.json")
-                print(f"      📁 textures/")
+                print("    📁 behavior_pack/")
+                print("      📄 manifest.json")
+                print("      📁 scripts/")
+                print("    📁 resource_pack/")
+                print("      📄 manifest.json")
+                print("      📁 textures/")
 
         except FileExistsError as e:
             if args.format == "json":
@@ -624,7 +621,7 @@ def cmd_create(args: argparse.Namespace) -> int:
             print(json.dumps(data, ensure_ascii=False, indent=2))
         else:
             print(f"✅ 实体 '{args.name}' 添加成功!")
-            print(f"\n创建的文件:")
+            print("\n创建的文件:")
             for f in created_files:
                 print(f"  📄 {f}")
 
@@ -655,7 +652,7 @@ def cmd_create(args: argparse.Namespace) -> int:
 
 def cmd_kb(args: argparse.Namespace) -> int:
     """知识库管理"""
-    from mc_agent_kit.knowledge_base import KnowledgeBase, KnowledgeRetriever
+    from mc_agent_kit.knowledge_base import KnowledgeRetriever
 
     if args.action == "status":
         # 查看状态
@@ -787,7 +784,6 @@ def cmd_kb(args: argparse.Namespace) -> int:
 def cmd_run(args: argparse.Namespace) -> int:
     """运行游戏并加载 Addon"""
     from mc_agent_kit.launcher import (
-        AddonInfo,
         GameConfig,
         PlayerInfo,
         ServerInfo,
@@ -797,7 +793,6 @@ def cmd_run(args: argparse.Namespace) -> int:
         scan_addon,
     )
     from mc_agent_kit.log_capture import start_log_server
-    import time
 
     # 扫描 Addon
     try:
@@ -846,7 +841,6 @@ def cmd_run(args: argparse.Namespace) -> int:
 
     # 启动日志服务器
     log_server = None
-    log_entries = []
     if not args.no_logs:
         try:
             log_server = start_log_server(port=args.log_port or 0)
@@ -876,7 +870,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         if args.format == "json":
             print(json.dumps(result, ensure_ascii=False, indent=2))
         else:
-            print(f"✅ 游戏启动成功!")
+            print("✅ 游戏启动成功!")
             print(f"   PID: {game_process.pid}")
             print(f"   配置文件: {config_path}")
             print(f"   Addon: {addon_info.name}")
@@ -958,7 +952,7 @@ def cmd_logs(args: argparse.Namespace) -> int:
             }
             print(json.dumps(data, ensure_ascii=False, indent=2))
         else:
-            print(f"日志分析结果:\n")
+            print("日志分析结果:\n")
             print(f"  总条目: {len(entries)}")
             print(f"  错误: {stats['error_count']}")
             print(f"  警告: {stats['warning_count']}")
@@ -1338,7 +1332,7 @@ def cmd_launcher(args: argparse.Namespace) -> int:
 
 def cmd_repl(args: argparse.Namespace) -> int:
     """交互式 REPL 模式"""
-    from mc_agent_kit.cli_enhanced import create_repl, create_alias_manager, get_builtin_aliases
+    from mc_agent_kit.cli_enhanced import create_alias_manager, create_repl, get_builtin_aliases
 
     # 创建别名管理器
     alias_manager = create_alias_manager()
@@ -1557,7 +1551,7 @@ def cmd_config(args: argparse.Namespace) -> int:
 
 def cmd_docs(args: argparse.Namespace) -> int:
     """文档生成"""
-    from mc_agent_kit.docs import create_doc_generator, create_formatter, OutputFormat
+    from mc_agent_kit.docs import OutputFormat, create_doc_generator, create_formatter
 
     if args.action == "generate":
         # 生成 API 文档
@@ -1650,7 +1644,7 @@ def cmd_docs(args: argparse.Namespace) -> int:
 
 def cmd_wizard(args: argparse.Namespace) -> int:
     """交互式向导"""
-    from mc_agent_kit.cli_enhanced import create_output, Color, Style
+    from mc_agent_kit.cli_enhanced import Color, Style, create_output
 
     output = create_output()
 
@@ -1712,7 +1706,7 @@ def cmd_wizard(args: argparse.Namespace) -> int:
         choice = input().strip() or "1"
 
         env_types = {"1": "development", "2": "production", "3": "testing"}
-        env_type = env_types.get(choice, "development")
+        env_types.get(choice, "development")
 
         # 选择输出格式
         output.print("\n请选择输出格式:", color=Color.GREEN)
@@ -1792,8 +1786,8 @@ def cmd_wizard(args: argparse.Namespace) -> int:
 
 def cmd_batch(args: argparse.Namespace) -> int:
     """批量操作"""
-    from mc_agent_kit.cli_enhanced import create_progress_bar, create_output, Color
-    import concurrent.futures
+
+    from mc_agent_kit.cli_enhanced import Color, create_output, create_progress_bar
 
     output = create_output()
 
@@ -1852,7 +1846,7 @@ def cmd_batch(args: argparse.Namespace) -> int:
             print("错误: 请提供要生成文档的 API 列表")
             return 1
 
-        from mc_agent_kit.docs import create_doc_generator, create_formatter, OutputFormat
+        from mc_agent_kit.docs import OutputFormat, create_doc_generator, create_formatter
 
         generator = create_doc_generator()
         formatter = create_formatter()
@@ -2048,6 +2042,7 @@ def cmd_stats(args: argparse.Namespace) -> int:
 
 def cmd_workflow(args: argparse.Namespace) -> int:
     """工作流管理"""
+    from mc_agent_kit.ux import get_ux_manager
     from mc_agent_kit.workflow import (
         RetryConfig,
         RetryPolicy,
@@ -2056,10 +2051,8 @@ def cmd_workflow(args: argparse.Namespace) -> int:
         clear_workflow_cache,
         create_enhanced_workflow,
         create_workflow,
-        get_enhanced_cache,
         get_workflow_cache,
     )
-    from mc_agent_kit.ux import get_ux_manager, LocaleManager, EnhancedUXManager
 
     # 设置语言
     locale = getattr(args, "locale", "zh_CN")
@@ -2266,7 +2259,7 @@ def cmd_workflow(args: argparse.Namespace) -> int:
 
             if result.output.get("log_analysis"):
                 log_analysis = result.output["log_analysis"]
-                print(f"\n  日志分析:")
+                print("\n  日志分析:")
                 print(f"    错误: {log_analysis.get('error_count', 0)}")
                 print(f"    警告: {log_analysis.get('warning_count', 0)}")
 

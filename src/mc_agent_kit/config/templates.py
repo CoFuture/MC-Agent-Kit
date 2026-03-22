@@ -9,11 +9,11 @@ This module provides configuration templates with:
 
 from __future__ import annotations
 
+import json
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable
-from pathlib import Path
-import json
+from typing import Any
 
 
 class TemplateType(Enum):
@@ -298,7 +298,8 @@ class TemplateGenerator:
             return {}
 
         values: dict[str, Any] = {}
-        default_prompt = lambda label, default: input(f"{label} [{default}]: ") or default
+        def default_prompt(label, default):
+            return input(f"{label} [{default}]: ") or default
 
         prompt = prompt_func or default_prompt
 

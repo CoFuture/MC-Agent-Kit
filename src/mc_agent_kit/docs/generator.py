@@ -9,14 +9,14 @@ This module generates documentation from code and templates:
 
 from __future__ import annotations
 
+import inspect
+import re
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable
-import ast
-import inspect
-import re
+from typing import Any
 
 
 class DocLanguage(Enum):
@@ -328,7 +328,7 @@ class DocGenerator:
             Generated markdown
         """
         lines = [
-            f"# API Documentation",
+            "# API Documentation",
             "",
             f"Version: {self._version.version}",
             "",

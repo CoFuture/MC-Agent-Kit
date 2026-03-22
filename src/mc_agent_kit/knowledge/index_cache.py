@@ -10,7 +10,6 @@
 
 import hashlib
 import json
-import os
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -57,7 +56,7 @@ class KnowledgeIndexCache:
 
     使用示例:
         cache = KnowledgeIndexCache(cache_dir=".cache/index")
-        
+
         # 检查是否需要重建
         if cache.needs_rebuild(docs_dir):
             kb = build_index(docs_dir)
@@ -255,7 +254,7 @@ class KnowledgeIndexCache:
         try:
             with open(cache_file, encoding="utf-8") as f:
                 return json.load(f)
-        except (json.JSONDecodeError, IOError):
+        except (OSError, json.JSONDecodeError):
             return None
 
     def invalidate(self, source_dir: str | None = None) -> bool:
@@ -376,7 +375,7 @@ class KnowledgeIndexCache:
                 data = json.load(f)
             self._metadata = CacheMetadata(**data)
             return self._metadata
-        except (json.JSONDecodeError, IOError, TypeError):
+        except (OSError, json.JSONDecodeError, TypeError):
             return None
 
     def _save_metadata(self) -> None:
@@ -410,7 +409,7 @@ class KnowledgeIndexCache:
                 path: FileState(**state)
                 for path, state in data.items()
             }
-        except (json.JSONDecodeError, IOError, TypeError):
+        except (OSError, json.JSONDecodeError, TypeError):
             self._file_states = {}
 
     def _save_file_states(self) -> None:

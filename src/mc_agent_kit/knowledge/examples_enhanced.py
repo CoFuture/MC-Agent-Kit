@@ -4,9 +4,7 @@
 管理代码示例，支持难度分级、API 关联和搜索优化。
 """
 
-import json
 import logging
-import re
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -162,7 +160,7 @@ def OnPlayerJoin(args):
     \"\"\"玩家加入事件回调\"\"\"
     player_name = args.get('playerName', '玩家')
     player_id = args.get('id')
-    
+
     # 发送欢迎消息
     comp = serverApi.GetEngineCompFactory().CreateGame()
     comp.NotifyToClient(player_id, {
@@ -192,23 +190,23 @@ import mod.server.extraServerApi as serverApi
 
 def create_custom_entity(pos, dimension_id=0):
     \"\"\"创建自定义实体
-    
+
     Args:
         pos: 位置坐标 (x, y, z)
         dimension_id: 维度 ID
-    
+
     Returns:
         str: 实体 ID，失败返回 None
     \"\"\"
     comp = serverApi.GetEngineCompFactory().CreateGame()
-    
+
     # 创建实体
     entity_id = comp.CreateEngineEntityByType(
         'my_mod:custom_entity',  # 实体类型
         pos,
         dimension_id
     )
-    
+
     if entity_id:
         print(f"[Entity] 创建成功: {entity_id}")
         return entity_id
@@ -242,15 +240,15 @@ def OnItemUse(args):
     \"\"\"物品使用事件\"\"\"
     entity_id = args.get('entityId')
     item_stack = args.get('itemStack')
-    
+
     # 检查是否是我们的物品
     if not item_stack or item_stack.get('newItemName') != ITEM_ID:
         return
-    
+
     # 获取玩家位置
     comp = serverApi.GetEngineCompFactory().CreatePos(entity_id)
     pos = comp.GetPos()
-    
+
     if pos:
         # 在玩家位置创建效果
         create_magic_effect(pos)
@@ -258,9 +256,9 @@ def OnItemUse(args):
 def create_magic_effect(pos):
     \"\"\"创建魔法效果\"\"\"
     import random
-    
+
     comp = serverApi.GetEngineCompFactory().CreateGame()
-    
+
     # 创建粒子效果
     for _ in range(10):
         offset = (random.uniform(-2, 2), random.uniform(0, 3), random.uniform(-2, 2))
@@ -291,45 +289,45 @@ BLOCK_ID = "my_mod:interactive_block"
 
 class InteractiveBlock:
     \"\"\"交互式方块逻辑\"\"\"
-    
+
     @staticmethod
     def on_placed(pos, dimension_id, player_id):
         \"\"\"方块放置\"\"\"
         print(f"[Block] 放置于 {pos}")
         # 初始化方块状态
         InteractiveBlock._set_block_data(pos, {"uses": 0})
-    
+
     @staticmethod
     def on_interact(pos, dimension_id, player_id, item_stack):
         \"\"\"玩家交互\"\"\"
         # 获取方块数据
         data = InteractiveBlock._get_block_data(pos)
         data["uses"] = data.get("uses", 0) + 1
-        
+
         print(f"[Block] 交互次数: {data['uses']}")
-        
+
         # 执行交互效果
         if data["uses"] % 5 == 0:
             InteractiveBlock._give_reward(player_id)
-        
+
         # 更新数据
         InteractiveBlock._set_block_data(pos, data)
-        
+
         return False  # 不拦截默认行为
-    
+
     @staticmethod
     def _give_reward(player_id):
         \"\"\"给予奖励\"\"\"
         comp = serverApi.GetEngineCompFactory().CreateGame()
         # 给予玩家物品
         print(f"[Block] 给予 {player_id} 奖励")
-    
+
     @staticmethod
     def _set_block_data(pos, data):
         \"\"\"存储方块数据\"\"\"
         # 实现数据存储
         pass
-    
+
     @staticmethod
     def _get_block_data(pos):
         \"\"\"获取方块数据\"\"\"
@@ -378,18 +376,18 @@ SYNC_EVENT = "my_mod:player_data_sync"
 
 class PlayerDataManager:
     \"\"\"玩家数据管理器\"\"\"
-    
+
     def __init__(self):
         self.player_data = {}  # playerId -> data
-    
+
     def set_data(self, player_id, key, value):
         \"\"\"设置数据并同步到客户端\"\"\"
         if player_id not in self.player_data:
             self.player_data[player_id] = {}
-        
+
         self.player_data[player_id][key] = value
         self._sync_to_client(player_id)
-    
+
     def get_data(self, player_id, key=None):
         \"\"\"获取数据\"\"\"
         if player_id not in self.player_data:
@@ -397,7 +395,7 @@ class PlayerDataManager:
         if key:
             return self.player_data[player_id].get(key)
         return self.player_data[player_id]
-    
+
     def _sync_to_client(self, player_id):
         \"\"\"同步数据到客户端\"\"\"
         comp = serverApi.GetEngineCompFactory().CreateGame(player_id)
@@ -413,10 +411,10 @@ import mod.client.extraClientApi as clientApi
 
 class ClientDataReceiver:
     \"\"\"客户端数据接收器\"\"\"
-    
+
     def __init__(self):
         self.data = {}
-    
+
     def on_notify(self, args):
         \"\"\"接收服务端通知\"\"\"
         if args.get('type') == SYNC_EVENT:
@@ -474,7 +472,7 @@ CHECK_INTERVAL = 20  # 每秒检查一次 (20 ticks)
 def on_tick(args):
     global tick_count
     tick_count += 1
-    
+
     if tick_count % CHECK_INTERVAL == 0:
         # 执行检查逻辑
         check_something()
@@ -490,10 +488,10 @@ def get_expensive_result():
     global cached_result, cache_time
     import time
     current_time = time.time()
-    
+
     if cached_result and (current_time - cache_time) < 60:
         return cached_result
-    
+
     # 执行昂贵计算
     cached_result = expensive_calculation()
     cache_time = current_time

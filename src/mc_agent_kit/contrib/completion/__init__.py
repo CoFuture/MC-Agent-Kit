@@ -3,12 +3,24 @@
 This module provides code completion, smell detection, and refactoring tools.
 """
 
+from mc_agent_kit.contrib.completion.best_practices import (
+    BestPractice,
+    BestPracticeChecker,
+    BestPracticeResult,
+    PracticeCategory,
+    PracticeSeverity,
+)
 from mc_agent_kit.contrib.completion.completer import (
     CodeCompleter,
     Completion,
     CompletionContext,
     CompletionKind,
     CompletionResult,
+)
+from mc_agent_kit.contrib.completion.refactor import (
+    RefactorEngine,
+    RefactorSuggestion,
+    RefactorType,
 )
 from mc_agent_kit.contrib.completion.smells import (
     CodeSmell,
@@ -17,18 +29,6 @@ from mc_agent_kit.contrib.completion.smells import (
     SmellDetectorConfig,
     SmellSeverity,
     SmellType,
-)
-from mc_agent_kit.contrib.completion.refactor import (
-    RefactorEngine,
-    RefactorSuggestion,
-    RefactorType,
-)
-from mc_agent_kit.contrib.completion.best_practices import (
-    BestPractice,
-    BestPracticeChecker,
-    BestPracticeResult,
-    PracticeCategory,
-    PracticeSeverity,
 )
 
 __all__ = [

@@ -8,13 +8,12 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from pathlib import Path
 from typing import Any
 
 from mc_agent_kit.knowledge.retrieval import KnowledgeRetrieval
+from mc_agent_kit.launcher.auto_fixer import MemoryAutoFixer, MemoryFixReport
 from mc_agent_kit.launcher.diagnoser import DiagnosticReport, LauncherDiagnoser
-from mc_agent_kit.launcher.auto_fixer import MemoryFixReport, MemoryAutoFixer
-from mc_agent_kit.log_capture.analyzer import LogAnalyzer, Alert, LogStatistics
+from mc_agent_kit.log_capture.analyzer import LogAnalyzer
 from mc_agent_kit.scaffold.creator import ProjectCreator
 
 
@@ -111,7 +110,7 @@ class WorkflowConfig:
 class EndToEndWorkflow:
     """
     端到端工作流管理器
-    
+
     整合完整的 MCP 开发闭环：
     1. 搜索文档：查询相关 API 和事件
     2. 创建项目：生成 Addon 项目结构
@@ -182,27 +181,27 @@ class EndToEndWorkflow:
     def step_search_docs(self, query: str) -> WorkflowStepResult:
         """
         步骤 1: 搜索文档
-        
+
         Args:
             query: 搜索查询
-            
+
         Returns:
             步骤结果
         """
         step = WorkflowStep.SEARCH_DOCS
-        start_time = time.time()
-        
+        time.time()
+
         try:
             self._init_retrieval()
-            
+
             # 执行搜索 - 使用正确的 API
             results = self._retrieval.search(query, limit=5)
-            
+
             # 统计结果
             api_count = sum(1 for r in results if r.type == "api")
             event_count = sum(1 for r in results if r.type == "event")
             example_count = sum(1 for r in results if r.type == "example")
-            
+
             output = {
                 "query": query,
                 "api_count": api_count,
@@ -219,11 +218,11 @@ class EndToEndWorkflow:
                     for r in results[:5]
                 ],
             }
-            
+
             suggestions = []
             if len(results) == 0:
                 suggestions.append("未找到相关文档，请尝试使用不同的关键词")
-            
+
             return self._record_step(
                 step,
                 WorkflowStepStatus.SUCCESS,
@@ -241,22 +240,22 @@ class EndToEndWorkflow:
     def step_create_project(self) -> WorkflowStepResult:
         """
         步骤 2: 创建项目
-        
+
         Returns:
             步骤结果
         """
         step = WorkflowStep.CREATE_PROJECT
-        
+
         try:
             self._init_creator()
-            
+
             # 创建项目 - 使用正确的 API
             project = self._creator.create_project(
                 name=self.config.project_name,
                 path=self.config.output_dir,
             )
             project_path = str(project.path)
-            
+
             # 添加实体（如果配置了）
             entity_path = None
             if self.config.entity_name:
@@ -265,7 +264,7 @@ class EndToEndWorkflow:
                     entity_path = str(entity_result) if entity_result else None
                 except Exception:
                     pass  # 实体添加失败不影响项目创建
-            
+
             # 添加物品（如果配置了）
             item_path = None
             if self.config.item_name:
@@ -274,13 +273,13 @@ class EndToEndWorkflow:
                     item_path = str(item_result) if item_result else None
                 except Exception:
                     pass  # 物品添加失败不影响项目创建
-            
+
             output = {
                 "project_path": project_path,
                 "entity_path": entity_path,
                 "item_path": item_path,
             }
-            
+
             return self._record_step(
                 step,
                 WorkflowStepStatus.SUCCESS,
@@ -297,35 +296,35 @@ class EndToEndWorkflow:
     def step_launch_test(self, addon_path: str) -> WorkflowStepResult:
         """
         步骤 3: 启动测试
-        
+
         Args:
             addon_path: Addon 路径
-            
+
         Returns:
             步骤结果
         """
         step = WorkflowStep.LAUNCH_TEST
-        
+
         try:
             self._init_diagnoser()
-            
+
             # 运行诊断检查
             report = self._diagnoser.diagnose(addon_path=addon_path)
-            
+
             output = {
                 "addon_path": addon_path,
                 "diagnostic_success": report.success,
                 "errors_count": report.checks_failed,
                 "warnings_count": report.checks_warning,
             }
-            
+
             suggestions = []
             if report.has_errors:
                 suggestions.extend([
                     issue.suggestion for issue in report.issues
                     if issue.severity.value == "error" and issue.suggestion
                 ])
-            
+
             # 如果有错误，标记为失败
             if report.has_errors:
                 return self._record_step(
@@ -335,7 +334,7 @@ class EndToEndWorkflow:
                     error="启动诊断发现问题",
                     suggestions=suggestions,
                 )
-            
+
             return self._record_step(
                 step,
                 WorkflowStepStatus.SUCCESS,
@@ -357,39 +356,39 @@ class EndToEndWorkflow:
     ) -> WorkflowStepResult:
         """
         步骤 4: 诊断错误
-        
+
         Args:
             addon_path: Addon 路径
             log_content: 日志内容（可选）
-            
+
         Returns:
             步骤结果
         """
         step = WorkflowStep.DIAGNOSE_ERROR
-        
+
         try:
             self._init_diagnoser()
             self._init_log_analyzer()
-            
+
             output = {}
             suggestions = []
-            
+
             # 诊断 Addon
             if addon_path:
                 report = self._diagnoser.diagnose(addon_path=addon_path)
                 output["diagnostic_report"] = report.to_dict()
-                
+
                 if report.has_errors:
                     for issue in report.issues:
                         if issue.severity.value == "error":
                             suggestions.append(f"{issue.code}: {issue.suggestion}")
-            
+
             # 分析日志
             if log_content:
                 self._log_analyzer.process_batch(log_content.split("\n"))
                 alerts = self._log_analyzer.get_alerts()
                 stats = self._log_analyzer.get_statistics()
-                
+
                 output["log_analysis"] = {
                     "error_count": stats.error_count,
                     "warning_count": stats.warning_count,
@@ -403,17 +402,17 @@ class EndToEndWorkflow:
                         for a in alerts[:5]  # 只返回前 5 个
                     ],
                 }
-                
+
                 for alert in alerts:
                     if alert.pattern and alert.pattern.suggestions:
                         suggestions.extend(alert.pattern.suggestions[:2])
-            
+
             # 判断是否成功
             has_issues = (
                 output.get("diagnostic_report", {}).get("has_errors", False) or
                 output.get("log_analysis", {}).get("error_count", 0) > 0
             )
-            
+
             if has_issues:
                 return self._record_step(
                     step,
@@ -421,7 +420,7 @@ class EndToEndWorkflow:
                     output=output,
                     suggestions=suggestions,
                 )
-            
+
             return self._record_step(
                 step,
                 WorkflowStepStatus.SUCCESS,
@@ -438,21 +437,21 @@ class EndToEndWorkflow:
     def step_fix_error(self, addon_path: str) -> WorkflowStepResult:
         """
         步骤 5: 修复错误
-        
+
         Args:
             addon_path: Addon 路径
-            
+
         Returns:
             步骤结果
         """
         step = WorkflowStep.FIX_ERROR
-        
+
         try:
             self._init_memory_fixer()
-            
+
             # 分析并生成修复建议
             report = self._memory_fixer.analyze(addon_path)
-            
+
             output = {
                 "addon_path": addon_path,
                 "total_issues": report.total_issues,
@@ -467,9 +466,9 @@ class EndToEndWorkflow:
                     for fix in report.fixes[:10]  # 只返回前 10 个
                 ],
             }
-            
+
             suggestions = report.optimization_tips[:5] if report.optimization_tips else []
-            
+
             if report.total_issues > 0:
                 return self._record_step(
                     step,
@@ -477,7 +476,7 @@ class EndToEndWorkflow:
                     output=output,
                     suggestions=suggestions,
                 )
-            
+
             return self._record_step(
                 step,
                 WorkflowStepStatus.SUCCESS,
@@ -500,50 +499,50 @@ class EndToEndWorkflow:
     ) -> WorkflowResult:
         """
         运行完整开发闭环
-        
+
         Args:
             search_query: 搜索查询（可选）
             addon_path: Addon 路径（可选）
             log_content: 日志内容（可选）
-            
+
         Returns:
             工作流结果
         """
         start_time = time.time()
         self._step_results = []
-        
+
         # 步骤 1: 搜索文档
         if search_query or self.config.search_query:
             query = search_query or self.config.search_query
             self.step_search_docs(query)
-        
+
         # 步骤 2: 创建项目
         if not addon_path:
             result = self.step_create_project()
             if result.status == WorkflowStepStatus.SUCCESS:
                 addon_path = result.output.get("project_path")
-        
+
         # 步骤 3: 启动测试
         if addon_path:
             self.step_launch_test(addon_path)
-        
+
         # 步骤 4: 诊断错误
         if addon_path or log_content:
             diag_result = self.step_diagnose_error(addon_path, log_content)
-            
+
             # 步骤 5: 修复错误（如果需要且启用了自动修复）
             if self.config.auto_fix and addon_path and diag_result.suggestions:
                 self.step_fix_error(addon_path)
-        
+
         # 计算总时间
         total_duration_ms = int((time.time() - start_time) * 1000)
-        
+
         # 判断整体成功
         success = all(
             s.status in (WorkflowStepStatus.SUCCESS, WorkflowStepStatus.SKIPPED)
             for s in self._step_results
         )
-        
+
         return WorkflowResult(
             success=success,
             steps=self._step_results,
@@ -556,10 +555,10 @@ class EndToEndWorkflow:
 def create_workflow(config: WorkflowConfig | None = None) -> EndToEndWorkflow:
     """
     创建工作流实例
-    
+
     Args:
         config: 工作流配置
-        
+
     Returns:
         工作流实例
     """
@@ -578,7 +577,7 @@ def run_development_cycle(
 ) -> WorkflowResult:
     """
     运行开发周期的便捷函数
-    
+
     Args:
         project_name: 项目名称
         output_dir: 输出目录
@@ -586,7 +585,7 @@ def run_development_cycle(
         entity_name: 实体名称
         game_path: 游戏路径
         auto_fix: 是否自动修复
-        
+
     Returns:
         工作流结果
     """

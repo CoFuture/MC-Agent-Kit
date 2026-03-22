@@ -9,11 +9,12 @@ This module provides:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from enum import Enum
-from typing import Any, Iterator
 import sys
 import time
+from collections.abc import Iterator
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
 
 
 class Color(Enum):

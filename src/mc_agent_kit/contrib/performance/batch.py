@@ -1,8 +1,9 @@
 """Batch processing utilities for MC-Agent-Kit."""
 
-from dataclasses import dataclass, field
-from typing import Any, Callable, Optional
 import time
+from collections.abc import Callable
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -30,7 +31,7 @@ class BatchStats:
 class LogBatchProcessor:
     """Processor for batch log processing."""
 
-    def __init__(self, config: Optional[BatchConfig] = None):
+    def __init__(self, config: BatchConfig | None = None):
         """Initialize the batch processor.
 
         Args:
@@ -40,7 +41,7 @@ class LogBatchProcessor:
         self._buffer: list[Any] = []
         self._stats = BatchStats()
         self._last_flush = time.time()
-        self._processor: Optional[Callable] = None
+        self._processor: Callable | None = None
 
     def set_processor(self, processor: Callable[[list[Any]], Any]) -> None:
         """Set the batch processor function.
@@ -67,7 +68,7 @@ class LogBatchProcessor:
         if time.time() - self._last_flush > self._config.flush_interval:
             self.flush()
 
-    def flush(self) -> Optional[Any]:
+    def flush(self) -> Any | None:
         """Flush the buffer and process items.
 
         Returns:
