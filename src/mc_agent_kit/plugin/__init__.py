@@ -12,17 +12,67 @@ from .base import (
     PluginResult,
     PluginState,
 )
+from .dependency import (
+    Dependency,
+    DependencyCheckResult,
+    DependencyManager,
+    DependencyReport,
+    DependencyStatus,
+    DependencyType,
+)
 from .loader import PluginLoader, PluginRegistry
 from .manager import PluginManager
+from .sandbox import (
+    CodeValidator,
+    PluginSandbox,
+    RestrictedOperationError,
+    SandboxConfig,
+    SandboxContext,
+    SandboxPermission,
+    SandboxViolation,
+)
+from .version import (
+    CompatibilityReport,
+    Version,
+    VersionChecker,
+    VersionCompatibility,
+    VersionRange,
+    check_plugin_version,
+)
 
 __all__ = [
+    # Base classes
     "PluginBase",
     "PluginInfo",
     "PluginMetadata",
     "PluginPriority",
     "PluginResult",
     "PluginState",
+    # Loader and Registry
     "PluginLoader",
     "PluginRegistry",
+    # Manager
     "PluginManager",
+    # Sandbox
+    "PluginSandbox",
+    "SandboxConfig",
+    "SandboxContext",
+    "SandboxPermission",
+    "SandboxViolation",
+    "CodeValidator",
+    "RestrictedOperationError",
+    # Version
+    "Version",
+    "VersionRange",
+    "VersionChecker",
+    "VersionCompatibility",
+    "CompatibilityReport",
+    "check_plugin_version",
+    # Dependency
+    "Dependency",
+    "DependencyType",
+    "DependencyStatus",
+    "DependencyCheckResult",
+    "DependencyReport",
+    "DependencyManager",
 ]
