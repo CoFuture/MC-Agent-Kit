@@ -20,6 +20,15 @@ from .dependency import (
     DependencyStatus,
     DependencyType,
 )
+from .hot_reload import (
+    HotReloadConfig,
+    HotReloadStatus,
+    PluginHotReloader,
+    ReloadEvent,
+    WatchedPlugin,
+    create_hot_reloader,
+    reload_all_plugins,
+)
 from .loader import PluginLoader, PluginRegistry
 from .manager import PluginManager
 from .sandbox import (
@@ -38,15 +47,6 @@ from .version import (
     VersionCompatibility,
     VersionRange,
     check_plugin_version,
-)
-from .hot_reload import (
-    HotReloadConfig,
-    HotReloadStatus,
-    PluginHotReloader,
-    ReloadEvent,
-    WatchedPlugin,
-    create_hot_reloader,
-    reload_all_plugins,
 )
 
 __all__ = [

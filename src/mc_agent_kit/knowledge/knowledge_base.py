@@ -417,7 +417,6 @@ class KnowledgeBase:
         try:
             # 尝试导入 ChromaDB
             import chromadb
-            from chromadb.config import Settings
 
             # 创建/加载向量存储
             if self.persist_dir:
@@ -431,7 +430,7 @@ class KnowledgeBase:
             if force:
                 try:
                     client.delete_collection(collection_name)
-                except:
+                except Exception:
                     pass
 
             self._vector_store = client.get_or_create_collection(

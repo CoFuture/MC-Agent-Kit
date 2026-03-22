@@ -151,7 +151,7 @@ class KeywordSearchEngine:
         scores: dict[str, float] = {}
         k1 = 1.5  # BM25 参数
         b = 0.75  # BM25 参数
-        N = len(self._documents)
+        n = len(self._documents)
 
         for term in query_terms:
             if term not in self._inverted_index:
@@ -159,7 +159,7 @@ class KeywordSearchEngine:
 
             # 计算 IDF
             df = len(self._inverted_index[term])
-            idf = max(0, ((N - df + 0.5) / (df + 0.5) + 1))
+            idf = max(0, ((n - df + 0.5) / (df + 0.5) + 1))
 
             # 对包含该词的每个文档计算 TF 分数
             for doc_id in self._inverted_index[term]:

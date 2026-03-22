@@ -1,0 +1,95 @@
+{
+  "version": "3.7.0.222545",
+  "client_type": 0,
+  "MainComponentId": "3c5afc820e514210ba430db5d46ac2b1",
+  "LocalComponentPathsDict": {
+    "3c5afc820e514210ba430db5d46ac2b1": {
+      "cfg_path": "D:\\MCStudioDownload\\work\\ningboo666@163.com\\Cpp\\AddOn\\3c5afc820e514210ba430db5d46ac2b1",
+      "work_path": "D:\\MCStudioDownload\\work\\ningboo666@163.com\\Cpp\\AddOn\\3c5afc820e514210ba430db5d46ac2b1"
+    }
+  },
+  "LocalComponentPaths": null,
+  "world_info": {
+    "level_id": "3c5afc820e514210ba430db5d46ac2b1",
+    "game_type": 1,
+    "difficulty": 2,
+    "permission_level": 1,
+    "cheat": true,
+    "cheat_info": {
+      "pvp": true,
+      "show_coordinates": false,
+      "always_day": false,
+      "daylight_cycle": true,
+      "fire_spreads": true,
+      "tnt_explodes": true,
+      "keep_inventory": true,
+      "mob_spawn": true,
+      "natural_regeneration": true,
+      "mob_loot": true,
+      "mob_griefing": true,
+      "tile_drops": true,
+      "entities_drop_loot": true,
+      "weather_cycle": true,
+      "command_blocks_enabled": true,
+      "random_tick_speed": 1,
+      "experimental_holiday": false,
+      "experimental_biomes": false,
+      "fancy_bubbles": false
+    },
+    "resource_packs": [
+      "CustomNeteaseParticlesModResourcePack"
+    ],
+    "behavior_packs": [
+      "CustomNeteaseParticlesModBehaviorPack"
+    ],
+    "name": "自定义中国版粒子特效材质",
+    "world_type": 2,
+    "start_with_map": false,
+    "bonus_items": false,
+    "seed": ""
+  },
+  "room_info": {
+    "ip": "",
+    "port": 0,
+    "muiltClient": false,
+    "room_name": "",
+    "token": "POQlsTkXqHFUwYijpGBciA==",
+    "room_id": 0,
+    "host_id": 0,
+    "allow_pe": true,
+    "max_player": 0,
+    "visibility_mode": 0,
+    "is_pe": true,
+    "tag_ids": null,
+    "item_ids": []
+  },
+  "player_info": {
+    "user_id": 2147672241,
+    "user_name": "开发者DQcZc",
+    "urs": "ningboo666@163.com"
+  },
+  "anti_addiction_info": {
+    "enable": false,
+    "left_time": 0,
+    "exp_multiplier": 1.0,
+    "block_multplier": 1.0,
+    "first_message": ""
+  },
+  "misc": {
+    "multiplayer_game_type": 0,
+    "game_id": null,
+    "auth_server_url": "https://g79authexpr1.nie.netease.com",
+    "launcher_port": 63085,
+    "sensitive_word_file": "",
+    "is_store_enabled": 1
+  },
+  "path": "E:\\develop\\MC-Agent-Kit\\test_output\\3c5afc820e514210ba430db5d46ac2b1.cppconfig",
+  "web_server_url": "https://x19mclexpr.nie.netease.com",
+  "core_server_url": "https://x19exprcore.nie.netease.com:8443",
+  "last_play_time": 1774149319,
+  "vip_using_mod": [
+    "21c93d8c-63ee-49bd-a9b8-3cf48c984b16",
+    "02a02b85-b286-435c-86d2-3d0b3a407038"
+  ],
+  "isCloud": false
+}

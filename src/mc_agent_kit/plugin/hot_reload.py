@@ -4,14 +4,14 @@ Integrates file watching with plugin management for automatic plugin reloading.
 """
 
 import logging
-import os
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from .manager import PluginManager
 
@@ -246,6 +246,22 @@ class PluginHotReloader:
             else:
                 logger.warning("Failed to reload plugin '%s'", name)
 
+            # Notify callbacks
+            for callback in self._on_reload_callbacks:
+                try:
+                    callback(event)
+                except Exception as e:
+                    logger.error("Callback error: %s", e)
+
+            # Notify via config callback
+            if self.config.notify_callback:
+                try:
+                    self.config.notify_callback(
+                        name, event.success, event.error or "Reloaded successfully"
+                    )
+                except Exception as e:
+                    logger.error("Notify callback error: %s", e)
+
             return event
 
         except Exception as e:
@@ -321,7 +337,7 @@ class PluginHotReloader:
         with self._lock:
             for name, plugin_info in self._watched.items():
                 try:
-                    new_modified = self._get_modified_time(plugin_info.path)
+                    _ = self._get_modified_time(plugin_info.path)  # 触发文件访问错误检测
                     new_checksum = self._compute_checksum(plugin_info.path)
 
                     if new_checksum != plugin_info.checksum:

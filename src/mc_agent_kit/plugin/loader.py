@@ -11,7 +11,6 @@ from .base import (
     PluginBase,
     PluginInfo,
     PluginMetadata,
-    PluginPriority,
     PluginState,
 )
 

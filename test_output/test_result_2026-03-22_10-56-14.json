@@ -1,0 +1,10 @@
+{
+  "success": false,
+  "addon_name": "自定义后处理材质",
+  "addon_id": "0eb5406c5f6e48e88fcdd996ceb37c1f",
+  "game_pid": 37376,
+  "config_path": "E:\\develop\\MC-Agent-Kit\\test_output\\0eb5406c5f6e48e88fcdd996ceb37c1f.cppconfig",
+  "launcher_log": "E:\\develop\\MC-Agent-Kit\\test_output\\launcher_2026-03-22_10-56-14.log",
+  "game_log": "E:\\develop\\MC-Agent-Kit\\test_output\\gamelog_2026-03-22_10-56-14.log",
+  "error_log": "C:\\Users\\95792\\AppData\\Local\\Netease\\MCStudio\\log\\x64_mc\\errorlogs\\2026-03-22-10-56-14.log"
+}

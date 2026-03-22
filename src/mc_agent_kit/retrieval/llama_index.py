@@ -63,7 +63,7 @@ class LlamaIndexRetriever:
     def _check_availability(self) -> None:
         """检查 LlamaIndex 是否可用"""
         try:
-            import llama_index
+            import llama_index  # noqa: F401 - 导入用于检查可用性
             self._llama_available = True
             logger.info("LlamaIndex 可用")
         except ImportError:
