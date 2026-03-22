@@ -33,7 +33,7 @@ class LocaleConfig:
 
 
 # 消息模板（支持多语言）
-MESSAGE_TEMPLATES: dict[str, dict[str, dict[str, str]]] = {
+MESSAGE_TEMPLATES: dict[str, dict[str, str]] = {
     "zh_CN": {
         # 成功消息
         "success.project_created": "项目创建成功",
@@ -178,9 +178,9 @@ class LocaleManager:
 
     def __init__(self, config: LocaleConfig | None = None):
         self.config = config or LocaleConfig()
-        self._custom_messages: dict[str, dict[str, str]] = {}
+        self._custom_messages: dict[str, str] = {}
 
-    def get(self, key: str, **kwargs) -> str:
+    def get(self, key: str, **kwargs: Any) -> str:
         """
         获取本地化消息
 
@@ -319,7 +319,7 @@ class MessageHistory:
     def get_statistics(self) -> dict[str, Any]:
         """获取统计信息"""
         with self._lock:
-            type_counts = {}
+            type_counts: dict[str, int] = {}
             for entry in self._history:
                 t = entry.message.type.value
                 type_counts[t] = type_counts.get(t, 0) + 1
@@ -363,7 +363,7 @@ class MessageTemplate:
     code_template: str | None = None
     learn_more_url: str | None = None
 
-    def render(self, **kwargs) -> UserMessage:
+    def render(self, **kwargs: Any) -> UserMessage:
         """渲染模板"""
         builder = UserMessageBuilder(self.type, self.title_template.format(**kwargs))
 
@@ -388,7 +388,7 @@ class MessageTemplate:
 class TemplateRegistry:
     """消息模板注册表"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._templates: dict[str, MessageTemplate] = {}
         self._load_builtin_templates()
 
@@ -469,7 +469,7 @@ class TemplateRegistry:
         """列出所有模板"""
         return list(self._templates.values())
 
-    def render(self, template_id: str, **kwargs) -> UserMessage | None:
+    def render(self, template_id: str, **kwargs: Any) -> UserMessage | None:
         """渲染模板"""
         template = self.get(template_id)
         if template:
@@ -490,7 +490,7 @@ class EnhancedUXManager:
         self,
         locale_config: LocaleConfig | None = None,
         history_max_entries: int = 1000,
-    ):
+    ) -> None:
         self.locale_manager = LocaleManager(locale_config)
         self.history = MessageHistory(history_max_entries)
         self.templates = TemplateRegistry()
@@ -531,7 +531,7 @@ class EnhancedUXManager:
             self.history.record(message, context)
         return message
 
-    def from_template(self, template_id: str, **kwargs) -> UserMessage | None:
+    def from_template(self, template_id: str, **kwargs: Any) -> UserMessage | None:
         """
         从模板创建消息
 
@@ -547,7 +547,7 @@ class EnhancedUXManager:
             self.history.record(message)
         return message
 
-    def localized(self, key: str, **kwargs) -> str:
+    def localized(self, key: str, **kwargs: Any) -> str:
         """
         获取本地化消息
 
@@ -562,31 +562,31 @@ class EnhancedUXManager:
 
     # 便捷方法
 
-    def success(self, key: str, **kwargs) -> UserMessage:
+    def success(self, key: str, **kwargs: Any) -> UserMessage:
         """创建成功消息"""
         title = self.localized(key, **kwargs)
         message = BaseEnhancer.success(title).build()
         return self.message(message)
 
-    def error(self, key: str, **kwargs) -> UserMessage:
+    def error(self, key: str, **kwargs: Any) -> UserMessage:
         """创建错误消息"""
         title = self.localized(key, **kwargs)
         message = BaseEnhancer.error(title).build()
         return self.message(message)
 
-    def warning(self, key: str, **kwargs) -> UserMessage:
+    def warning(self, key: str, **kwargs: Any) -> UserMessage:
         """创建警告消息"""
         title = self.localized(key, **kwargs)
         message = BaseEnhancer.warning(title).build()
         return self.message(message)
 
-    def info(self, key: str, **kwargs) -> UserMessage:
+    def info(self, key: str, **kwargs: Any) -> UserMessage:
         """创建信息消息"""
         title = self.localized(key, **kwargs)
         message = BaseEnhancer.info(title).build()
         return self.message(message)
 
-    def hint(self, key: str, **kwargs) -> UserMessage:
+    def hint(self, key: str, **kwargs: Any) -> UserMessage:
         """创建提示消息"""
         title = self.localized(key, **kwargs)
         message = BaseEnhancer.hint(title).build()
@@ -720,6 +720,6 @@ def get_ux_manager(
     return _global_ux_manager
 
 
-def localized_message(key: str, **kwargs) -> str:
+def localized_message(key: str, **kwargs: Any) -> str:
     """获取本地化消息的便捷函数"""
     return get_ux_manager().localized(key, **kwargs)

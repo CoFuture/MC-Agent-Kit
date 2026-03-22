@@ -109,7 +109,7 @@ class TextureAnalyzer:
         Returns:
             修复建议列表
         """
-        suggestions = []
+        suggestions: list[FixSuggestion] = []
 
         if not os.path.exists(textures_dir):
             return suggestions
@@ -222,7 +222,7 @@ class ModelAnalyzer:
         Returns:
             修复建议列表
         """
-        suggestions = []
+        suggestions: list[FixSuggestion] = []
 
         if not os.path.exists(models_dir):
             return suggestions
@@ -329,7 +329,7 @@ class ScriptAnalyzer:
         Returns:
             修复建议列表
         """
-        suggestions = []
+        suggestions: list[FixSuggestion] = []
 
         if not os.path.exists(scripts_dir):
             return suggestions

@@ -641,7 +641,7 @@ class LauncherDiagnoser:
         Returns:
             对比结果
         """
-        result = {
+        result: dict[str, Any] = {
             "differences": [],
             "warnings": [],
             "suggestions": [],
@@ -1293,7 +1293,7 @@ class AddonResourceAnalyzer:
         Returns:
             分析结果字典
         """
-        result = {
+        result: dict[str, Any] = {
             "total_files": 0,
             "total_size_bytes": 0,
             "large_files": [],
@@ -1337,7 +1337,7 @@ class AddonResourceAnalyzer:
         Returns:
             分析结果字典
         """
-        result = {
+        result: dict[str, Any] = {
             "total_models": 0,
             "total_size_bytes": 0,
             "complex_models": [],

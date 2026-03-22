@@ -128,7 +128,7 @@ class BaseSkill(ABC):
         return self._metadata.name
 
     @abstractmethod
-    def execute(self, *args, **kwargs) -> SkillResult:
+    def execute(self, *args: Any, **kwargs: Any) -> SkillResult:
         """执行 Skill
 
         子类必须实现此方法。
@@ -138,7 +138,7 @@ class BaseSkill(ABC):
         """
         pass
 
-    def validate(self, *args, **kwargs) -> bool:
+    def validate(self, *args: Any, **kwargs: Any) -> bool:
         """验证输入参数
 
         子类可覆盖此方法实现参数验证。
@@ -188,7 +188,7 @@ class SkillRegistry:
         result = skill.execute(query="GetEngineType")
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """初始化注册表"""
         self._skills: dict[str, BaseSkill] = {}
         self._categories: dict[SkillCategory, list[str]] = {

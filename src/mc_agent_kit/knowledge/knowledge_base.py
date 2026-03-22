@@ -258,7 +258,10 @@ class KnowledgeBase:
 
     def _load_documents(self) -> list[Document]:
         """加载所有文档"""
-        documents = []
+        documents: list[Document] = []
+
+        if self.docs_path is None:
+            return documents
 
         for ext in ["*.md", "*.txt"]:
             for fp in self.docs_path.rglob(ext):
@@ -276,7 +279,7 @@ class KnowledgeBase:
 
     def _chunk_documents(self) -> list[DocumentChunk]:
         """文档分块"""
-        chunks = []
+        chunks: list[DocumentChunk] = []
 
         for doc in self._documents:
             doc_chunks = self._chunk_single_document(doc)
@@ -311,12 +314,12 @@ class KnowledgeBase:
 
     def _chunk_by_headers(self, doc: Document) -> list[DocumentChunk]:
         """按标题分块（适用于 API 文档）"""
-        chunks = []
+        chunks: list[DocumentChunk] = []
         content = doc.content
 
         # 简单的标题分割
         lines = content.split("\n")
-        current_section = []
+        current_section: list[str] = []
         current_title = ""
 
         for line in lines:
@@ -344,10 +347,10 @@ class KnowledgeBase:
 
     def _chunk_by_paragraphs(self, doc: Document) -> list[DocumentChunk]:
         """按段落分块"""
-        chunks = []
+        chunks: list[DocumentChunk] = []
         paragraphs = doc.content.split("\n\n")
 
-        current_chunk = []
+        current_chunk: list[str] = []
         current_size = 0
 
         for para in paragraphs:

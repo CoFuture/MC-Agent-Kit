@@ -7,6 +7,7 @@
 import json
 import logging
 from pathlib import Path
+from typing import Any
 
 from .models import APIEntry, EnumEntry, EventEntry, KnowledgeBase
 from .parser import MarkdownParser
@@ -25,7 +26,7 @@ class KnowledgeIndexer:
         print(kb.stats())
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.parser = MarkdownParser()
         self.kb = KnowledgeBase()
 
@@ -115,7 +116,7 @@ class KnowledgeIndexer:
             加载的知识库对象
         """
         with open(input_path, encoding="utf-8") as f:
-            data = json.load(f)
+            data: dict[str, Any] = json.load(f)
 
         self.kb = KnowledgeBase(
             version=data.get("version", "1.0.0"),

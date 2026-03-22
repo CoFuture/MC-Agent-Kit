@@ -9,6 +9,7 @@ import socket
 import subprocess
 from dataclasses import dataclass
 from datetime import datetime
+from typing import cast
 
 
 @dataclass
@@ -55,7 +56,8 @@ def find_free_port() -> int:
     """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(("", 0))
-        return s.getsockname()[1]
+        port: int = cast(int, s.getsockname()[1])
+        return port
 
 
 def generate_error_log_path(base_dir: str | None = None) -> str:

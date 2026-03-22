@@ -171,7 +171,7 @@ class KnowledgeIndexCache:
         current_files = self._scan_files(source_dir, patterns)
         self._load_file_states()
 
-        changes = {
+        changes: dict[str, list[str]] = {
             "added": [],
             "modified": [],
             "deleted": [],
@@ -253,7 +253,8 @@ class KnowledgeIndexCache:
 
         try:
             with open(cache_file, encoding="utf-8") as f:
-                return json.load(f)
+                data: dict[str, Any] = json.load(f)
+                return data
         except (OSError, json.JSONDecodeError):
             return None
 

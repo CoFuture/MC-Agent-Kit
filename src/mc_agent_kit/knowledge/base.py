@@ -26,7 +26,7 @@ class Document:
     doc_type: DocumentType = DocumentType.UNKNOWN
     metadata: dict[str, Any] = field(default_factory=dict)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """根据路径推断文档类型"""
         if self.doc_type == DocumentType.UNKNOWN:
             self.doc_type = self._infer_type()

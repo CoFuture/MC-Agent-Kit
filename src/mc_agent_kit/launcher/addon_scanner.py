@@ -102,7 +102,7 @@ def list_addons(addon_dir: str) -> list[AddonInfo]:
     Returns:
         AddonInfo 列表
     """
-    addons = []
+    addons: list[AddonInfo] = []
     if not os.path.exists(addon_dir):
         return addons
 

@@ -213,7 +213,7 @@ class CodeQualityTool:
         Returns:
             问题列表
         """
-        issues = []
+        issues: list[LintIssue] = []
         path = Path(file_path)
 
         if not path.exists():

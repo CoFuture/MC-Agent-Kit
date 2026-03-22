@@ -71,7 +71,7 @@ class MarkdownParser:
         print(doc.api_info)
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """初始化解析器"""
         self.code_block_pattern = re.compile(r"```(\w*)\n(.*?)```", re.DOTALL)
         self.table_pattern = re.compile(r"\|[^\n]+\|\n\|[-:| ]+\|\n((?:\|[^\n]+\|\n?)+)", re.MULTILINE)
@@ -162,7 +162,7 @@ class MarkdownParser:
         """提取文档标题"""
         match = self.header_pattern.search(content)
         if match:
-            return match.group(2).strip()
+            return str(match.group(2).strip())
         return ""
 
     def _extract_code_blocks(self, content: str) -> list[str]:
@@ -316,7 +316,7 @@ class MarkdownParser:
 
     def _extract_parameters(self, sections: dict[str, str]) -> list[APIParameter]:
         """从表格提取参数"""
-        parameters = []
+        parameters: list[APIParameter] = []
 
         # 查找参数表
         param_section = sections.get("参数", sections.get("参数说明", ""))

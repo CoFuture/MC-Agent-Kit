@@ -1,74 +1,52 @@
 [project]
 name = "mc-agent-kit"
-version = "1.32.0"
-description = "Toolsets and Skills to empower AI Agents for Minecraft ModSDK development"
+version = "1.33.0"
+description = "MC-Agent-Kit - AI Agent 工具集，用于 Minecraft 网易版 ModSDK 开发"
 readme = "README.md"
-license = "MIT"
-license-files = ["LICENSE"]
 requires-python = ">=3.13"
+license = { text = "MIT" }
 authors = [
-    { name = "MC-Agent-Kit Contributors" }
+    { name = "MC-Agent-Kit Team" }
 ]
-maintainers = [
-    { name = "MC-Agent-Kit Contributors" }
-]
-keywords = [
-    "minecraft",
-    "modsdk",
-    "ai",
-    "agent",
-    "code-generation",
-    "netease",
-    "addon",
-]
+keywords = ["minecraft", "modsdk", "ai", "agent", "development-tools"]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Environment :: Console",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.13",
     "Topic :: Games/Entertainment",
-    "Topic :: Software Development :: Code Generators",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Typing :: Typed",
 ]
+
 dependencies = [
-    "jinja2>=3.1.0",
-    "pyyaml>=6.0.3",
+    "click>=8.0.0",
+    "jinja2>=3.0.0",
+    "pyyaml>=6.0",
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "types-PyYAML>=6.0.0",
+]
+semantic = [
+    "llama-index>=0.10.0",
+    "chromadb>=0.4.0",
+    "sentence-transformers>=2.0.0",
 ]
 
 [project.scripts]
 mc-agent = "mc_agent_kit.cli:main"
-
-[project.optional-dependencies]
-dev = [
-    "pytest>=8.0.0",
-    "pytest-asyncio>=0.23.0",
-    "ruff>=0.3.0",
-    "mypy>=1.8.0",
-    "pytest-cov>=5.0.0",
-]
-
-knowledge = [
-    "chromadb>=0.5.0",
-    "sentence-transformers>=3.0.0",
-    "llama-index>=0.12.0",
-    "llama-index-vector-stores-chroma>=0.3.0",
-    "llama-index-embeddings-huggingface>=0.4.0",
-]
-
-all = [
-    "mc-agent-kit[dev,knowledge]",
-]
-
-[project.urls]
-Homepage = "https://github.com/your-username/mc-agent-kit"
-Documentation = "https://github.com/your-username/mc-agent-kit#readme"
-Repository = "https://github.com/your-username/mc-agent-kit.git"
-Issues = "https://github.com/your-username/mc-agent-kit/issues"
-Changelog = "https://github.com/your-username/mc-agent-kit/blob/main/CHANGELOG.md"
+mc-create = "mc_agent_kit.cli:create_main"
+mc-kb = "mc_agent_kit.cli:kb_main"
+mc-run = "mc_agent_kit.cli:run_main"
+mc-logs = "mc_agent_kit.cli:logs_main"
+mc-launcher = "mc_agent_kit.cli:launcher_main"
 
 [build-system]
 requires = ["hatchling"]
@@ -80,16 +58,17 @@ packages = ["src/mc_agent_kit"]
 [tool.pytest.ini_options]
 testpaths = ["src/tests"]
 python_files = ["test_*.py"]
+python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "-v --tb=short"
-norecursedirs = ["_skipped", ".git", "__pycache__", "*.egg", ".venv"]
+norecursedirs = ["src/tests/_skipped"]
 
 [tool.ruff]
 line-length = 100
 target-version = "py313"
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "N", "UP"]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4"]
 ignore = ["E501"]
 
 [tool.mypy]
@@ -97,3 +76,55 @@ python_version = "3.13"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
+
+# 对核心模块启用严格检查
+[[tool.mypy.overrides]]
+module = [
+    "mc_agent_kit.knowledge.*",
+    "mc_agent_kit.knowledge_base.*",
+    "mc_agent_kit.generator.code_gen",
+    "mc_agent_kit.generator.templates",
+    "mc_agent_kit.skills.base",
+    "mc_agent_kit.launcher.addon_scanner",
+    "mc_agent_kit.launcher.diagnoser",
+    "mc_agent_kit.autofix.*",
+    "mc_agent_kit.ux.enhanced",
+]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+# 对 CLI 和实验性模块放宽检查
+[[tool.mypy.overrides]]
+module = [
+    "mc_agent_kit.cli",
+    "mc_agent_kit.cli_optimize",
+    "mc_agent_kit.execution.executor",
+    "mc_agent_kit.execution.debugger",
+    "mc_agent_kit.retrieval.*",
+    "mc_agent_kit.contrib.*",
+    "mc_agent_kit.docs.*",
+    "mc_agent_kit.workflow.*",
+    "mc_agent_kit.skills.modsdk.*",
+    "mc_agent_kit.generator.bindings",
+    "mc_agent_kit.generator.event_gen",
+    "mc_agent_kit.generator.quality_checker",
+    "mc_agent_kit.log_capture.*",
+    "mc_agent_kit.knowledge.retrieval",
+    "mc_agent_kit.knowledge.incremental",
+    "mc_agent_kit.launcher.diagnoser",
+]
+ignore_errors = true
+
+[tool.coverage.run]
+source = ["src/mc_agent_kit"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]

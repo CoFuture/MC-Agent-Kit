@@ -744,7 +744,7 @@ class TemplateManager:
     管理代码模板的注册、查询和渲染。
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """初始化模板管理器"""
         self._templates: dict[str, CodeTemplate] = {}
         self._templates_by_type: dict[TemplateType, list[str]] = {

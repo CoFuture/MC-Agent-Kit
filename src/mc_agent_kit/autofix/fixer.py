@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from difflib import unified_diff
 from enum import Enum
-from typing import Any
+from typing import Any, Callable
 
 from .diagnoser import (
     DiagnosisResult,
@@ -87,7 +87,7 @@ class AutoFixer:
         """
         self.auto_apply = auto_apply
         self.diagnoser = ErrorDiagnoser()
-        self._fix_handlers: dict[ErrorType, callable] = {
+        self._fix_handlers: dict[ErrorType, Callable] = {
             ErrorType.KEY_ERROR: self._fix_key_error,
             ErrorType.ATTRIBUTE_ERROR: self._fix_attribute_error,
             ErrorType.INDEX_ERROR: self._fix_index_error,

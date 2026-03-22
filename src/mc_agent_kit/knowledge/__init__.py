@@ -4,6 +4,8 @@ MC-Agent-Kit 知识库模块
 为 AI Agent 提供 MC ModSDK 开发知识的检索能力。
 """
 
+from typing import Any
+
 from .base import Document, DocumentChunk, DocumentType, SearchResult
 from .examples_enhanced import (
     CodeExampleEnhanced,
@@ -72,7 +74,7 @@ __all__ = [
 ]
 
 
-def create_knowledge_tool(kb: KnowledgeBase):
+def create_knowledge_tool(kb: KnowledgeBase) -> Any:
     """
     创建 Agent 可调用的知识库工具函数
 

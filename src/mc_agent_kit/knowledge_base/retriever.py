@@ -320,7 +320,7 @@ class KnowledgeRetriever:
         Returns:
             模块名称列表
         """
-        modules = set()
+        modules: set[str] = set()
 
         if entry_type in ("api", "all"):
             modules.update(self.kb.api_by_module.keys())
@@ -368,7 +368,7 @@ class KnowledgeRetriever:
         Returns:
             匹配的条目列表
         """
-        results = []
+        results: list[APIEntry | EventEntry] = []
 
         if entry_type == "api":
             for api in self.kb.apis.values():
@@ -378,7 +378,7 @@ class KnowledgeRetriever:
                         break
         elif entry_type == "event":
             for event in self.kb.events.values():
-                for param in event.parameters:
+                for param in event.parameters:  # type: ignore[assignment]
                     if param.name == param_name:
                         results.append(event)
                         break
@@ -394,7 +394,7 @@ class KnowledgeRetriever:
         Returns:
             匹配的 API 列表
         """
-        results = []
+        results: list[APIEntry] = []
 
         for api in self.kb.apis.values():
             if api.return_type and return_type.lower() in api.return_type.lower():
@@ -450,7 +450,7 @@ class KnowledgeRetriever:
         名称完全匹配最优先。
         """
 
-        def get_score(entry):
+        def get_score(entry: APIEntry | EventEntry | EnumEntry) -> int:
             query_lower = query.lower()
             name_lower = entry.name.lower()
 
@@ -523,7 +523,7 @@ class KnowledgeRetriever:
         if len(s2) == 0:
             return len(s1)
 
-        previous_row = range(len(s2) + 1)
+        previous_row: list[int] = list(range(len(s2) + 1))
 
         for i, c1 in enumerate(s1):
             current_row = [i + 1]

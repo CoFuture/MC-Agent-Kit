@@ -88,7 +88,7 @@ class CodeExtractor:
         r"On(\w+)",  # 回调事件
     ]
 
-    def __init__(self):
+    def __init__(self) -> None:
         """初始化提取器"""
         self.code_block_pattern = re.compile(
             r"```(\w*)\n(.*?)```",
@@ -317,7 +317,7 @@ class CodeExtractor:
 
         # 取最后几行作为描述
         lines = before_code.split("\n")
-        desc_lines = []
+        desc_lines: list[str] = []
 
         for line in reversed(lines):
             line = line.strip()

@@ -423,9 +423,9 @@ class ApiUsageTracker:
     追踪 API 的使用情况，提供统计和推荐功能。
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._stats: dict[str, ApiUsageStats] = {}
-        self._total_queries = 0
+        self._total_queries: int = 0
 
     def record_usage(
         self,

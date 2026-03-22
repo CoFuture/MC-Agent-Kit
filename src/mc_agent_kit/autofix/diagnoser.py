@@ -156,7 +156,7 @@ class ErrorDiagnoser:
     # Traceback 行号提取模式
     TRACEBACK_LINE_PATTERN = re.compile(r'File\s+"([^"]+)",\s+line\s+(\d+)')
 
-    def __init__(self):
+    def __init__(self) -> None:
         """初始化诊断器"""
         self._custom_patterns: list[tuple[ErrorType, re.Pattern, dict[str, Any]]] = []
 

@@ -1134,20 +1134,6 @@ wheels = [
 ]
 
 [[package]]
-name = "llama-index-embeddings-huggingface"
-version = "0.7.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "huggingface-hub" },
-    { name = "llama-index-core" },
-    { name = "sentence-transformers" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/a1/b3/faa44f7c9edaaefb6f7e1d8a306433c4ccc5ea5bde92302bec149e62b838/llama_index_embeddings_huggingface-0.7.0.tar.gz", hash = "sha256:da8a2a65df9404112c4430dfada09d4f846ba165197a25dbe77f734014c56a87", size = 8692, upload-time = "2026-03-12T20:20:31.588Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/25/86/dc43deab70f19db4fcdd82337e18b7f5b828478c486d6308cea10def87c5/llama_index_embeddings_huggingface-0.7.0-py3-none-any.whl", hash = "sha256:cae7e4ffddc1fecb34b83425a00679f338ce03ad0a7f3aca6b927136d6af7131", size = 8904, upload-time = "2026-03-12T20:20:32.449Z" },
-]
-
-[[package]]
 name = "llama-index-embeddings-openai"
 version = "0.6.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1210,19 +1196,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/e0/9e/ae83aac91f48cf79141d8751ed0f02aa4dbc62ecf397a4095455ca26f660/llama_index_readers_llama_parse-0.6.0.tar.gz", hash = "sha256:6e086b7034a001bb0204e3431cb1cee5b6ec13f930acbf9a6e82c64aed72b09e", size = 3858, upload-time = "2026-03-12T20:35:56.291Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/72/52/1d8e1aa23ef32d0df3a7fd533ae0c1bbcd15ae24d9c43d5c66096ef47e0e/llama_index_readers_llama_parse-0.6.0-py3-none-any.whl", hash = "sha256:d06a3376bcb278a610a4dad4bdc70a5f19278370d7df756d8b5c171c3c13ff1f", size = 3200, upload-time = "2026-03-12T20:35:55.611Z" },
-]
-
-[[package]]
-name = "llama-index-vector-stores-chroma"
-version = "0.5.5"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "chromadb" },
-    { name = "llama-index-core" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/10/e7/19d0a81ccba54c5d0c5be46ac3a300ed86eb9e6638375d8b4ceb506bd629/llama_index_vector_stores_chroma-0.5.5.tar.gz", hash = "sha256:823865069bcea4d9de91510271ae03cd6ea8eb0106a5b5ea43ffcec03ec2a708", size = 8262, upload-time = "2025-12-30T00:01:04.091Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a1/3e/eced8b70b63067bf1600faa003f5bcc11c67ce39fcb6efb9aa38ebcc3b05/llama_index_vector_stores_chroma-0.5.5-py3-none-any.whl", hash = "sha256:a1ca18abe2b6b90cd0bdff89fef9fb389bbd3dfb6fc74844bf9100d48d258874", size = 8078, upload-time = "2025-12-30T00:01:03.288Z" },
 ]
 
 [[package]]
@@ -1334,55 +1307,42 @@ name = "mc-agent-kit"
 version = "1.32.0"
 source = { editable = "." }
 dependencies = [
+    { name = "click" },
     { name = "jinja2" },
     { name = "pyyaml" },
+    { name = "rich" },
 ]
 
 [package.optional-dependencies]
-all = [
-    { name = "chromadb" },
-    { name = "llama-index" },
-    { name = "llama-index-embeddings-huggingface" },
-    { name = "llama-index-vector-stores-chroma" },
-    { name = "mypy" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-cov" },
-    { name = "ruff" },
-    { name = "sentence-transformers" },
-]
 dev = [
     { name = "mypy" },
     { name = "pytest" },
-    { name = "pytest-asyncio" },
     { name = "pytest-cov" },
     { name = "ruff" },
+    { name = "types-pyyaml" },
 ]
-knowledge = [
+semantic = [
     { name = "chromadb" },
     { name = "llama-index" },
-    { name = "llama-index-embeddings-huggingface" },
-    { name = "llama-index-vector-stores-chroma" },
     { name = "sentence-transformers" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "chromadb", marker = "extra == 'knowledge'", specifier = ">=0.5.0" },
-    { name = "jinja2", specifier = ">=3.1.0" },
-    { name = "llama-index", marker = "extra == 'knowledge'", specifier = ">=0.12.0" },
-    { name = "llama-index-embeddings-huggingface", marker = "extra == 'knowledge'", specifier = ">=0.4.0" },
-    { name = "llama-index-vector-stores-chroma", marker = "extra == 'knowledge'", specifier = ">=0.3.0" },
-    { name = "mc-agent-kit", extras = ["dev", "knowledge"], marker = "extra == 'all'" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23.0" },
-    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=5.0.0" },
-    { name = "pyyaml", specifier = ">=6.0.3" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.3.0" },
-    { name = "sentence-transformers", marker = "extra == 'knowledge'", specifier = ">=3.0.0" },
+    { name = "chromadb", marker = "extra == 'semantic'", specifier = ">=0.4.0" },
+    { name = "click", specifier = ">=8.0.0" },
+    { name = "jinja2", specifier = ">=3.0.0" },
+    { name = "llama-index", marker = "extra == 'semantic'", specifier = ">=0.10.0" },
+    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },
+    { name = "pyyaml", specifier = ">=6.0" },
+    { name = "rich", specifier = ">=13.0.0" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
+    { name = "sentence-transformers", marker = "extra == 'semantic'", specifier = ">=2.0.0" },
+    { name = "types-pyyaml", marker = "extra == 'dev'", specifier = ">=6.0.0" },
 ]
-provides-extras = ["dev", "knowledge", "all"]
+provides-extras = ["dev", "semantic"]
 
 [[package]]
 name = "mdurl"
@@ -2385,18 +2345,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pytest-asyncio"
-version = "1.3.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pytest" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/90/2c/8af215c0f776415f3590cac4f9086ccefd6fd463befeae41cd4d3f193e5a/pytest_asyncio-1.3.0.tar.gz", hash = "sha256:d7f52f36d231b80ee124cd216ffb19369aa168fc10095013c6b014a34d3ee9e5", size = 50087, upload-time = "2025-11-10T16:07:47.256Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e5/35/f8b19922b6a25bc0880171a2f1a003eaeb93657475193ab516fd87cac9da/pytest_asyncio-1.3.0-py3-none-any.whl", hash = "sha256:611e26147c7f77640e6d0a92a38ed17c3e9848063698d5c93d5aa7aa11cebff5", size = 15075, upload-time = "2025-11-10T16:07:45.537Z" },
-]
-
-[[package]]
 name = "pytest-cov"
 version = "7.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3109,6 +3057,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f5/24/cb09efec5cc954f7f9b930bf8279447d24618bb6758d4f6adf2574c41780/typer-0.24.1.tar.gz", hash = "sha256:e39b4732d65fbdcde189ae76cf7cd48aeae72919dea1fdfc16593be016256b45", size = 118613, upload-time = "2026-02-21T16:54:40.609Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4a/91/48db081e7a63bb37284f9fbcefda7c44c277b18b0e13fbc36ea2335b71e6/typer-0.24.1-py3-none-any.whl", hash = "sha256:112c1f0ce578bfb4cab9ffdabc68f031416ebcc216536611ba21f04e9aa84c9e", size = 56085, upload-time = "2026-02-21T16:54:41.616Z" },
+]
+
+[[package]]
+name = "types-pyyaml"
+version = "6.0.12.20250915"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/7e/69/3c51b36d04da19b92f9e815be12753125bd8bc247ba0470a982e6979e71c/types_pyyaml-6.0.12.20250915.tar.gz", hash = "sha256:0f8b54a528c303f0e6f7165687dd33fafa81c807fcac23f632b63aa624ced1d3", size = 17522, upload-time = "2025-09-15T03:01:00.728Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bd/e0/1eed384f02555dde685fff1a1ac805c1c7dcb6dd019c916fe659b1c1f9ec/types_pyyaml-6.0.12.20250915-py3-none-any.whl", hash = "sha256:e7d4d9e064e89a3b3cae120b4990cd370874d2bf12fa5f46c97018dd5d3c9ab6", size = 20338, upload-time = "2025-09-15T03:00:59.218Z" },
 ]
 
 [[package]]
