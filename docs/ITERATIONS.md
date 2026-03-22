@@ -33,7 +33,9 @@
 | #23 | v1.10.0 | 2026-03-22 | 插件系统功能完善（沙箱、版本检查、依赖管理） | ✅ 完成 |
 | #24 | v1.11.0 | 2026-03-22 | 插件热重载功能与示例扩展 | ✅ 完成 |
 | #25 | v1.12.0 | 2026-03-22 | 代码质量改进与文档完善 | ✅ 完成 |
-| #26 | v1.13.0 | 2026-03-22 | 项目结构重组，聚焦MVP核心能力 | 🔄 进行中 |
+| #26 | v1.13.0 | 2026-03-22 | 项目结构重组，聚焦MVP核心能力 | ✅ 完成 |
+| #27 | v1.14.0 | 2026-03-22 | CLI工具完善（mc-create/mc-kb命令） | ✅ 完成 |
+| #28 | v1.15.0 | 2026-03-22 | 知识检索增强与脚手架完善 | ✅ 完成 |
 
 ---
 
@@ -2299,4 +2301,134 @@ v1.13.0
 - 修复游戏启动器内存错误（最高优先级）
 - 完善 scaffold CLI 命令
 - 增强知识检索功能
+
+---
+
+## 迭代 #27 (2026-03-22)
+
+### 版本
+v1.14.0
+
+### 目标
+完善核心 CLI 工具
+
+### 完成内容
+
+#### 1. CLI 命令实现 ✅
+- [x] `mc-create project` 命令
+- [x] `mc-create entity` 命令
+- [x] `mc-create item` 命令（标记为未实现）
+- [x] `mc-create block` 命令（标记为未实现）
+- [x] `mc-kb search` 命令
+- [x] `mc-kb api` 命令
+- [x] `mc-kb event` 命令
+- [x] `mc-kb status` 命令
+
+#### 2. 测试完善 ✅
+- 新增 `test_cli_new_commands.py` (15 个测试)
+- 所有测试通过 (1415 passed, 2 skipped)
+
+#### 3. 模块兼容性修复 ✅
+- [x] 创建 plugin/completion/performance 顶层模块别名
+- [x] 保持向后兼容，测试全部通过
+
+### 验收标准
+- [x] mc-create 命令可用 ✅
+- [x] mc-kb 命令可用 ✅
+- [x] 所有测试通过 ✅
+
+### 文件变更
+- 新增：src/tests/test_cli_new_commands.py (15 个测试)
+- 修改：src/mc_agent_kit/cli.py (新增 create 和 kb 命令)
+- 修改：pyproject.toml (版本升级到 1.14.0)
+- 修改：docs/ITERATIONS.md
+- 修改：docs/NEXT_ITERATION.md
+
+---
+
+## 迭代 #28 (2026-03-22)
+
+### 版本
+v1.15.0
+
+### 目标
+知识检索增强与脚手架完善
+
+### 完成内容
+
+#### 1. 知识库解析器增强 ✅
+新增 `src/mc_agent_kit/knowledge/parsers/` 模块：
+- `markdown_parser.py` - Markdown 文档解析器
+  - `MarkdownParser`: 解析 Markdown 文档
+  - `APIInfo`: API 接口信息数据结构
+  - `EventInfo`: 事件信息数据结构
+  - `APIParameter`: API 参数数据结构
+  - `ParsedDocument`: 解析后的文档结构
+  - 支持提取：frontmatter、代码块、章节、参数表格
+  - 支持推断文档类型（API/事件/指南/Demo）
+
+- `code_extractor.py` - 代码示例提取器
+  - `CodeExtractor`: 从文档中提取代码示例
+  - `CodeExample`: 代码示例数据结构
+  - 支持提取：代码内容、API 调用、事件名称、标签
+  - 支持按 API/事件/标签查找代码示例
+
+#### 2. 脚手架功能完善 ✅
+实现 `mc-create item` 和 `mc-create block` 命令：
+- `ProjectCreator.add_item()`: 创建物品定义和脚本
+  - 生成 `items/{name}.json` 物品定义
+  - 生成 `scripts/{name}_item.py` 物品逻辑脚本
+  - 生成 `textures/item_texture.json` 纹理定义
+
+- `ProjectCreator.add_block()`: 创建方块定义和脚本
+  - 生成 `blocks/{name}.json` 方块定义
+  - 生成 `scripts/{name}_block.py` 方块逻辑脚本
+  - 生成 `models/entity/{name}.geo.json` 几何模型
+
+#### 3. 测试完善 ✅
+- 新增 `test_iteration_28.py` (27 个测试)
+  - TestMarkdownParser: 7 个测试
+  - TestCodeExtractor: 5 个测试
+  - TestProjectCreatorEnhanced: 6 个测试
+  - TestHybridSearchIntegration: 2 个测试
+  - TestCLIIntegration: 2 个测试
+  - TestCodeExampleDataStructure: 2 个测试
+  - TestAPIParameter: 2 个测试
+  - TestEventInfo: 1 个测试
+- 更新 `test_cli_new_commands.py` 物品/方块测试
+- 总测试数：1442 passed, 2 skipped
+
+### 遇到的问题
+1. 代码提取器语法错误
+   - 问题：`event_names: list[str]` 缺少 `=` 号
+   - 解决：添加缺失的 `=` 号
+
+2. CLI 测试期望未实现错误
+   - 问题：测试期望 item/block 命令返回失败
+   - 解决：更新测试验证实际功能
+
+### 经验总结
+- 解析器模块化设计便于后续扩展不同格式文档
+- 代码示例提取器可以关联 API/事件，便于搜索
+- 脚手架功能完善后，用户可以快速创建完整项目结构
+- 测试驱动开发确保功能正确性
+
+### 文件变更
+- 新增：src/mc_agent_kit/knowledge/parsers/__init__.py
+- 新增：src/mc_agent_kit/knowledge/parsers/markdown_parser.py
+- 新增：src/mc_agent_kit/knowledge/parsers/code_extractor.py
+- 修改：src/mc_agent_kit/scaffold/creator.py (实现 add_item/add_block)
+- 新增：src/tests/test_iteration_28.py (27 个测试)
+- 修改：src/tests/test_cli_new_commands.py (更新物品/方块测试)
+- 修改：pyproject.toml (版本升级到 1.15.0)
+- 修改：docs/ITERATIONS.md
+- 修改：docs/NEXT_ITERATION.md
+
+### 验收标准完成情况
+- [x] 知识库解析器可用
+- [x] 代码示例提取器可用
+- [x] mc-create item 命令可用
+- [x] mc-create block 命令可用
+- [x] 所有测试通过 (1442 passed, 2 skipped)
+- [x] 新增代码有测试覆盖
 

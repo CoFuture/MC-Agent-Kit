@@ -142,17 +142,277 @@ class ProjectCreator:
         self,
         name: str,
         project: AddonProject | Path | str,
+        template: str = "default",
     ) -> list[Path]:
-        """添加物品"""
-        raise NotImplementedError("物品创建功能将在后续迭代中实现")
-    
+        """
+        添加物品
+
+        Args:
+            name: 物品名称
+            project: 项目路径或 AddonProject 对象
+            template: 物品模板
+
+        Returns:
+            创建的文件路径列表
+        """
+        if isinstance(project, (str, Path)):
+            project_path = Path(project)
+            behavior_pack_path = project_path / "behavior_pack"
+            resource_pack_path = project_path / "resource_pack"
+        else:
+            behavior_pack_path = project.behavior_pack_path
+            resource_pack_path = project.resource_pack_path
+
+        created_files = []
+
+        # 创建物品定义文件
+        items_dir = behavior_pack_path / "items"
+        items_dir.mkdir(exist_ok=True)
+
+        item_file = items_dir / f"{name.lower()}.json"
+        item_content = {
+            "format_version": "1.16.0",
+            "minecraft:item": {
+                "description": {
+                    "identifier": f"custom:{name.lower()}",
+                    "category": "Items",
+                },
+                "components": {
+                    "minecraft:icon": f"custom:{name.lower()}",
+                    "minecraft:creative_group": "itemGroup.name.items",
+                },
+            },
+        }
+        item_file.write_text(json.dumps(item_content, indent=2))
+        created_files.append(item_file)
+
+        # 创建物品脚本
+        scripts_dir = behavior_pack_path / "scripts"
+        scripts_dir.mkdir(exist_ok=True)
+
+        script_file = scripts_dir / f"{name.lower()}_item.py"
+        script_content = self._generate_item_script(name)
+        script_file.write_text(script_content)
+        created_files.append(script_file)
+
+        # 创建纹理占位符说明
+        textures_dir = resource_pack_path / "textures"
+        textures_dir.mkdir(exist_ok=True)
+        items_textures_dir = textures_dir / "items"
+        items_textures_dir.mkdir(exist_ok=True)
+
+        # 创建纹理定义文件
+        textures_json = resource_pack_path / "textures" / "item_texture.json"
+        if not textures_json.exists():
+            texture_def = {
+                "resource_pack_name": "pack",
+                "texture_name": "atlas.items",
+                "texture_data": {
+                    name.lower(): {
+                        "textures": f"textures/items/{name.lower()}"
+                    }
+                },
+            }
+            textures_json.write_text(json.dumps(texture_def, indent=2))
+            created_files.append(textures_json)
+
+        return created_files
+
     def add_block(
         self,
         name: str,
         project: AddonProject | Path | str,
+        template: str = "default",
     ) -> list[Path]:
-        """添加方块"""
-        raise NotImplementedError("方块创建功能将在后续迭代中实现")
+        """
+        添加方块
+
+        Args:
+            name: 方块名称
+            project: 项目路径或 AddonProject 对象
+            template: 方块模板
+
+        Returns:
+            创建的文件路径列表
+        """
+        if isinstance(project, (str, Path)):
+            project_path = Path(project)
+            behavior_pack_path = project_path / "behavior_pack"
+            resource_pack_path = project_path / "resource_pack"
+        else:
+            behavior_pack_path = project.behavior_pack_path
+            resource_pack_path = project.resource_pack_path
+
+        created_files = []
+
+        # 创建方块定义文件
+        blocks_dir = behavior_pack_path / "blocks"
+        blocks_dir.mkdir(exist_ok=True)
+
+        block_file = blocks_dir / f"{name.lower()}.json"
+        block_content = {
+            "format_version": "1.16.0",
+            "minecraft:block": {
+                "description": {
+                    "identifier": f"custom:{name.lower()}",
+                },
+                "components": {
+                    "minecraft:destroy_time": 1.0,
+                    "minecraft:explosion_resistance": 1.0,
+                    "minecraft:friction": 0.6,
+                    "minecraft:light_emission": 0,
+                    "minecraft:light_dampening": 15,
+                    "minecraft:map_color": "#FFFFFF",
+                    "minecraft:geometry": f"geometry.{name.lower()}",
+                },
+            },
+        }
+        block_file.write_text(json.dumps(block_content, indent=2))
+        created_files.append(block_file)
+
+        # 创建方块脚本
+        scripts_dir = behavior_pack_path / "scripts"
+        scripts_dir.mkdir(exist_ok=True)
+
+        script_file = scripts_dir / f"{name.lower()}_block.py"
+        script_content = self._generate_block_script(name)
+        script_file.write_text(script_content)
+        created_files.append(script_file)
+
+        # 创建几何模型
+        models_dir = resource_pack_path / "models"
+        models_dir.mkdir(exist_ok=True)
+        entity_dir = models_dir / "entity"
+        entity_dir.mkdir(exist_ok=True)
+
+        geo_file = entity_dir / f"{name.lower()}.geo.json"
+        geo_content = self._generate_block_geometry(name)
+        geo_file.write_text(json.dumps(geo_content, indent=2))
+        created_files.append(geo_file)
+
+        # 创建纹理占位符
+        textures_dir = resource_pack_path / "textures"
+        textures_dir.mkdir(exist_ok=True)
+        blocks_textures_dir = textures_dir / "blocks"
+        blocks_textures_dir.mkdir(exist_ok=True)
+
+        return created_files
+
+    def _generate_item_script(self, name: str) -> str:
+        """生成物品脚本"""
+        return f'''# -*- coding: utf-8 -*-
+"""
+{name} 物品逻辑
+
+使用 ModSDK API 实现物品功能。
+"""
+
+from mod.common import minecraftEnum
+from mod.common.minecraftEnum import ItemUseType
+
+
+def register_item(system, item_name="{name.lower()}"):
+    """
+    注册物品事件监听
+
+    Args:
+        system: 游戏系统实例
+        item_name: 物品名称
+    """
+
+    def on_item_use(args):
+        """物品使用事件"""
+        player_id = args["playerId"]
+        item_stack = args["itemStack"]
+
+        # TODO: 实现物品使用逻辑
+        print(f"{{item_name}} used by player: {{player_id}}")
+
+    # 注册事件监听
+    system.DefineEvent("OnItemUse")
+    system.ListenForEvent("OnItemUse", on_item_use)
+
+
+def on_server_create(system):
+    """服务端创建时调用"""
+    register_item(system)
+'''
+
+    def _generate_block_script(self, name: str) -> str:
+        """生成方块脚本"""
+        return f'''# -*- coding: utf-8 -*-
+"""
+{name} 方块逻辑
+
+使用 ModSDK API 实现方块功能。
+"""
+
+from mod.common import minecraftEnum
+
+
+def register_block(system, block_name="{name.lower()}"):
+    """
+    注册方块事件监听
+
+    Args:
+        system: 游戏系统实例
+        block_name: 方块名称
+    """
+
+    def on_block_placed(args):
+        """方块放置事件"""
+        block_pos = args["blockPos"]
+        player_id = args.get("playerId")
+
+        # TODO: 实现方块放置逻辑
+        print(f"{{block_name}} placed at: {{block_pos}}")
+
+    def on_block_destroyed(args):
+        """方块破坏事件"""
+        block_pos = args["blockPos"]
+
+        # TODO: 实现方块破坏逻辑
+        print(f"{{block_name}} destroyed at: {{block_pos}}")
+
+    # 注册事件监听
+    system.DefineEvent("OnBlockPlaced")
+    system.DefineEvent("OnBlockDestroyed")
+    system.ListenForEvent("OnBlockPlaced", on_block_placed)
+    system.ListenForEvent("OnBlockDestroyed", on_block_destroyed)
+
+
+def on_server_create(system):
+    """服务端创建时调用"""
+    register_block(system)
+'''
+
+    def _generate_block_geometry(self, name: str) -> dict:
+        """生成方块几何模型"""
+        return {
+            "format_version": "1.12.0",
+            "minecraft:geometry": [
+                {
+                    "description": {
+                        "identifier": f"geometry.{name.lower()}",
+                        "texture_width": 16,
+                        "texture_height": 16,
+                    },
+                    "bones": [
+                        {
+                            "name": name.lower(),
+                            "pivot": [0, 0, 0],
+                            "cubes": [
+                                {
+                                    "origin": [0, 0, 0],
+                                    "size": [16, 16, 16],
+                                    "uv": [0, 0],
+                                }
+                            ],
+                        }
+                    ],
+                }
+            ],
+        }
     
     def _create_manifests(
         self,

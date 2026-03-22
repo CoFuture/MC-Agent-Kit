@@ -69,8 +69,8 @@ class TestCLICreate:
             assert entities_dir.exists()
             assert (entities_dir / "dragon.json").exists()
 
-    def test_create_item_not_implemented(self, tmp_path):
-        """测试添加物品（未实现）"""
+    def test_create_item(self, tmp_path):
+        """测试添加物品"""
         # 先创建项目
         with mock.patch("sys.argv", ["mc-agent", "create", "project", "test-addon", "-p", str(tmp_path)]):
             main()
@@ -78,10 +78,13 @@ class TestCLICreate:
         # 添加物品
         with mock.patch("sys.argv", ["mc-agent", "create", "item", "Sword", "-p", str(tmp_path / "test-addon")]):
             result = main()
-            assert result == 1  # 应该返回失败（未实现）
+            assert result == 0
+            items_dir = tmp_path / "test-addon" / "behavior_pack" / "items"
+            assert items_dir.exists()
+            assert (items_dir / "sword.json").exists()
 
-    def test_create_block_not_implemented(self, tmp_path):
-        """测试添加方块（未实现）"""
+    def test_create_block(self, tmp_path):
+        """测试添加方块"""
         # 先创建项目
         with mock.patch("sys.argv", ["mc-agent", "create", "project", "test-addon", "-p", str(tmp_path)]):
             main()
@@ -89,7 +92,10 @@ class TestCLICreate:
         # 添加方块
         with mock.patch("sys.argv", ["mc-agent", "create", "block", "Stone", "-p", str(tmp_path / "test-addon")]):
             result = main()
-            assert result == 1  # 应该返回失败（未实现）
+            assert result == 0
+            blocks_dir = tmp_path / "test-addon" / "behavior_pack" / "blocks"
+            assert blocks_dir.exists()
+            assert (blocks_dir / "stone.json").exists()
 
 
 class TestCLIKB:
