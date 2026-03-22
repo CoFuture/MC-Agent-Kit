@@ -5,6 +5,15 @@ MC-Agent-Kit 知识库模块
 """
 
 from .base import Document, DocumentChunk, DocumentType, SearchResult
+from .examples_enhanced import (
+    CodeExampleEnhanced,
+    CodeExampleManager,
+    DifficultyLevel,
+    ExampleCategory,
+    ExampleManagerConfig,
+    SearchResult as ExampleSearchResult,
+    create_example_manager,
+)
 from .incremental import ChangeReport, DocumentChange, IncrementalUpdater
 from .knowledge_base import KnowledgeBase
 from .retrieval import CodeExampleSearchResult, KnowledgeRetrieval, SearchResult as RetrievalSearchResult, create_retrieval
@@ -49,6 +58,14 @@ __all__ = [
     "SearchCacheEntry",
     "SearchCacheStats",
     "create_search_cache",
+    # Iteration #35: Enhanced Examples
+    "CodeExampleEnhanced",
+    "CodeExampleManager",
+    "DifficultyLevel",
+    "ExampleCategory",
+    "ExampleManagerConfig",
+    "ExampleSearchResult",
+    "create_example_manager",
 ]
 
 

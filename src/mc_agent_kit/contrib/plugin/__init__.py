@@ -4,6 +4,16 @@ This module provides a plugin architecture that allows extending
 the functionality of MC-Agent-Kit with third-party plugins.
 """
 
+from .auto_install import (
+    DependencyInfo,
+    DependencyInstaller,
+    DependencyInstallerConfig,
+    DependencyType,
+    InstallReport,
+    InstallResult,
+    InstallStatus,
+    create_dependency_installer,
+)
 from .base import (
     PluginBase,
     PluginInfo,
@@ -18,7 +28,7 @@ from .dependency import (
     DependencyManager,
     DependencyReport,
     DependencyStatus,
-    DependencyType,
+    DependencyType as PluginDependencyType,
 )
 from .hot_reload import (
     HotReloadConfig,
@@ -31,6 +41,24 @@ from .hot_reload import (
 )
 from .loader import PluginLoader, PluginRegistry
 from .manager import PluginManager
+from .marketplace import (
+    MarketplaceConfig,
+    PluginCategory,
+    PluginMarketInfo,
+    PluginMarketplace,
+    PluginStatus,
+    SearchResult,
+    create_marketplace,
+)
+from .performance import (
+    MetricType,
+    PerformanceAlert,
+    PerformanceMetric,
+    PerformanceMonitorConfig,
+    PluginPerformanceMonitor,
+    PluginStats,
+    create_performance_monitor,
+)
 from .sandbox import (
     CodeValidator,
     PluginSandbox,
@@ -92,4 +120,28 @@ __all__ = [
     "WatchedPlugin",
     "create_hot_reloader",
     "reload_all_plugins",
+    # Marketplace
+    "PluginMarketplace",
+    "PluginMarketInfo",
+    "PluginCategory",
+    "PluginStatus",
+    "MarketplaceConfig",
+    "SearchResult",
+    "create_marketplace",
+    # Performance Monitor
+    "PluginPerformanceMonitor",
+    "PluginStats",
+    "PerformanceMetric",
+    "PerformanceAlert",
+    "MetricType",
+    "PerformanceMonitorConfig",
+    "create_performance_monitor",
+    # Auto Install
+    "DependencyInstaller",
+    "DependencyInfo",
+    "DependencyInstallerConfig",
+    "InstallReport",
+    "InstallResult",
+    "InstallStatus",
+    "create_dependency_installer",
 ]
