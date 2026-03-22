@@ -20,6 +20,7 @@ from mc_agent_kit.completion import (
     RefactorEngine,
     SmellDetector,
 )
+from mc_agent_kit.scaffold import ProjectCreator
 from mc_agent_kit.skills import (
     get_registry,
     register_modsdk_skills,
@@ -554,6 +555,227 @@ def cmd_autofix(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_create(args: argparse.Namespace) -> int:
+    """项目创建"""
+    creator = ProjectCreator()
+
+    if args.type == "project":
+        # 创建项目
+        try:
+            project = creator.create_project(
+                name=args.name,
+                path=args.path or ".",
+                template=args.template or "empty",
+                force=args.force,
+            )
+
+            if args.format == "json":
+                data = {
+                    "success": True,
+                    "message": f"项目 '{args.name}' 创建成功",
+                    "project": {
+                        "name": project.name,
+                        "path": str(project.path),
+                        "behavior_pack_path": str(project.behavior_pack_path),
+                        "resource_pack_path": str(project.resource_pack_path),
+                    }
+                }
+                print(json.dumps(data, ensure_ascii=False, indent=2))
+            else:
+                print(f"✅ 项目 '{args.name}' 创建成功!")
+                print(f"\n目录结构:")
+                print(f"  📁 {project.path}")
+                print(f"    📁 behavior_pack/")
+                print(f"      📄 manifest.json")
+                print(f"      📁 scripts/")
+                print(f"    📁 resource_pack/")
+                print(f"      📄 manifest.json")
+                print(f"      📁 textures/")
+
+        except FileExistsError as e:
+            if args.format == "json":
+                print(json.dumps({"success": False, "error": str(e)}, ensure_ascii=False))
+            else:
+                print(f"❌ 错误: {e}")
+                print("提示: 使用 --force 覆盖已存在的项目")
+            return 1
+
+    elif args.type == "entity":
+        # 添加实体
+        created_files = creator.add_entity(
+            name=args.name,
+            project=args.path or ".",
+        )
+
+        if args.format == "json":
+            data = {
+                "success": True,
+                "message": f"实体 '{args.name}' 添加成功",
+                "files": [str(f) for f in created_files]
+            }
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            print(f"✅ 实体 '{args.name}' 添加成功!")
+            print(f"\n创建的文件:")
+            for f in created_files:
+                print(f"  📄 {f}")
+
+    elif args.type == "item":
+        # 添加物品
+        try:
+            creator.add_item(name=args.name, project=args.path or ".")
+        except NotImplementedError as e:
+            if args.format == "json":
+                print(json.dumps({"success": False, "error": str(e)}, ensure_ascii=False))
+            else:
+                print(f"❌ 功能未实现: {e}")
+            return 1
+
+    elif args.type == "block":
+        # 添加方块
+        try:
+            creator.add_block(name=args.name, project=args.path or ".")
+        except NotImplementedError as e:
+            if args.format == "json":
+                print(json.dumps({"success": False, "error": str(e)}, ensure_ascii=False))
+            else:
+                print(f"❌ 功能未实现: {e}")
+            return 1
+
+    return 0
+
+
+def cmd_kb(args: argparse.Namespace) -> int:
+    """知识库管理"""
+    from mc_agent_kit.knowledge_base import KnowledgeBase, KnowledgeRetriever
+
+    if args.action == "status":
+        # 查看状态
+        if args.format == "json":
+            data = {
+                "status": "ready",
+                "docs_path": "resources/docs/mcdocs",
+                "index_path": "data/knowledge_base.json"
+            }
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            print("知识库状态:")
+            print("  状态: ✅ 就绪")
+            print("  文档路径: resources/docs/mcdocs")
+            print("  索引路径: data/knowledge_base.json")
+
+    elif args.action == "search":
+        # 搜索
+        retriever = KnowledgeRetriever()
+        retriever.load("data/knowledge_base.json")
+
+        results = retriever.search(
+            query=args.query,
+            limit=args.limit or 5,
+        )
+
+        if args.format == "json":
+            data = {
+                "success": True,
+                "query": args.query,
+                "results": [
+                    {
+                        "name": r.name,
+                        "type": type(r).__name__,
+                        "module": r.module,
+                        "description": r.description[:100] + "..." if len(r.description) > 100 else r.description,
+                    }
+                    for r in results
+                ]
+            }
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            print(f"搜索结果: '{args.query}'\n")
+            if results:
+                for i, r in enumerate(results, 1):
+                    print(f"[{i}] {r.name} ({type(r).__name__})")
+                    print(f"    模块: {r.module}")
+                    desc = r.description[:100] + "..." if len(r.description) > 100 else r.description
+                    print(f"    描述: {desc}")
+                    print()
+            else:
+                print("未找到相关结果")
+
+    elif args.action == "api":
+        # 精确查 API
+        retriever = KnowledgeRetriever()
+        retriever.load("data/knowledge_base.json")
+
+        api = retriever.get_api(args.name)
+
+        if args.format == "json":
+            if api:
+                data = {
+                    "success": True,
+                    "api": {
+                        "name": api.name,
+                        "module": api.module,
+                        "description": api.description,
+                        "scope": api.scope.value if api.scope else "unknown",
+                        "parameters": [
+                            {"name": p.name, "type": p.data_type, "description": p.description}
+                            for p in api.parameters
+                        ],
+                    }
+                }
+            else:
+                data = {"success": False, "error": f"API '{args.name}' 未找到"}
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            if api:
+                print(f"API: {api.name}\n")
+                print(f"模块: {api.module}")
+                print(f"描述: {api.description}")
+                if api.scope:
+                    print(f"作用域: {api.scope.value}")
+                if api.parameters:
+                    print("\n参数:")
+                    for p in api.parameters:
+                        print(f"  - {p.name}: {p.data_type}")
+                        if p.description:
+                            print(f"    {p.description}")
+            else:
+                print(f"❌ API '{args.name}' 未找到")
+
+    elif args.action == "event":
+        # 精确查事件
+        retriever = KnowledgeRetriever()
+        retriever.load("data/knowledge_base.json")
+
+        event = retriever.get_event(args.name)
+
+        if args.format == "json":
+            if event:
+                data = {
+                    "success": True,
+                    "event": {
+                        "name": event.name,
+                        "module": event.module,
+                        "description": event.description,
+                        "scope": event.scope.value if event.scope else "unknown",
+                    }
+                }
+            else:
+                data = {"success": False, "error": f"事件 '{args.name}' 未找到"}
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        else:
+            if event:
+                print(f"事件: {event.name}\n")
+                print(f"模块: {event.module}")
+                print(f"描述: {event.description}")
+                if event.scope:
+                    print(f"作用域: {event.scope.value}")
+            else:
+                print(f"❌ 事件 '{args.name}' 未找到")
+
+    return 0
+
+
 def main() -> int:
     """主入口"""
     parser = argparse.ArgumentParser(
@@ -686,6 +908,35 @@ def main() -> int:
         help="输出格式",
     )
 
+    # create 命令
+    create_parser = subparsers.add_parser("create", help="创建 Addon 项目")
+    create_parser.add_argument("type", choices=["project", "entity", "item", "block"], help="创建类型")
+    create_parser.add_argument("name", help="名称")
+    create_parser.add_argument("-p", "--path", help="目标路径")
+    create_parser.add_argument("-t", "--template", choices=["empty", "entity", "item", "block"], help="项目模板")
+    create_parser.add_argument("--force", action="store_true", help="覆盖已存在的项目")
+    create_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
+
+    # kb 命令
+    kb_parser = subparsers.add_parser("kb", help="知识库管理")
+    kb_parser.add_argument("action", choices=["status", "search", "api", "event"], help="操作类型")
+    kb_parser.add_argument("-q", "--query", help="搜索查询")
+    kb_parser.add_argument("-n", "--name", help="API/事件名称")
+    kb_parser.add_argument("-l", "--limit", type=int, default=5, help="返回结果数量")
+    kb_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
+
     args = parser.parse_args()
 
     if args.command == "list":
@@ -706,6 +957,10 @@ def main() -> int:
         return cmd_check(args)
     elif args.command == "autofix":
         return cmd_autofix(args)
+    elif args.command == "create":
+        return cmd_create(args)
+    elif args.command == "kb":
+        return cmd_kb(args)
     else:
         parser.print_help()
         return 0

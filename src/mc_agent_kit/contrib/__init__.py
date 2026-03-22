@@ -10,3 +10,12 @@
 
 这些模块不是当前开发重点，保留供后续迭代使用。
 """
+
+# 导出子模块以保持向后兼容
+from . import completion, performance, plugin
+
+__all__ = [
+    "completion",
+    "performance",
+    "plugin",
+]

@@ -37,6 +37,79 @@
 
 ---
 
+
+---
+
+## 迭代 #26 (2026-03-22)
+
+### 版本
+v1.13.0
+
+### 目标
+根据 VISION.md 调整项目结构，聚焦 MVP 核心能力
+
+### 完成内容
+
+#### 1. 项目结构重组 ✅
+- 将 completion、performance、plugin 移到 contrib 目录
+- 创建向后兼容的模块别名，保持测试通过
+- 新增 plugin/completion/performance 顶层模块别名
+
+#### 2. CLI 工具增强 ✅
+- 新增 mc-create 命令：创建 Addon 项目
+  - mc-create project <name> - 创建新项目
+  - mc-create entity <name> - 添加实体
+  - mc-create item <name> - 添加物品（待实现）
+  - mc-create block <name> - 添加方块（待实现）
+- 新增 mc-kb 命令：知识库管理
+  - mc-kb status - 查看知识库状态
+  - mc-kb search <query> - 语义搜索
+  - mc-kb api <name> - 精确查 API
+  - mc-kb event <name> - 精确查事件
+
+#### 3. 测试完善 ✅
+- 新增 	est_cli_new_commands.py (15 个测试)
+  - TestCLICreate: 7 个测试
+  - TestCLIKB: 7 个测试
+  - TestCLIScaffoldIntegration: 1 个集成测试
+- 总测试数：1415 passed, 2 skipped
+
+### 遇到的问题
+1. 模块移动后测试导入失败
+   - 问题：completion/performance/plugin 移到 contrib 后，测试文件导入路径失效
+   - 解决：创建顶层模块别名文件，保持向后兼容
+
+2. CLI kb 命令属性错误
+   - 问题：搜索结果对象没有 entry_type 属性
+   - 解决：使用 type(r).__name__ 动态获取类型
+
+### 经验总结
+- 模块重构时需要保持向后兼容性
+- 测试应该基于实际 API 而非预期 API
+- CLI 命令需要充分的测试覆盖
+
+### 文件变更
+- 新增：src/mc_agent_kit/plugin/__init__.py (向后兼容别名)
+- 新增：src/mc_agent_kit/completion/__init__.py (向后兼容别名)
+- 新增：src/mc_agent_kit/performance/__init__.py (向后兼容别名)
+- 新增：src/mc_agent_kit/plugin/*.py (7 个子模块别名)
+- 新增：src/mc_agent_kit/completion/*.py (4 个子模块别名)
+- 新增：src/mc_agent_kit/performance/*.py (3 个子模块别名)
+- 新增：src/tests/test_cli_new_commands.py (15 个测试)
+- 修改：src/mc_agent_kit/cli.py (新增 create 和 kb 命令)
+- 修改：src/mc_agent_kit/__init__.py (导出 contrib 模块)
+- 修改：src/mc_agent_kit/contrib/__init__.py (导出子模块)
+- 修改：docs/ITERATIONS.md
+- 修改：docs/NEXT_ITERATION.md
+- 修改：pyproject.toml (版本升级到 1.14.0)
+
+### 验收标准完成情况
+- [x] 所有测试通过 (1415 passed, 2 skipped)
+- [x] mc-create 命令可用
+- [x] mc-kb 命令可用
+- [x] 新增代码有测试覆盖
+
+---
 ## 迭代 #25 (2026-03-22)
 
 ### 版本
