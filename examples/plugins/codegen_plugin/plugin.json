@@ -1,0 +1,16 @@
+{
+    "name": "codegen_plugin",
+    "version": "1.0.0",
+    "description": "Code generation plugin for MC-Agent-Kit templates",
+    "author": "MC-Agent-Kit Team",
+    "main": "codegen_plugin.py",
+    "plugin_class": "CodegenPlugin",
+    "dependencies": [],
+    "capabilities": ["code_generation", "templates", "snippets"],
+    "min_core_version": "1.10.0",
+    "config": {
+        "default_style": "pep8",
+        "add_docstrings": true,
+        "add_type_hints": true
+    }
+}

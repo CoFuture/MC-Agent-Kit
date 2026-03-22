@@ -39,6 +39,15 @@ from .version import (
     VersionRange,
     check_plugin_version,
 )
+from .hot_reload import (
+    HotReloadConfig,
+    HotReloadStatus,
+    PluginHotReloader,
+    ReloadEvent,
+    WatchedPlugin,
+    create_hot_reloader,
+    reload_all_plugins,
+)
 
 __all__ = [
     # Base classes
@@ -75,4 +84,12 @@ __all__ = [
     "DependencyCheckResult",
     "DependencyReport",
     "DependencyManager",
+    # Hot Reload
+    "PluginHotReloader",
+    "HotReloadConfig",
+    "HotReloadStatus",
+    "ReloadEvent",
+    "WatchedPlugin",
+    "create_hot_reloader",
+    "reload_all_plugins",
 ]
