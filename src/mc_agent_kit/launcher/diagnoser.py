@@ -646,6 +646,9 @@ class LauncherDiagnoser:
             "differences": [],
             "warnings": [],
             "suggestions": [],
+            "missing_fields": [],
+            "extra_fields": [],
+            "type_mismatches": [],
         }
 
         # 读取当前配置
@@ -671,27 +674,29 @@ class LauncherDiagnoser:
             result["warnings"].append(f"无法读取 MC Studio 配置文件: {e}")
             return result
 
-        # 比较关键字段
+        # 深度比较配置
+        self._deep_compare(
+            current_config, mc_config,
+            "", result
+        )
+
+        # 检查关键字段
         key_fields = [
             "version",
             "MainComponentId",
+            "LocalComponentPathsDict",
             "world_info",
             "player_info",
             "room_info",
         ]
 
         for field in key_fields:
-            current_val = current_config.get(field)
-            mc_val = mc_config.get(field)
+            if field not in current_config and field in mc_config:
+                result["missing_fields"].append(field)
+            elif field in current_config and field not in mc_config:
+                result["extra_fields"].append(field)
 
-            if current_val != mc_val:
-                result["differences"].append({
-                    "field": field,
-                    "current": current_val,
-                    "mc_studio": mc_val,
-                })
-
-        # 检查 LocalComponentPathsDict
+        # 检查 LocalComponentPathsDict 结构
         current_paths = current_config.get("LocalComponentPathsDict", {})
         mc_paths = mc_config.get("LocalComponentPathsDict", {})
 
@@ -702,13 +707,120 @@ class LauncherDiagnoser:
                 "mc_studio": list(mc_paths.keys()),
             })
 
+        # 检查路径配置结构
+        for key, path_info in current_paths.items():
+            if isinstance(path_info, dict):
+                required_path_fields = ["cfg_path", "work_path"]
+                for pf in required_path_fields:
+                    if pf not in path_info:
+                        result["warnings"].append(
+                            f"LocalComponentPathsDict[{key}] 缺少字段: {pf}"
+                        )
+
+        # 检查 world_info 结构
+        current_world = current_config.get("world_info", {})
+        mc_world = mc_config.get("world_info", {})
+
+        world_fields = ["game_type", "difficulty", "permission_level", "cheat", "cheat_info"]
+        for field in world_fields:
+            if field in mc_world and field not in current_world:
+                result["missing_fields"].append(f"world_info.{field}")
+            elif field in current_world and field in mc_world:
+                if current_world.get(field) != mc_world.get(field):
+                    result["differences"].append({
+                        "field": f"world_info.{field}",
+                        "current": current_world.get(field),
+                        "mc_studio": mc_world.get(field),
+                    })
+
+        # 检查 room_info 结构
+        current_room = current_config.get("room_info", {})
+        mc_room = mc_config.get("room_info", {})
+
+        room_fields = ["token", "room_id", "host_id", "max_player"]
+        for field in room_fields:
+            if field in mc_room and field in current_room:
+                if current_room.get(field) != mc_room.get(field):
+                    result["differences"].append({
+                        "field": f"room_info.{field}",
+                        "current": current_room.get(field),
+                        "mc_studio": mc_room.get(field),
+                    })
+
         # 生成建议
         if result["differences"]:
             result["suggestions"].append(
                 "建议参考 MC Studio 生成的配置文件格式，调整当前配置"
             )
 
+        if result["missing_fields"]:
+            result["suggestions"].append(
+                f"配置文件缺少字段: {', '.join(result['missing_fields'])}"
+            )
+
+        if result["type_mismatches"]:
+            result["suggestions"].append(
+                "检查数据类型是否正确，部分字段可能需要类型转换"
+            )
+
         return result
+
+    def _deep_compare(
+        self,
+        current: Any,
+        reference: Any,
+        path: str,
+        result: dict[str, Any]
+    ) -> None:
+        """
+        深度比较两个配置对象。
+
+        Args:
+            current: 当前配置
+            reference: 参考配置
+            path: 当前路径
+            result: 结果字典
+        """
+        if type(current) != type(reference):
+            result["type_mismatches"].append({
+                "path": path,
+                "current_type": type(current).__name__,
+                "reference_type": type(reference).__name__,
+            })
+            return
+
+        if isinstance(current, dict):
+            # 检查字典键
+            current_keys = set(current.keys())
+            reference_keys = set(reference.keys())
+
+            # 缺少的键
+            missing = reference_keys - current_keys
+            for key in missing:
+                result["missing_fields"].append(f"{path}.{key}" if path else key)
+
+            # 多余的键
+            extra = current_keys - reference_keys
+            for key in extra:
+                result["extra_fields"].append(f"{path}.{key}" if path else key)
+
+            # 递归比较共同键
+            for key in current_keys & reference_keys:
+                new_path = f"{path}.{key}" if path else key
+                self._deep_compare(current[key], reference[key], new_path, result)
+
+        elif isinstance(current, list):
+            # 列表长度不同
+            if len(current) != len(reference):
+                result["differences"].append({
+                    "field": f"{path} (length)",
+                    "current": len(current),
+                    "mc_studio": len(reference),
+                })
+            else:
+                # 逐项比较
+                for i, (c, r) in enumerate(zip(current, reference)):
+                    self._deep_compare(c, r, f"{path}[{i}]", result)
 
     def _find_mc_studio_config(self) -> str | None:
         """查找 MC Studio 配置文件"""
@@ -718,6 +830,374 @@ class LauncherDiagnoser:
                 if f.endswith(".cppconfig"):
                     return os.path.join(config_dir, f)
         return None
+
+
+@dataclass
+class ConfigFix:
+    """配置修复项"""
+    field: str
+    current_value: Any
+    suggested_value: Any
+    description: str
+    auto_fixable: bool = True
+
+
+@dataclass
+class ConfigFixReport:
+    """配置修复报告"""
+    fixes: list[ConfigFix] = field(default_factory=list)
+    fixed: bool = False
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "fixes": [
+                {
+                    "field": f.field,
+                    "current_value": f.current_value,
+                    "suggested_value": f.suggested_value,
+                    "description": f.description,
+                    "auto_fixable": f.auto_fixable,
+                }
+                for f in self.fixes
+            ],
+            "fixed": self.fixed,
+            "errors": self.errors,
+            "warnings": self.warnings,
+        }
+
+
+class ConfigAutoFixer:
+    """
+    配置文件自动修复器
+
+    分析配置文件问题并提供自动修复功能。
+    """
+
+    # 必要字段及其默认值
+    REQUIRED_FIELDS = {
+        "version": "1.0.0",
+        "client_type": 0,
+        "MainComponentId": "",
+        "LocalComponentPathsDict": {},
+        "world_info": {
+            "level_id": "",
+            "game_type": 1,
+            "difficulty": 2,
+            "permission_level": 1,
+            "cheat": True,
+            "cheat_info": {},
+            "resource_packs": [],
+            "behavior_packs": [],
+            "name": "",
+            "world_type": 2,
+        },
+        "room_info": {
+            "ip": "",
+            "port": 0,
+            "muiltClient": False,
+            "room_name": "",
+            "token": "",
+            "room_id": 0,
+            "host_id": 0,
+            "allow_pe": True,
+            "max_player": 0,
+            "visibility_mode": 0,
+            "is_pe": True,
+        },
+        "player_info": {
+            "user_id": 0,
+            "user_name": "",
+            "urs": "",
+        },
+        "anti_addiction_info": {
+            "enable": False,
+            "left_time": 0,
+            "exp_multiplier": 1.0,
+            "block_multplier": 1.0,
+            "first_message": "",
+        },
+        "misc": {
+            "multiplayer_game_type": 0,
+            "is_store_enabled": 1,
+        },
+    }
+
+    # CheatInfo 默认值
+    CHEAT_INFO_DEFAULTS = {
+        "pvp": True,
+        "show_coordinates": False,
+        "always_day": False,
+        "daylight_cycle": True,
+        "fire_spreads": True,
+        "tnt_explodes": True,
+        "keep_inventory": True,
+        "mob_spawn": True,
+        "natural_regeneration": True,
+        "mob_loot": True,
+        "mob_griefing": True,
+        "tile_drops": True,
+        "entities_drop_loot": True,
+        "weather_cycle": True,
+        "command_blocks_enabled": True,
+        "random_tick_speed": 1,
+        "experimental_holiday": False,
+        "experimental_biomes": False,
+        "fancy_bubbles": False,
+    }
+
+    def analyze(self, config: dict[str, Any]) -> ConfigFixReport:
+        """
+        分析配置文件问题。
+
+        Args:
+            config: 配置字典
+
+        Returns:
+            ConfigFixReport 修复报告
+        """
+        report = ConfigFixReport()
+
+        # 检查必要字段
+        self._check_required_fields(config, report)
+
+        # 检查 world_info 结构
+        world_info = config.get("world_info", {})
+        self._check_world_info(world_info, report)
+
+        # 检查 room_info 结构
+        room_info = config.get("room_info", {})
+        self._check_room_info(room_info, report)
+
+        # 检查 player_info 结构
+        player_info = config.get("player_info", {})
+        self._check_player_info(player_info, report)
+
+        # 检查 LocalComponentPathsDict
+        paths = config.get("LocalComponentPathsDict", {})
+        self._check_paths(paths, report)
+
+        return report
+
+    def _check_required_fields(
+        self,
+        config: dict[str, Any],
+        report: ConfigFixReport
+    ) -> None:
+        """检查必要字段"""
+        for field, default_value in self.REQUIRED_FIELDS.items():
+            if field not in config:
+                report.fixes.append(ConfigFix(
+                    field=field,
+                    current_value=None,
+                    suggested_value=default_value,
+                    description=f"缺少必要字段: {field}",
+                    auto_fixable=True,
+                ))
+
+    def _check_world_info(
+        self,
+        world_info: dict[str, Any],
+        report: ConfigFixReport
+    ) -> None:
+        """检查 world_info 结构"""
+        required = ["level_id", "game_type", "difficulty", "cheat", "resource_packs", "behavior_packs"]
+
+        for field in required:
+            if field not in world_info:
+                report.fixes.append(ConfigFix(
+                    field=f"world_info.{field}",
+                    current_value=None,
+                    suggested_value="" if field in ["level_id", "name"] else ([] if field.endswith("packs") else 0),
+                    description=f"world_info 缺少字段: {field}",
+                    auto_fixable=True,
+                ))
+
+        # 检查 cheat_info
+        cheat_info = world_info.get("cheat_info", {})
+        for field, default in self.CHEAT_INFO_DEFAULTS.items():
+            if field not in cheat_info:
+                report.fixes.append(ConfigFix(
+                    field=f"world_info.cheat_info.{field}",
+                    current_value=None,
+                    suggested_value=default,
+                    description=f"cheat_info 缺少字段: {field}",
+                    auto_fixable=True,
+                ))
+
+    def _check_room_info(
+        self,
+        room_info: dict[str, Any],
+        report: ConfigFixReport
+    ) -> None:
+        """检查 room_info 结构"""
+        required = ["token", "room_id", "host_id", "max_player", "allow_pe"]
+
+        for field in required:
+            if field not in room_info:
+                default = "" if field == "token" else 0
+                if field == "allow_pe":
+                    default = True
+
+                report.fixes.append(ConfigFix(
+                    field=f"room_info.{field}",
+                    current_value=None,
+                    suggested_value=default,
+                    description=f"room_info 缺少字段: {field}",
+                    auto_fixable=True,
+                ))
+
+    def _check_player_info(
+        self,
+        player_info: dict[str, Any],
+        report: ConfigFixReport
+    ) -> None:
+        """检查 player_info 结构"""
+        required = ["user_id", "user_name", "urs"]
+
+        for field in required:
+            if field not in player_info:
+                report.fixes.append(ConfigFix(
+                    field=f"player_info.{field}",
+                    current_value=None,
+                    suggested_value="" if field != "user_id" else 0,
+                    description=f"player_info 缺少字段: {field}",
+                    auto_fixable=True,
+                ))
+
+    def _check_paths(
+        self,
+        paths: dict[str, Any],
+        report: ConfigFixReport
+    ) -> None:
+        """检查 LocalComponentPathsDict 结构"""
+        for component_id, path_info in paths.items():
+            if not isinstance(path_info, dict):
+                report.errors.append(
+                    f"LocalComponentPathsDict[{component_id}] 应该是字典类型"
+                )
+                continue
+
+            for field in ["cfg_path", "work_path"]:
+                if field not in path_info:
+                    report.fixes.append(ConfigFix(
+                        field=f"LocalComponentPathsDict[{component_id}].{field}",
+                        current_value=None,
+                        suggested_value="",
+                        description=f"路径配置缺少字段: {field}",
+                        auto_fixable=True,
+                    ))
+
+    def fix(
+        self,
+        config: dict[str, Any],
+        report: ConfigFixReport | None = None
+    ) -> tuple[dict[str, Any], ConfigFixReport]:
+        """
+        自动修复配置文件。
+
+        Args:
+            config: 原始配置
+            report: 预先分析的修复报告（可选）
+
+        Returns:
+            (修复后的配置, 修复报告)
+        """
+        if report is None:
+            report = self.analyze(config)
+
+        fixed_config = dict(config)
+
+        # 应用所有可自动修复的修复项
+        for fix in report.fixes:
+            if not fix.auto_fixable:
+                continue
+
+            self._apply_fix(fixed_config, fix.field, fix.suggested_value)
+
+        report.fixed = True
+        return fixed_config, report
+
+    def _apply_fix(
+        self,
+        config: dict[str, Any],
+        field: str,
+        value: Any
+    ) -> None:
+        """
+        应用单个修复项。
+
+        Args:
+            config: 配置字典
+            field: 字段路径（如 "world_info.game_type"）
+            value: 要设置的值
+        """
+        parts = field.split(".")
+        current = config
+
+        for i, part in enumerate(parts[:-1]):
+            # 处理数组索引
+            if "[" in part and part.endswith("]"):
+                key = part.split("[")[0]
+                index = int(part.split("[")[1].rstrip("]"))
+                if key not in current:
+                    current[key] = []
+                while len(current[key]) <= index:
+                    current[key].append({})
+                current = current[key][index]
+            else:
+                if part not in current:
+                    current[part] = {}
+                current = current[part]
+
+        # 设置最终值
+        final_key = parts[-1]
+        if "[" in final_key and final_key.endswith("]"):
+            key = final_key.split("[")[0]
+            index = int(final_key.split("[")[1].rstrip("]"))
+            if key not in current:
+                current[key] = []
+            while len(current[key]) <= index:
+                current[key].append(None)
+            current[key][index] = value
+        else:
+            current[final_key] = value
+
+    def fix_from_file(
+        self,
+        config_path: str,
+        output_path: str | None = None
+    ) -> ConfigFixReport:
+        """
+        从文件读取配置并修复。
+
+        Args:
+            config_path: 配置文件路径
+            output_path: 输出路径（默认覆盖原文件）
+
+        Returns:
+            ConfigFixReport 修复报告
+        """
+        try:
+            with open(config_path, encoding="utf-8") as f:
+                config = json.load(f)
+        except Exception as e:
+            report = ConfigFixReport()
+            report.errors.append(f"无法读取配置文件: {e}")
+            return report
+
+        fixed_config, report = self.fix(config)
+
+        if report.fixed:
+            output = output_path or config_path
+            try:
+                with open(output, "w", encoding="utf-8") as f:
+                    json.dump(fixed_config, f, ensure_ascii=False, indent=2)
+            except Exception as e:
+                report.errors.append(f"无法保存配置文件: {e}")
+
+        return report
 
 
 def diagnose_launcher(
@@ -738,3 +1218,21 @@ def diagnose_launcher(
     """
     diagnoser = LauncherDiagnoser(game_path)
     return diagnoser.diagnose(addon_path, config_path, game_path)
+
+
+def fix_config(
+    config_path: str,
+    output_path: str | None = None
+) -> ConfigFixReport:
+    """
+    便捷函数：修复配置文件。
+
+    Args:
+        config_path: 配置文件路径
+        output_path: 输出路径（默认覆盖原文件）
+
+    Returns:
+        ConfigFixReport 修复报告
+    """
+    fixer = ConfigAutoFixer()
+    return fixer.fix_from_file(config_path, output_path)

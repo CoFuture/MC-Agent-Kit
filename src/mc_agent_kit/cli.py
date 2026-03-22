@@ -1021,7 +1021,7 @@ def cmd_logs(args: argparse.Namespace) -> int:
 
 def cmd_launcher(args: argparse.Namespace) -> int:
     """启动器诊断"""
-    from mc_agent_kit.launcher import diagnose_launcher
+    from mc_agent_kit.launcher import diagnose_launcher, fix_config
 
     if args.action == "diagnose":
         # 执行诊断
@@ -1143,6 +1143,45 @@ def cmd_launcher(args: argparse.Namespace) -> int:
                 print("✅ 配置文件与 MC Studio 格式一致")
 
         return 0
+
+    elif args.action == "fix":
+        # 自动修复配置文件
+        report = fix_config(
+            args.config_path,
+            args.output_path,
+        )
+
+        if args.format == "json":
+            print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
+        else:
+            print("配置文件修复结果:\n")
+
+            if report.fixes:
+                print(f"应用的修复 ({len(report.fixes)} 个):")
+                for fix in report.fixes:
+                    print(f"  - {fix.field}: {fix.description}")
+                    if fix.auto_fixable:
+                        print(f"    {fix.current_value} → {fix.suggested_value}")
+                print()
+
+            if report.errors:
+                print("❌ 错误:")
+                for e in report.errors:
+                    print(f"  - {e}")
+                print()
+
+            if report.warnings:
+                print("⚠️  警告:")
+                for w in report.warnings:
+                    print(f"  - {w}")
+                print()
+
+            if report.fixed:
+                print("✅ 配置文件修复完成")
+            else:
+                print("❌ 配置文件修复失败")
+
+        return 0 if report.fixed else 1
 
     return 0
 
@@ -1342,11 +1381,12 @@ def main() -> int:
 
     # launcher 命令
     launcher_parser = subparsers.add_parser("launcher", help="启动器诊断")
-    launcher_parser.add_argument("action", choices=["diagnose", "compare"], help="操作类型")
+    launcher_parser.add_argument("action", choices=["diagnose", "compare", "fix"], help="操作类型")
     launcher_parser.add_argument("--addon-path", help="Addon 目录路径")
     launcher_parser.add_argument("--config-path", help="配置文件路径")
     launcher_parser.add_argument("--game-path", help="游戏可执行文件路径")
     launcher_parser.add_argument("--mc-studio-config", help="MC Studio 配置文件路径 (用于对比)")
+    launcher_parser.add_argument("--output-path", help="修复后的配置输出路径")
     launcher_parser.add_argument(
         "--format",
         dest="format",
