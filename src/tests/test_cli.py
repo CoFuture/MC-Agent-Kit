@@ -233,7 +233,7 @@ class TestCLIDebug:
         args.format = "json"
         args.log = None
         args.file = None
-        args.action = "list_patterns"
+        args.action = "list_errors"
 
         result = cli.cmd_debug(args)
         assert result == 0
@@ -461,12 +461,12 @@ def test():
                 MockDetector.return_value = mock_detector
 
                 mock_engine = mock.MagicMock()
-                mock_engine.generate_suggestions.return_value = [
+                mock_engine.suggest.return_value = [
                     RefactorSuggestion(
-                        refactor_type=RefactorType.REPLACE_MAGIC_NUMBER,
-                        description="Replace magic number with constant",
+                        type=RefactorType.REPLACE_MAGIC_NUMBER,
+                        message="Replace magic number with constant",
                         line=3,
-                        auto_fixable=True,
+                        auto_applicable=True,
                     )
                 ]
                 MockEngine.return_value = mock_engine

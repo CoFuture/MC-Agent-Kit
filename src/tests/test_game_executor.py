@@ -84,6 +84,7 @@ class TestGameExecutionResult:
         """测试创建执行结果"""
         execution_result = ExecutionResult(
             status=ExecutionStatus.SUCCESS,
+            code="print('Hello')",
             output="Hello",
             return_value=None,
         )
@@ -341,6 +342,7 @@ class TestGameExecutorWithMock:
         # Mock 代码执行器
         mock_result = ExecutionResult(
             status=ExecutionStatus.SUCCESS,
+            code="print('Hello')",
             output="Hello",
             return_value=None,
         )

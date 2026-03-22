@@ -23,6 +23,7 @@
 | #13 | v1.0.0 | 2026-03-22 | PyPI 发布准备与代码质量改进 | ✅ 完成 |
 | #14 | v1.1.0 | 2026-03-22 | 测试覆盖率提升与文档国际化 | ✅ 完成 |
 | #15 | v1.2.0 | 2026-03-22 | 测试覆盖率提升至 78% | ✅ 完成 |
+| #16 | v1.3.0 | 2026-03-22 | CLI Bug 修复与测试完善 | ✅ 完成 |
 
 ---
 
@@ -98,6 +99,71 @@ v1.2.0
 - [x] 新增 6 个测试文件
 - [x] 覆盖率从 70% 提升至 78%
 - [ ] 测试覆盖率达到 90%（当前 78%，需后续迭代完成）
+
+---
+
+## 迭代 #16 (2026-03-22)
+
+### 版本
+v1.3.0
+
+### 目标
+- 修复 CLI 测试失败
+- 修复代码属性名不匹配问题
+- 提升测试覆盖率至 79%
+- 确保所有测试通过
+
+### 完成内容
+
+#### 1. CLI Bug 修复
+修复了多个 CLI 命令中的属性名不匹配问题：
+- `cmd_complete`: 修复 `item.text` → `item.label`, `result.items` → `result.completions`
+- `cmd_refactor`: 修复 `smell.smell_type` → `smell.type`, `sug.refactor_type` → `sug.type`
+- `cmd_debug`: 修复 `list_patterns` → `list_errors`, 添加 list_errors 无需日志内容的处理
+- `cmd_check`: 修复 list 操作不需要代码参数的问题
+- 移动 `--format` 参数从根解析器到每个子命令解析器
+
+#### 2. 测试文件修复
+- `test_cli.py`: 修复 RefactorSuggestion 属性名 (refactor_type → type, description → message, auto_fixable → auto_applicable)
+- `test_game_executor.py`: 修复 ExecutionResult 缺少 code 参数的问题
+
+#### 3. API 搜索技能增强
+- 支持仅按 module 参数搜索 API（无需 query）
+
+#### 4. 测试验证
+- 总测试数：605 个 (605 passed, 4 skipped, 0 failed)
+- 所有测试通过
+
+#### 5. 覆盖率提升
+- 整体覆盖率从 78% 提升至 79%
+- cli.py: 56% → 75%
+- game_executor.py: 88% → 97%
+
+### 遇到的问题
+1. PowerShell 字符串替换导致文件编码问题（已重写 CLI 文件解决）
+2. RefactorSuggestion 和 CodeSmell 属性名不一致（type vs refactor_type/smell_type）
+3. Completion 和 CompletionResult 属性名不一致（label vs text, completions vs items）
+
+### 经验总结
+- 数据类属性名需要在整个项目中保持一致
+- CLI 测试应该使用 mock 模拟依赖，避免实际调用知识库
+- 测试驱动开发能及时发现 API 设计问题
+- 文件编辑时使用 exact match 需要小心 whitespace 和编码问题
+
+### 文件变更
+- 修改：`src/mc_agent_kit/cli.py` (重写，修复多个 bug)
+- 修改：`src/mc_agent_kit/skills/modsdk/api_search.py` (支持 module-only 搜索)
+- 修改：`src/tests/test_cli.py` (修复属性名和 action 名称)
+- 修改：`src/tests/test_game_executor.py` (添加 code 参数)
+- 修改：`docs/ITERATIONS.md`
+- 修改：`docs/NEXT_ITERATION.md`
+- 修改：`pyproject.toml` (版本升级到 1.3.0)
+
+### 验收标准完成情况
+- [x] CLI 测试全部通过
+- [x] 所有测试通过 (605 passed, 4 skipped)
+- [x] 覆盖率提升至 79%
+- [ ] 覆盖率达到 90%（当前 79%，需后续迭代完成）
 - [x] CLI bug 修复
 - [ ] CLI 测试全部通过（部分失败，需进一步修复）
 

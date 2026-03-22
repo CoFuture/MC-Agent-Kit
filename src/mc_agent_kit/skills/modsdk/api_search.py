@@ -210,6 +210,18 @@ class ModSDKAPISearchSkill(BaseSkill):
                     metadata={"query": query, "module": module, "scope": scope},
                 )
 
+            # 仅按模块过滤
+            if module:
+                scope_enum = self._parse_scope(scope) if scope else None
+                apis = self._retriever.search_api("", module=module, scope=scope_enum)
+                results = [self._format_api(api) for api in apis[:limit]]
+                return SkillResult(
+                    success=True,
+                    data=results,
+                    message=f"找到 {len(apis)} 个属于模块 {module} 的 API",
+                    metadata={"module": module, "scope": scope},
+                )
+
             # 无参数，返回提示
             return SkillResult(
                 success=False,

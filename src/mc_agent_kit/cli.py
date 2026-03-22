@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 MC-Agent-Kit CLI
 
@@ -78,7 +78,7 @@ def print_result(result: dict[str, Any], format: str = "text") -> None:
         else:
             print(f"❌ {result.get('message', '失败')}")
             if result.get("error"):
-                print(f"错误: {result['error']}")
+                print(f"错误：{result['error']}")
             if result.get("suggestions"):
                 print("建议:")
                 for s in result["suggestions"]:
@@ -99,9 +99,9 @@ def cmd_list(args: argparse.Namespace) -> int:
         print("已注册的 Skills:\n")
         for skill in skills:
             print(f"  📦 {skill.name}")
-            print(f"     描述: {skill.description}")
-            print(f"     分类: {skill.category.value}")
-            print(f"     优先级: {skill.priority.name}")
+            print(f"     描述：{skill.description}")
+            print(f"     分类：{skill.category.value}")
+            print(f"     优先级：{skill.priority.name}")
             print()
 
     return 0
@@ -114,7 +114,7 @@ def cmd_api(args: argparse.Namespace) -> int:
     skill = registry.get("modsdk-api-search")
 
     if not skill:
-        print("错误: API 搜索 Skill 未注册")
+        print("错误：API 搜索 Skill 未注册")
         return 1
 
     skill.initialize()
@@ -138,7 +138,7 @@ def cmd_event(args: argparse.Namespace) -> int:
     skill = registry.get("modsdk-event-search")
 
     if not skill:
-        print("错误: 事件搜索 Skill 未注册")
+        print("错误：事件搜索 Skill 未注册")
         return 1
 
     skill.initialize()
@@ -162,7 +162,7 @@ def cmd_gen(args: argparse.Namespace) -> int:
     skill = registry.get("modsdk-code-gen")
 
     if not skill:
-        print("错误: 代码生成 Skill 未注册")
+        print("错误：代码生成 Skill 未注册")
         return 1
 
     skill.initialize()
@@ -173,7 +173,7 @@ def cmd_gen(args: argparse.Namespace) -> int:
         try:
             params = json.loads(args.params)
         except json.JSONDecodeError:
-            print("错误: params 参数必须是有效的 JSON")
+            print("错误：params 参数必须是有效的 JSON")
             return 1
 
     result = skill.execute(
@@ -194,10 +194,16 @@ def cmd_debug(args: argparse.Namespace) -> int:
     skill = registry.get("modsdk-debug")
 
     if not skill:
-        print("错误: 调试辅助 Skill 未注册")
+        print("错误：调试辅助 Skill 未注册")
         return 1
 
     skill.initialize()
+
+    # list_errors 不需要日志内容
+    if args.action == "list_errors":
+        result = skill.execute(action="list_errors")
+        print_result(result.to_dict(), args.format)
+        return 0 if result.success else 1
 
     # 读取日志内容
     log_content = args.log
@@ -206,11 +212,11 @@ def cmd_debug(args: argparse.Namespace) -> int:
             with open(args.file, encoding="utf-8") as f:
                 log_content = f.read()
         except FileNotFoundError:
-            print(f"错误: 文件不存在: {args.file}")
+            print(f"错误：文件不存在：{args.file}")
             return 1
 
     if not log_content:
-        print("错误: 请提供日志内容 (-l) 或日志文件 (-f)")
+        print("错误：请提供日志内容 (-l) 或日志文件 (--file)")
         return 1
 
     result = skill.execute(
@@ -233,11 +239,11 @@ def cmd_complete(args: argparse.Namespace) -> int:
             with open(args.file, encoding="utf-8") as f:
                 code = f.read()
         except FileNotFoundError:
-            print(f"错误: 文件不存在: {args.file}")
+            print(f"错误：文件不存在：{args.file}")
             return 1
 
     if not code:
-        print("错误: 请提供代码内容 (-c) 或代码文件 (-f)")
+        print("错误：请提供代码内容 (-c) 或代码文件 (--file)")
         return 1
 
     result = completer.complete(
@@ -251,23 +257,23 @@ def cmd_complete(args: argparse.Namespace) -> int:
         data = {
             "items": [
                 {
-                    "text": item.text,
+                    "text": item.label,
                     "kind": item.kind.value,
                     "detail": item.detail,
                     "documentation": item.documentation,
                 }
-                for item in result.items
+                for item in result.completions
             ]
         }
         print(json.dumps(data, ensure_ascii=False, indent=2))
     else:
-        if result.items:
-            print(f"补全建议 ({len(result.items)} 个):\n")
-            for item in result.items:
-                print(f"  📝 {item.text}")
-                print(f"     类型: {item.kind.value}")
+        if result.completions:
+            print(f"补全建议 ({len(result.completions)} 个):\n")
+            for item in result.completions:
+                print(f"  📝 {item.label}")
+                print(f"     类型：{item.kind.value}")
                 if item.detail:
-                    print(f"     详情: {item.detail}")
+                    print(f"     详情：{item.detail}")
                 print()
         else:
             print("没有找到补全建议")
@@ -287,11 +293,11 @@ def cmd_refactor(args: argparse.Namespace) -> int:
             with open(args.file, encoding="utf-8") as f:
                 code = f.read()
         except FileNotFoundError:
-            print(f"错误: 文件不存在: {args.file}")
+            print(f"错误：文件不存在：{args.file}")
             return 1
 
     if not code:
-        print("错误: 请提供代码内容 (-c) 或代码文件 (-f)")
+        print("错误：请提供代码内容 (-c) 或代码文件 (--file)")
         return 1
 
     if args.action == "detect":
@@ -302,7 +308,7 @@ def cmd_refactor(args: argparse.Namespace) -> int:
             data = {
                 "smells": [
                     {
-                        "type": smell.smell_type.value,
+                        "type": smell.type.value,
                         "severity": smell.severity.value,
                         "message": smell.message,
                         "line": smell.line,
@@ -315,10 +321,10 @@ def cmd_refactor(args: argparse.Namespace) -> int:
             if smells:
                 print(f"检测到 {len(smells)} 个代码异味:\n")
                 for smell in smells:
-                    print(f"  ⚠️ {smell.smell_type.value}: {smell.message}")
-                    print(f"     严重程度: {smell.severity.value}")
+                    print(f"  ⚠️ {smell.type.value}: {smell.message}")
+                    print(f"     严重程度：{smell.severity.value}")
                     if smell.line:
-                        print(f"     位置: 第 {smell.line} 行")
+                        print(f"     位置：第 {smell.line} 行")
                     print()
             else:
                 print("✅ 未检测到代码异味")
@@ -332,10 +338,10 @@ def cmd_refactor(args: argparse.Namespace) -> int:
             data = {
                 "suggestions": [
                     {
-                        "type": sug.refactor_type.value,
-                        "description": sug.description,
+                        "type": sug.type.value,
+                        "description": sug.message,
                         "line": sug.line,
-                        "auto_fixable": sug.auto_fixable,
+                        "auto_fixable": sug.auto_applicable,
                     }
                     for sug in suggestions
                 ]
@@ -345,10 +351,10 @@ def cmd_refactor(args: argparse.Namespace) -> int:
             if suggestions:
                 print(f"生成 {len(suggestions)} 个重构建议:\n")
                 for sug in suggestions:
-                    print(f"  💡 {sug.refactor_type.value}: {sug.description}")
+                    print(f"  💡 {sug.type.value}: {sug.message}")
                     if sug.line:
-                        print(f"     位置: 第 {sug.line} 行")
-                    print(f"     可自动修复: {'是' if sug.auto_fixable else '否'}")
+                        print(f"     位置：第 {sug.line} 行")
+                    print(f"     可自动修复：{'是' if sug.auto_applicable else '否'}")
                     print()
             else:
                 print("✅ 无需重构")
@@ -360,57 +366,8 @@ def cmd_check(args: argparse.Namespace) -> int:
     """最佳实践检查"""
     checker = BestPracticeChecker()
 
-    # 读取代码
-    code = args.code
-    if args.file:
-        try:
-            with open(args.file, encoding="utf-8") as f:
-                code = f.read()
-        except FileNotFoundError:
-            print(f"错误: 文件不存在: {args.file}")
-            return 1
-
-    if not code:
-        print("错误: 请提供代码内容 (-c) 或代码文件 (-f)")
-        return 1
-
-    if args.action == "check":
-        # 检查最佳实践
-        results = checker.check(code)
-
-        if args.format == "json":
-            data = {
-                "results": [
-                    {
-                        "practice_id": r.practice.id,
-                        "practice_name": r.practice.name,
-                        "passed": r.passed,
-                        "message": r.message,
-                        "line": r.line,
-                    }
-                    for r in results
-                ]
-            }
-            print(json.dumps(data, ensure_ascii=False, indent=2))
-        else:
-            passed = [r for r in results if r.passed]
-            failed = [r for r in results if not r.passed]
-
-            print("最佳实践检查结果:\n")
-            print(f"  ✅ 通过: {len(passed)}")
-            print(f"  ❌ 未通过: {len(failed)}")
-
-            if failed:
-                print("\n未通过的项目:\n")
-                for r in failed:
-                    print(f"  ❌ {r.practice.name}")
-                    print(f"     消息: {r.message}")
-                    if r.line:
-                        print(f"     位置: 第 {r.line} 行")
-                    print()
-
-    elif args.action == "list":
-        # 列出所有最佳实践
+    # list 操作不需要代码
+    if args.action == "list":
         practices = checker.list_practices()
 
         if args.format == "json":
@@ -430,8 +387,58 @@ def cmd_check(args: argparse.Namespace) -> int:
             print(f"最佳实践列表 ({len(practices)} 条):\n")
             for p in practices:
                 print(f"  📋 {p.id}: {p.name}")
-                print(f"     分类: {p.category.value}")
-                print(f"     描述: {p.description}")
+                print(f"     分类：{p.category.value}")
+                print(f"     描述：{p.description}")
+                print()
+
+        return 0
+
+    # check 操作需要代码
+    code = args.code
+    if args.file:
+        try:
+            with open(args.file, encoding="utf-8") as f:
+                code = f.read()
+        except FileNotFoundError:
+            print(f"错误：文件不存在：{args.file}")
+            return 1
+
+    if not code:
+        print("错误：请提供代码内容 (-c) 或代码文件 (--file)")
+        return 1
+
+    # 检查最佳实践
+    results = checker.check(code)
+
+    if args.format == "json":
+        data = {
+            "results": [
+                {
+                    "practice_id": r.practice.id,
+                    "practice_name": r.practice.name,
+                    "passed": r.passed,
+                    "message": r.message,
+                    "line": r.line,
+                }
+                for r in results
+            ]
+        }
+        print(json.dumps(data, ensure_ascii=False, indent=2))
+    else:
+        passed = [r for r in results if r.passed]
+        failed = [r for r in results if not r.passed]
+
+        print("最佳实践检查结果:\n")
+        print(f"  ✅ 通过：{len(passed)}")
+        print(f"  ❌ 未通过：{len(failed)}")
+
+        if failed:
+            print("\n未通过的项目:\n")
+            for r in failed:
+                print(f"  ❌ {r.practice.name}")
+                print(f"     消息：{r.message}")
+                if r.line:
+                    print(f"     位置：第 {r.line} 行")
                 print()
 
     return 0
@@ -449,11 +456,11 @@ def cmd_autofix(args: argparse.Namespace) -> int:
             with open(args.file, encoding="utf-8") as f:
                 code = f.read()
         except FileNotFoundError:
-            print(f"错误: 文件不存在: {args.file}")
+            print(f"错误：文件不存在：{args.file}")
             return 1
 
     if not code:
-        print("错误: 请提供代码内容 (-c) 或代码文件 (-f)")
+        print("错误：请提供代码内容 (-c) 或代码文件 (--file)")
         return 1
 
     # 读取错误日志
@@ -463,7 +470,7 @@ def cmd_autofix(args: argparse.Namespace) -> int:
             with open(args.error_file, encoding="utf-8") as f:
                 error_log = f.read()
         except FileNotFoundError:
-            print(f"错误: 错误日志文件不存在: {args.error_file}")
+            print(f"错误：错误日志文件不存在：{args.error_file}")
             return 1
 
     if args.action == "diagnose":
@@ -486,13 +493,13 @@ def cmd_autofix(args: argparse.Namespace) -> int:
             print(json.dumps(data, ensure_ascii=False, indent=2))
         else:
             print("错误诊断结果:\n")
-            print(f"  类型: {diagnosis.error_info.error_type.value}")
-            print(f"  消息: {diagnosis.error_info.message}")
+            print(f"  类型：{diagnosis.error_info.error_type.value}")
+            print(f"  消息：{diagnosis.error_info.message}")
             print("\n修复建议:\n")
             for s in diagnosis.suggestions:
                 print(f"  💡 {s.description}")
-                print(f"     信心: {s.confidence.value}")
-                print(f"     可自动修复: {'是' if s.auto_fixable else '否'}")
+                print(f"     信心：{s.confidence.value}")
+                print(f"     可自动修复：{'是' if s.auto_fixable else '否'}")
                 print()
 
     elif args.action == "fix":
@@ -517,8 +524,8 @@ def cmd_autofix(args: argparse.Namespace) -> int:
             print(json.dumps(data, ensure_ascii=False, indent=2))
         else:
             print("自动修复结果:\n")
-            print(f"  状态: {result.status.value}")
-            print(f"  消息: {result.message}")
+            print(f"  状态：{result.status.value}")
+            print(f"  消息：{result.message}")
 
             if result.replacements:
                 print(f"\n应用的修复 ({len(result.replacements)} 个):\n")
@@ -553,18 +560,18 @@ def main() -> int:
         prog="mc-agent",
         description="MC-Agent-Kit CLI - ModSDK 开发辅助工具",
     )
-    parser.add_argument(
+
+    subparsers = parser.add_subparsers(dest="command", help="可用命令")
+
+    # list 命令
+    list_parser = subparsers.add_parser("list", help="列出所有 Skills")
+    list_parser.add_argument(
         "--format",
         "-f",
         choices=["text", "json"],
         default="text",
         help="输出格式",
     )
-
-    subparsers = parser.add_subparsers(dest="command", help="可用命令")
-
-    # list 命令
-    subparsers.add_parser("list", help="列出所有 Skills")
 
     # api 命令
     api_parser = subparsers.add_parser("api", help="搜索 ModSDK API")
@@ -573,6 +580,13 @@ def main() -> int:
     api_parser.add_argument("-m", "--module", help="按模块过滤")
     api_parser.add_argument("-s", "--scope", choices=["client", "server"], help="按作用域过滤")
     api_parser.add_argument("-l", "--limit", type=int, default=10, help="返回结果数量")
+    api_parser.add_argument(
+        "--format",
+        "-f",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
 
     # event 命令
     event_parser = subparsers.add_parser("event", help="搜索 ModSDK 事件")
@@ -581,6 +595,13 @@ def main() -> int:
     event_parser.add_argument("-m", "--module", help="按模块过滤")
     event_parser.add_argument("-s", "--scope", choices=["client", "server"], help="按作用域过滤")
     event_parser.add_argument("-l", "--limit", type=int, default=10, help="返回结果数量")
+    event_parser.add_argument(
+        "--format",
+        "-f",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
 
     # gen 命令
     gen_parser = subparsers.add_parser("gen", help="生成 ModSDK 代码")
@@ -588,40 +609,82 @@ def main() -> int:
     gen_parser.add_argument("-p", "--params", help="模板参数 (JSON 格式)")
     gen_parser.add_argument("-a", "--action", default="generate", help="操作类型")
     gen_parser.add_argument("-k", "--keyword", help="搜索关键词")
+    gen_parser.add_argument(
+        "--format",
+        "-f",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
 
     # debug 命令
     debug_parser = subparsers.add_parser("debug", help="调试 ModSDK 错误")
     debug_parser.add_argument("-l", "--log", help="日志内容")
-    debug_parser.add_argument("-f", "--file", help="日志文件路径")
+    debug_parser.add_argument("--file", dest="file", help="日志文件路径")
     debug_parser.add_argument("-a", "--action", default="diagnose", help="操作类型")
+    debug_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
 
     # complete 命令
     complete_parser = subparsers.add_parser("complete", help="代码补全")
     complete_parser.add_argument("-c", "--code", help="代码内容")
-    complete_parser.add_argument("-f", "--file", help="代码文件路径")
+    complete_parser.add_argument("--file", dest="file", help="代码文件路径")
     complete_parser.add_argument("-l", "--line", type=int, default=1, help="光标行号")
     complete_parser.add_argument("-C", "--column", type=int, default=0, help="光标列号")
     complete_parser.add_argument("-p", "--prefix", help="补全前缀")
+    complete_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
 
     # refactor 命令
     refactor_parser = subparsers.add_parser("refactor", help="代码重构")
     refactor_parser.add_argument("-c", "--code", help="代码内容")
-    refactor_parser.add_argument("-f", "--file", help="代码文件路径")
+    refactor_parser.add_argument("--file", dest="file", help="代码文件路径")
     refactor_parser.add_argument("-a", "--action", choices=["detect", "suggest"], default="detect", help="操作类型")
+    refactor_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
 
     # check 命令
     check_parser = subparsers.add_parser("check", help="最佳实践检查")
     check_parser.add_argument("-c", "--code", help="代码内容")
-    check_parser.add_argument("-f", "--file", help="代码文件路径")
+    check_parser.add_argument("--file", dest="file", help="代码文件路径")
     check_parser.add_argument("-a", "--action", choices=["check", "list"], default="check", help="操作类型")
+    check_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
 
     # autofix 命令
     autofix_parser = subparsers.add_parser("autofix", help="自动修复错误")
     autofix_parser.add_argument("-c", "--code", help="代码内容")
-    autofix_parser.add_argument("-f", "--file", help="代码文件路径")
+    autofix_parser.add_argument("--file", dest="file", help="代码文件路径")
     autofix_parser.add_argument("-e", "--error", help="错误日志内容")
     autofix_parser.add_argument("-E", "--error-file", help="错误日志文件路径")
     autofix_parser.add_argument("-a", "--action", choices=["diagnose", "fix", "preview"], default="diagnose", help="操作类型")
+    autofix_parser.add_argument(
+        "--format",
+        dest="format",
+        choices=["text", "json"],
+        default="text",
+        help="输出格式",
+    )
 
     args = parser.parse_args()
 
