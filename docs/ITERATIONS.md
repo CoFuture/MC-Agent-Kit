@@ -33,6 +33,7 @@
 | #23 | v1.10.0 | 2026-03-22 | 插件系统功能完善（沙箱、版本检查、依赖管理） | ✅ 完成 |
 | #24 | v1.11.0 | 2026-03-22 | 插件热重载功能与示例扩展 | ✅ 完成 |
 | #25 | v1.12.0 | 2026-03-22 | 代码质量改进与文档完善 | ✅ 完成 |
+| #26 | v1.13.0 | 2026-03-22 | 项目结构重组，聚焦MVP核心能力 | 🔄 进行中 |
 
 ---
 
@@ -2167,3 +2168,62 @@ vX.Y.Z
 
 *文档版本: v0.1.0*
 *最后更新: 2026-03-22*
+---
+
+## 迭代 #26 (2026-03-22)
+
+### 版本
+v1.13.0
+
+### 目标
+根据 VISION.md 调整项目结构，聚焦 MVP 核心能力
+
+### 完成内容
+
+#### 1. 项目愿景文档 ✅
+- 新增 docs/VISION.md - 项目愿景与核心能力规划
+- 新增 docs/PROJECT_DESIGN.md - 项目设计文档
+- 更新 docs/ROADMAP.md - 与愿景对齐的路线图
+
+#### 2. 项目结构重组 ✅
+- 将 completion、performance、plugin 移到 contrib/ 目录
+- 这些模块不在 MVP 范围内，标记为后续迭代
+
+#### 3. Scaffold 模块创建 ✅
+- 新增 scaffold/ 模块（P0 核心能力）
+- 实现 ProjectCreator 基础框架
+- 支持 create_project 和 dd_entity
+
+### 遇到的问题
+- 项目前期开发了过多非核心功能（plugin、completion、performance）
+- 缺少 P0 核心能力 scaffold 模块
+
+### 解决方案
+- 重新审视愿景，识别 MVP 核心能力
+- 移除非核心模块到 contrib 目录
+- 创建缺失的 scaffold 模块
+
+### 经验总结
+- 开发前应明确定义 MVP 范围
+- 优先完成核心能力，再扩展增强功能
+- 定期对照愿景检查项目进展
+
+### 文件变更
+- 新增: docs/VISION.md
+- 新增: docs/PROJECT_DESIGN.md
+- 新增: src/mc_agent_kit/scaffold/__init__.py
+- 新增: src/mc_agent_kit/scaffold/creator.py
+- 新增: src/mc_agent_kit/scaffold/templates.py
+- 新增: src/mc_agent_kit/contrib/__init__.py
+- 移动: completion → contrib/completion
+- 移动: performance → contrib/performance
+- 移动: plugin → contrib/plugin
+- 修改: docs/ROADMAP.md
+- 修改: docs/NEXT_ITERATION.md
+- 修改: docs/ITERATIONS.md
+
+### 下一步
+- 修复游戏启动器内存错误（最高优先级）
+- 完善 scaffold CLI 命令
+- 增强知识检索功能
+

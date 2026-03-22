@@ -71,11 +71,12 @@ mc-kb event <name>      # 精确查事件
 
 ## Phase 2: 核心闭环 (Week 3-4)
 
-### 2.1 项目脚手架
+### 2.1 项目脚手架 🔥
 
 **目标**: 实现 `mc-create` 创建标准项目结构
 
-- [ ] 设计项目模板结构
+- [x] 创建 scaffold 模块
+- [x] 实现 ProjectCreator 基础框架
 - [ ] 实现 `mc-create project`
 - [ ] 实现 `mc-create entity`
 - [ ] 实现 `mc-create item`
