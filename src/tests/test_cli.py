@@ -1,4 +1,4 @@
-"""
+﻿"""
 CLI 测试
 
 测试 mc-agent 命令行工具的所有子命令。
@@ -817,5 +817,6 @@ class TestPrintResult:
         cli.print_result(result, "text")
         captured = capsys.readouterr()
         assert "建议:" in captured.out or "•" in captured.out
+
 
 
