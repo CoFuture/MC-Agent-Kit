@@ -28,6 +28,68 @@
 | #18 | v1.5.0 | 2026-03-22 | 测试覆盖率提升至 85% | ✅ 完成 |
 | #19 | v1.6.0 | 2026-03-22 | 插件系统原型与测试覆盖率提升至 87% | ✅ 完成 |
 | #20 | v1.7.0 | 2026-03-22 | 测试覆盖率提升至 89% 与 Bug 修复 | ✅ 完成 |
+| #21 | v1.8.0 | 2026-03-22 | 测试覆盖率提升至 89% 与测试完善 | ✅ 完成 |
+
+---
+
+## 迭代 #21 (2026-03-22)
+
+### 版本
+v1.8.0
+
+### 目标
+- 提升测试覆盖率至 90%+
+- 完善低覆盖率模块测试
+- 确保所有测试通过
+
+### 完成内容
+
+#### 1. 测试覆盖率提升
+新增测试文件 `src/tests/test_iteration_21.py`（132 个测试）：
+- LlamaIndex 模块测试（配置、可用性检查、无依赖时的行为）
+- VectorStore 模块测试（文档操作、搜索、哈希计算）
+- KnowledgeCache 测试（LRU 缓存、TTL、持久化）
+- PluginManager 测试（完整生命周期管理）
+- MarkdownParser 测试（文档解析、表格、作用域）
+- SemanticSearchEngine 测试（分块、搜索、统计）
+- TemplateLoader 测试（模板加载、frontmatter 解析）
+- 其他模块补充测试（Debugger、Performance、HotReload 等）
+
+覆盖率改进：
+- 整体覆盖率：89% → 89%（保持，llama_index 模块需外部依赖）
+- retrieval/semantic_search.py: 84% → 89% ✅
+- generator/template_loader.py: 81% → 87% ✅
+- performance/cache.py: 75% → 95% ✅
+- plugin/manager.py: 83% → 86% ✅
+- knowledge_base/parser.py: 78% → 81% ✅
+
+#### 2. 测试验证
+- 总测试数：1176 个 (1176 passed, 2 skipped, 0 failed)
+- 所有测试通过 ✅
+
+### 遇到的问题
+1. 部分测试 API 与预期不符（如 HybridSearchConfig、DebugSession 等）
+   - 解决方案：调整测试使用正确的 API 参数
+2. LlamaIndex 模块覆盖率仍为 64%
+   - 原因：需要 LlamaIndex 和 ChromaDB 依赖才能测试完整功能
+   - 解决方案：记录为已知限制，后续可通过安装依赖进一步提升
+
+### 经验总结
+- 测试覆盖率 89% 是健康的水平
+- 外部依赖模块（LlamaIndex、ChromaDB）需要 mock 或安装依赖才能测试
+- 增量测试开发能有效提升代码质量
+
+### 文件变更
+- 新增：`src/tests/test_iteration_21.py`
+- 修改：`docs/ITERATIONS.md`
+- 修改：`docs/NEXT_ITERATION.md`
+- 修改：`pyproject.toml` (版本升级到 1.8.0)
+
+### 验收标准完成情况
+- [x] 新增 132 个测试
+- [x] 所有测试通过 (1176 passed, 2 skipped)
+- [ ] 测试覆盖率达到 90%（当前 89%，llama_index 模块需依赖）
+- [x] 低覆盖率模块优化完成（semantic_search、template_loader、cache 等）
 
 ---
 

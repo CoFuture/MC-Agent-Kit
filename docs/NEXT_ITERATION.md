@@ -2,19 +2,19 @@
 
 ## 当前状态
 
-**当前版本**: v1.7.0
-**当前迭代**: #20 (已完成)
-**下次迭代**: #21
+**当前版本**: v1.8.0
+**当前迭代**: #21 (已完成)
+**下次迭代**: #22
 
 ---
 
-## 迭代 #21 计划
+## 迭代 #22 计划
 
 ### 版本
-v1.8.0
+v1.9.0
 
 ### 目标
-- 完成测试覆盖率 90% 目标
+- 突破 90% 测试覆盖率（安装 LlamaIndex 依赖）
 - 插件系统功能完善
 - 性能优化
 
@@ -22,12 +22,11 @@ v1.8.0
 
 #### 1. 测试覆盖率提升（重点）
 剩余低覆盖率模块：
-- [ ] retrieval/llama_index.py: 64% → 80%（需要模拟 LlamaIndex 依赖）
-- [ ] retrieval/vector_store.py: 78% → 85%
-- [ ] generator/template_loader.py: 81% → 85%
-- [ ] generator/event_gen.py: 83% → 85%
-- [ ] generator/lint.py: 83% → 85%
-- [ ] performance/cache.py: 75% → 85%
+- [ ] retrieval/llama_index.py: 64% → 85%（安装 LlamaIndex 依赖后测试）
+- [ ] retrieval/vector_store.py: 78% → 85%（安装 ChromaDB 后测试）
+- [ ] skills/modsdk/api_search.py: 74% → 85%
+- [ ] skills/modsdk/code_gen.py: 80% → 85%
+- [ ] knowledge_base/indexer.py: 79% → 85%
 - [ ] 目标：整体覆盖率达到 90%+
 
 #### 2. 插件系统完善
@@ -41,11 +40,9 @@ v1.8.0
 - [ ] 修复剩余 lint 警告
 - [ ] 优化性能瓶颈模块
 - [ ] 改进错误处理和日志记录
-- [ ] 添加类型注解到所有公共 API
 
 #### 4. 文档完善
 - [ ] 更新插件系统文档
-- [ ] 补充 API 参考文档
 - [ ] 添加插件开发指南
 - [ ] 创建插件示例项目
 
