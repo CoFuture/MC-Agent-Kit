@@ -51,6 +51,115 @@
 | #41 | v1.28.0 | 2026-03-22 | MVP 闭环完善与用户体验提升 | ✅ 完成 |
 | #42 | v1.29.0 | 2026-03-22 | 工作流 CLI 命令与性能优化 | ✅ 完成 |
 | #43 | v1.30.0 | 2026-03-23 | 工作流增强与 UX 本地化 | ✅ 完成 |
+| #44 | v1.31.0 | 2026-03-23 | 文档完善与 CLI 集成 | ✅ 完成 |
+
+---
+
+## 迭代 #44 (2026-03-23)
+
+### 版本
+v1.31.0
+
+### 目标
+文档完善与 CLI 集成
+
+### 完成内容
+
+#### 1. 工作流文档完善 🔥
+
+**新增 `docs/user/workflow-guide.md` 用户指南**:
+- 工作流系统概述（端到端自动化、重试机制、进度追踪、缓存优化）
+- CLI 使用示例（workflow run/search/create/diagnose/cache 命令）
+- Python API 使用示例
+- 工作流步骤说明（SEARCH、CREATE、LAUNCH、DIAGNOSE、FIX）
+- 重试机制配置（策略：NONE、LINEAR、EXPONENTIAL）
+- 进度追踪使用（ProgressInfo、进度回调）
+- 缓存系统（类型、配置、预热、批量操作）
+- 本地化支持（语言设置）
+- 消息模板（预定义模板列表）
+- 最佳实践（重试配置、缓存优化、进度回调、工作流控制）
+- 性能调优（缓存指标、性能基准）
+- 故障排除（常见问题及解决方案）
+- API 参考（主要类、便捷函数）
+
+#### 2. CLI 工作流增强选项 🔥
+
+**新增 `workflow` 命令选项**:
+- `--retry <n>` - 配置重试次数
+- `--retry-policy <linear|exponential>` - 重试策略
+- `--progress` - 启用进度显示
+- `--locale <zh_CN|en_US|ja_JP|ko_KR>` - 语言设置
+
+**功能实现**:
+- 根据 `--retry` 选项自动配置 `RetryConfig`
+- 进度回调函数根据 `--progress` 选项启用
+- 本地化管理器根据 `--locale` 选项切换语言
+- JSON 输出包含配置详情（locale、retry_config）
+
+#### 3. 本地化扩展 🔥
+
+**新增语言支持**:
+- `ja_JP` - 日语消息模板
+- `ko_KR` - 韩语消息模板
+
+**消息类型覆盖**:
+- 成功消息（项目创建、实体/物品/方块创建、代码生成等）
+- 错误消息（项目失败、API/事件未找到、配置无效等）
+- 警告消息（API 弃用、高内存、慢查询等）
+- 信息消息（搜索结果、诊断完成、缓存命中等）
+- 提示消息（使用搜索、查看文档、优化代码等）
+
+#### 4. 测试与验证 🔥
+
+**新增 `src/tests/test_iteration_44.py` 测试文件**:
+- `TestRetryConfigEnhanced` - 重试配置测试（5 个测试）
+- `TestLocaleManagerExtended` - 本地化管理器测试（6 个测试）
+- `TestEnhancedUXManagerExtended` - UX 管理器测试（5 个测试）
+- `TestTemplateRegistryExtended` - 模板注册表测试（3 个测试）
+- `TestCLIWorkflowOptions` - CLI 选项测试（3 个测试）
+- `TestEnhancedWorkflowWithRetry` - 工作流重试测试（3 个测试）
+- `TestIteration44Integration` - 集成测试（3 个测试）
+- `TestIteration44AcceptanceCriteria` - 验收标准测试（10 个测试）
+
+**测试覆盖**:
+- 重试延迟计算（线性、指数、最大限制）
+- 多语言消息获取（中文、英文、日语、韩语）
+- 本地化回退机制
+- 模板渲染
+- CLI 参数解析
+- 工作流控制
+
+### 测试统计
+
+- **总测试数**: 1423
+- **新增测试**: 38
+- **跳过测试**: 2
+- **状态**: ✅ 全部通过
+
+### 文件变更
+
+```
+新增文件:
+- docs/user/workflow-guide.md           (工作流使用指南)
+- src/tests/test_iteration_44.py        (迭代 #44 测试)
+
+修改文件:
+- src/mc_agent_kit/cli.py               (新增 --retry, --progress, --locale 选项)
+- src/mc_agent_kit/ux/enhanced.py       (新增日语、韩语支持)
+```
+
+### 技术亮点
+
+1. **完整的用户文档**: 详尽的工作流使用指南，包含 CLI 和 Python API 示例
+2. **CLI 增强**: 工作流命令支持重试、进度、语言选项
+3. **国际化支持**: 新增日语、韩语消息模板
+4. **测试完善**: 38 个新测试覆盖所有新功能
+
+### 经验总结
+
+1. CLI 选项与后端实现解耦，通过参数传递配置
+2. 本地化消息模板保持一致性，便于维护
+3. 测试覆盖验收标准，确保功能正确实现
 
 ---
 

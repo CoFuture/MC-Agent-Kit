@@ -2049,14 +2049,40 @@ def cmd_stats(args: argparse.Namespace) -> int:
 def cmd_workflow(args: argparse.Namespace) -> int:
     """工作流管理"""
     from mc_agent_kit.workflow import (
+        RetryConfig,
+        RetryPolicy,
         WorkflowConfig,
         WorkflowStep,
         clear_workflow_cache,
+        create_enhanced_workflow,
         create_workflow,
+        get_enhanced_cache,
         get_workflow_cache,
     )
+    from mc_agent_kit.ux import get_ux_manager, LocaleManager, EnhancedUXManager
+
+    # 设置语言
+    locale = getattr(args, "locale", "zh_CN")
+    ux_manager = get_ux_manager(locale=locale)
+    ux_manager.set_locale(locale)
+
+    # 本地化消息
+    def _(key: str, **kwargs) -> str:
+        return ux_manager.localized(key, **kwargs)
 
     if args.action == "run":
+        # 配置重试策略
+        retry_config = None
+        if getattr(args, "retry", 0) > 0:
+            policy = RetryPolicy.EXPONENTIAL
+            if getattr(args, "retry_policy", "exponential") == "linear":
+                policy = RetryPolicy.LINEAR
+            retry_config = RetryConfig(
+                max_retries=args.retry,
+                policy=policy,
+                base_delay_seconds=1.0,
+            )
+
         # 运行完整工作流
         config = WorkflowConfig(
             project_name=args.project_name or "my_addon",
@@ -2068,7 +2094,24 @@ def cmd_workflow(args: argparse.Namespace) -> int:
             verbose=args.verbose,
         )
 
-        workflow = create_workflow(config)
+        # 进度回调
+        progress_enabled = getattr(args, "progress", False)
+        def on_progress(info):
+            if progress_enabled and args.format != "json":
+                step_name = {
+                    WorkflowStep.SEARCH_DOCS: _("info.search_result", query=""),
+                    WorkflowStep.CREATE_PROJECT: _("success.project_created"),
+                    WorkflowStep.LAUNCH_TEST: "启动测试",
+                    WorkflowStep.DIAGNOSE_ERROR: _("info.diagnostic_complete"),
+                    WorkflowStep.FIX_ERROR: _("success.fix_applied"),
+                }.get(info.current_step, info.current_step.value)
+                print(f"  [{info.completed_steps}/{info.total_steps}] {step_name} ({info.percentage:.0f}%)")
+
+        workflow = create_enhanced_workflow(
+            config=config,
+            retry_config=retry_config,
+            progress_callback=on_progress if progress_enabled else None,
+        )
 
         if args.verbose:
             print("🔄 启动工作流...")
@@ -2076,6 +2119,8 @@ def cmd_workflow(args: argparse.Namespace) -> int:
             print(f"   输出目录: {config.output_dir}")
             if config.search_query:
                 print(f"   搜索查询: {config.search_query}")
+            if retry_config:
+                print(f"   重试配置: 最大 {retry_config.max_retries} 次, 策略: {retry_config.policy.value}")
             print()
 
         # 运行完整周期
@@ -2089,23 +2134,28 @@ def cmd_workflow(args: argparse.Namespace) -> int:
             output["config"] = {
                 "project_name": config.project_name,
                 "output_dir": config.output_dir,
+                "locale": locale,
+                "retry_config": {
+                    "max_retries": retry_config.max_retries if retry_config else 0,
+                    "policy": retry_config.policy.value if retry_config else "none",
+                } if retry_config else None,
             }
             print(json.dumps(output, ensure_ascii=False, indent=2))
         else:
             # 使用 UX 模块的友好输出
             print("\n" + "=" * 60)
-            print("工作流执行结果")
+            print(_("info.diagnostic_complete") if locale.startswith("en") else "工作流执行结果")
             print("=" * 60)
             print()
 
             # 显示步骤结果
             for step_result in result.steps:
                 step_name = {
-                    WorkflowStep.SEARCH_DOCS: "搜索文档",
-                    WorkflowStep.CREATE_PROJECT: "创建项目",
+                    WorkflowStep.SEARCH_DOCS: _("info.search_result", query="") if locale.startswith("en") else "搜索文档",
+                    WorkflowStep.CREATE_PROJECT: _("success.project_created") if locale.startswith("en") else "创建项目",
                     WorkflowStep.LAUNCH_TEST: "启动测试",
-                    WorkflowStep.DIAGNOSE_ERROR: "诊断错误",
-                    WorkflowStep.FIX_ERROR: "修复错误",
+                    WorkflowStep.DIAGNOSE_ERROR: _("info.diagnostic_complete") if locale.startswith("en") else "诊断错误",
+                    WorkflowStep.FIX_ERROR: _("success.fix_applied") if locale.startswith("en") else "修复错误",
                 }.get(step_result.step, step_result.step.value)
 
                 status_icon = "✅" if step_result.status.value == "success" else "❌" if step_result.status.value == "failed" else "⏭️"
@@ -2582,6 +2632,30 @@ def main() -> int:
         choices=["text", "json"],
         default="text",
         help="输出格式",
+    )
+    # 新增增强选项
+    workflow_parser.add_argument(
+        "--retry",
+        type=int,
+        default=0,
+        help="重试次数 (默认: 0, 不重试)",
+    )
+    workflow_parser.add_argument(
+        "--retry-policy",
+        choices=["linear", "exponential"],
+        default="exponential",
+        help="重试策略 (默认: exponential)",
+    )
+    workflow_parser.add_argument(
+        "--progress",
+        action="store_true",
+        help="显示进度",
+    )
+    workflow_parser.add_argument(
+        "--locale",
+        choices=["zh_CN", "en_US", "ja_JP", "ko_KR"],
+        default="zh_CN",
+        help="语言设置 (默认: zh_CN)",
     )
 
     args = parser.parse_args()

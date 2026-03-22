@@ -103,6 +103,74 @@ MESSAGE_TEMPLATES: dict[str, dict[str, dict[str, str]]] = {
         "hint.check_docs": "Check documentation for more details",
         "hint.optimize_code": "Consider optimizing your code",
     },
+    "ja_JP": {
+        # 成功メッセージ
+        "success.project_created": "プロジェクトが正常に作成されました",
+        "success.entity_created": "エンティティ '{name}' が正常に作成されました",
+        "success.item_created": "アイテム '{name}' が正常に作成されました",
+        "success.block_created": "ブロック '{name}' が正常に作成されました",
+        "success.code_generated": "コードが正常に生成されました",
+        "success.test_passed": "テストに合格しました",
+        "success.fix_applied": "修正が適用されました",
+
+        # エラーメッセージ
+        "error.project_failed": "プロジェクトの作成に失敗しました",
+        "error.api_not_found": "API '{name}' が見つかりません",
+        "error.event_not_found": "イベント '{name}' が見つかりません",
+        "error.config_invalid": "設定ファイルが無効です",
+        "error.launch_failed": "ゲームの起動に失敗しました",
+        "error.memory_issue": "メモリの問題が検出されました",
+        "error.syntax_error": "構文エラー",
+
+        # 警告メッセージ
+        "warning.deprecated_api": "API '{name}' は非推奨です",
+        "warning.high_memory": "メモリ使用量が高いです",
+        "warning.slow_query": "クエリが遅いです",
+
+        # 情報メッセージ
+        "info.search_result": "検索結果: '{query}'",
+        "info.diagnostic_complete": "診断が完了しました",
+        "info.cache_hit": "キャッシュヒット",
+
+        # ヒントメッセージ
+        "hint.use_search": "mc-kb search <keyword> を使用して検索",
+        "hint.check_docs": "詳細はドキュメントを参照してください",
+        "hint.optimize_code": "コードの最適化を検討してください",
+    },
+    "ko_KR": {
+        # 성공 메시지
+        "success.project_created": "프로젝트가 성공적으로 생성되었습니다",
+        "success.entity_created": "엔티티 '{name}'이(가) 성공적으로 생성되었습니다",
+        "success.item_created": "아이템 '{name}'이(가) 성공적으로 생성되었습니다",
+        "success.block_created": "블록 '{name}'이(가) 성공적으로 생성되었습니다",
+        "success.code_generated": "코드가 성공적으로 생성되었습니다",
+        "success.test_passed": "테스트 통과",
+        "success.fix_applied": "수정이 적용되었습니다",
+
+        # 오류 메시지
+        "error.project_failed": "프로젝트 생성 실패",
+        "error.api_not_found": "API '{name}'을(를) 찾을 수 없습니다",
+        "error.event_not_found": "이벤트 '{name}'을(를) 찾을 수 없습니다",
+        "error.config_invalid": "구성 파일이 잘못되었습니다",
+        "error.launch_failed": "게임 시작 실패",
+        "error.memory_issue": "메모리 문제가 감지되었습니다",
+        "error.syntax_error": "구문 오류",
+
+        # 경고 메시지
+        "warning.deprecated_api": "API '{name}'은(는) 더 이상 사용되지 않습니다",
+        "warning.high_memory": "메모리 사용량이 높습니다",
+        "warning.slow_query": "느린 쿼리가 감지되었습니다",
+
+        # 정보 메시지
+        "info.search_result": "검색 결과: '{query}'",
+        "info.diagnostic_complete": "진단 완료",
+        "info.cache_hit": "캐시 적중",
+
+        # 힌트 메시지
+        "hint.use_search": "mc-kb search <keyword>를 사용하여 검색",
+        "hint.check_docs": "자세한 내용은 문서를 참조하세요",
+        "hint.optimize_code": "코드 최적화를 고려하세요",
+    },
 }
 
 
