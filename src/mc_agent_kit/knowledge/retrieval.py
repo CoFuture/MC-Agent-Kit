@@ -87,6 +87,19 @@ class KnowledgeRetrieval:
         for event in data.get("events", []):
             self._event_index[event["name"]] = event
 
+        # 加载代码示例索引
+        for example in data.get("examples", []):
+            self._example_index[example["id"]] = CodeExample(
+                id=example["id"],
+                code=example.get("code", ""),
+                language=example.get("language", "python"),
+                source=example.get("source", ""),
+                description=example.get("description", ""),
+                api_names=example.get("api_calls", example.get("api_names", [])),
+                event_names=example.get("event_names", []),
+                tags=example.get("tags", []),
+            )
+
         self._loaded = True
 
     def build_from_docs(self, docs_path: str, output_path: str | None = None) -> dict[str, int]:
@@ -181,7 +194,7 @@ class KnowledgeRetrieval:
                     "code": ex.code,
                     "language": ex.language,
                     "description": ex.description,
-                    "api_calls": ex.api_calls,
+                    "api_calls": ex.api_names,
                     "event_names": ex.event_names,
                     "tags": ex.tags,
                 }
@@ -261,7 +274,7 @@ class KnowledgeRetrieval:
                         content=example.code,
                         score=score,
                         code_examples=[example.code],
-                        related_apis=example.api_calls,
+                        related_apis=example.api_names,
                         related_events=example.event_names,
                     ))
 
@@ -296,7 +309,7 @@ class KnowledgeRetrieval:
 
         for ex_id, example in self._example_index.items():
             # 过滤条件
-            if api_name and api_name not in example.api_calls:
+            if api_name and api_name not in example.api_names:
                 continue
             if event_name and event_name not in example.event_names:
                 continue
@@ -307,7 +320,7 @@ class KnowledgeRetrieval:
                 results.append(CodeExampleSearchResult(
                     example=example,
                     score=score,
-                    matched_apis=[api for api in example.api_calls if api.lower() in query_lower],
+                    matched_apis=[api for api in example.api_names if api.lower() in query_lower],
                     matched_events=[ev for ev in example.event_names if ev.lower() in query_lower],
                 ))
 
@@ -351,7 +364,7 @@ class KnowledgeRetrieval:
         """
         results = []
         for example in self._example_index.values():
-            if api_name and api_name in example.api_calls:
+            if api_name and api_name in example.api_names:
                 results.append(example)
             elif event_name and event_name in example.event_names:
                 results.append(example)
@@ -396,7 +409,7 @@ class KnowledgeRetrieval:
             score += 0.5
 
         # API 调用匹配
-        for api in example.api_calls:
+        for api in example.api_names:
             if query in api.lower():
                 score += 0.7
 
@@ -479,3 +492,123 @@ def create_retrieval(knowledge_base_path: str = "data/knowledge_base.json") -> K
     if os.path.exists(knowledge_base_path):
         retrieval.load()
     return retrieval
+
+
+# ============================================================
+# Iteration #31: Enhanced Knowledge Retrieval
+# ============================================================
+
+class EnhancedKnowledgeRetrieval(KnowledgeRetrieval):
+    """
+    增强知识检索类
+
+    在 KnowledgeRetrieval 基础上添加：
+    - 版本过滤
+    - 搜索相关性优化
+    - 精确匹配加分
+    """
+
+    def search(
+        self,
+        query: str,
+        search_type: str = "all",
+        limit: int = 10,
+        target_version: str | None = None,
+    ) -> list[SearchResult]:
+        """
+        搜索知识库（增强版）。
+
+        Args:
+            query: 搜索查询
+            search_type: 搜索类型 (api/event/example/all)
+            limit: 返回结果数量
+            target_version: 目标游戏版本（可选）
+
+        Returns:
+            搜索结果列表
+        """
+        if not self._loaded:
+            raise RuntimeError("知识库未加载，请先调用 load() 方法")
+
+        results = []
+        query_lower = query.lower()
+
+        # 搜索 API
+        if search_type in ("api", "all"):
+            for name, api in self._api_index.items():
+                # 版本过滤
+                if target_version and "version" in api:
+                    compat = self._check_version_compatibility(api["version"], target_version)
+                    if not compat:
+                        continue
+
+                score = self._calculate_score(query_lower, api)
+                
+                # 精确匹配加分
+                if query_lower == name.lower():
+                    score += 2.0
+                elif query_lower in name.lower():
+                    score += 1.0
+
+                if score > 0:
+                    results.append(SearchResult(
+                        type="api",
+                        name=api["name"],
+                        description=api.get("description", ""),
+                        content=self._format_api_content(api),
+                        score=score,
+                        source=api.get("source", ""),
+                        module=api.get("module", ""),
+                        scope=api.get("scope", ""),
+                        code_examples=api.get("code_examples", []),
+                    ))
+
+        # 搜索事件
+        if search_type in ("event", "all"):
+            for name, event in self._event_index.items():
+                score = self._calculate_score(query_lower, event)
+                
+                # 精确匹配加分
+                if query_lower == name.lower():
+                    score += 2.0
+
+                if score > 0:
+                    results.append(SearchResult(
+                        type="event",
+                        name=event["name"],
+                        description=event.get("description", ""),
+                        content=self._format_event_content(event),
+                        score=score,
+                        source=event.get("source", ""),
+                        module=event.get("module", ""),
+                        scope=event.get("scope", ""),
+                    ))
+
+        # 排序并返回
+        results.sort(key=lambda x: x.score, reverse=True)
+        return results[:limit]
+
+    def _check_version_compatibility(self, api_version: str, target_version: str) -> bool:
+        """
+        检查 API 版本兼容性。
+
+        Args:
+            api_version: API 引入版本
+            target_version: 目标游戏版本
+
+        Returns:
+            是否兼容
+        """
+        try:
+            api_parts = [int(x) for x in api_version.split(".")[:2]]
+            target_parts = [int(x) for x in target_version.split(".")[:2]]
+
+            # 目标版本 >= API 版本则兼容
+            if target_parts[0] > api_parts[0]:
+                return True
+            elif target_parts[0] < api_parts[0]:
+                return False
+            else:
+                return target_parts[1] >= api_parts[1]
+        except (ValueError, IndexError):
+            return True  # 无法解析时默认兼容

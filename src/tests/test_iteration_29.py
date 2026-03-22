@@ -286,6 +286,7 @@ class TestCodeExampleSearchResult:
             id="test-1",
             code="print('hello')",
             language="python",
+            source="test",
         )
         result = CodeExampleSearchResult(
             example=example,
@@ -580,7 +581,7 @@ class TestCLILogsCommand:
 
         args = argparse.Namespace(
             action="patterns",
-            log=None,
+            log="[ERROR] test error message",
             file=None,
             limit=10,
             format="json",

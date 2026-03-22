@@ -915,12 +915,15 @@ def cmd_logs(args: argparse.Namespace) -> int:
             return 1
 
     if not log_content:
-        print("错误：请提供日志内容 (-l) 或日志文件 (--file)")
+        print("错误：请提供日志内容或日志文件 (--file)")
         return 1
+
+    # 将日志内容按行分割后批量解析
+    log_lines = [line.strip() for line in log_content.split("\n") if line.strip()]
 
     if args.action == "analyze":
         # 解析日志
-        entries = parser.parse(log_content)
+        entries = parser.parse_batch(log_lines) if log_lines else []
 
         # 分析日志
         stats = analyzer.get_statistics()
@@ -930,10 +933,10 @@ def cmd_logs(args: argparse.Namespace) -> int:
                 "success": True,
                 "total_entries": len(entries),
                 "statistics": {
-                    "total_logs": stats.total_logs,
-                    "error_count": stats.error_count,
-                    "warning_count": stats.warning_count,
-                    "by_level": dict(stats.by_level),
+                    "total_logs": stats["total_logs"],
+                    "error_count": stats["error_count"],
+                    "warning_count": stats["warning_count"],
+                    "by_level": stats["by_level"],
                 },
                 "entries": [
                     {
@@ -949,8 +952,8 @@ def cmd_logs(args: argparse.Namespace) -> int:
         else:
             print(f"日志分析结果:\n")
             print(f"  总条目: {len(entries)}")
-            print(f"  错误: {stats.error_count}")
-            print(f"  警告: {stats.warning_count}")
+            print(f"  错误: {stats['error_count']}")
+            print(f"  警告: {stats['warning_count']}")
 
             if entries:
                 print(f"\n最近 {min(args.limit, len(entries))} 条日志:\n")
@@ -960,7 +963,7 @@ def cmd_logs(args: argparse.Namespace) -> int:
 
     elif args.action == "errors":
         # 提取错误
-        entries = parser.parse(log_content)
+        entries = parser.parse_batch(log_lines) if log_lines else []
         errors = [e for e in entries if e.level and e.level.value in ("ERROR", "CRITICAL")]
 
         if args.format == "json":
@@ -1368,7 +1371,7 @@ def main() -> int:
     # logs 命令
     logs_parser = subparsers.add_parser("logs", help="日志分析")
     logs_parser.add_argument("action", choices=["analyze", "errors", "patterns"], help="操作类型")
-    logs_parser.add_argument("-l", "--log", help="日志内容")
+    logs_parser.add_argument("--log", help="日志内容")
     logs_parser.add_argument("--file", dest="file", help="日志文件路径")
     logs_parser.add_argument("-l", "--limit", type=int, default=20, help="返回结果数量")
     logs_parser.add_argument(

@@ -5,7 +5,7 @@
 """
 
 from .addon_scanner import AddonInfo, list_addons, scan_addon
-from .config_generator import GameConfig, generate_config
+from .config_generator import GameConfig, PlayerInfo, ServerInfo, WorldInfo, generate_config
 from .diagnoser import (
     ConfigAutoFixer,
     ConfigFix,
@@ -25,6 +25,9 @@ __all__ = [
     "scan_addon",
     "list_addons",
     "GameConfig",
+    "PlayerInfo",
+    "ServerInfo",
+    "WorldInfo",
     "generate_config",
     "launch_game",
     "GameProcess",
@@ -40,4 +43,8 @@ __all__ = [
     "ConfigFix",
     "ConfigFixReport",
     "fix_config",
+    # Iteration #31
+    "MemoryDiagnosticReport",
+    "AddonResourceAnalyzer",
+    "GameVersionChecker",
 ]

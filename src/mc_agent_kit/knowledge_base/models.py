@@ -257,3 +257,37 @@ class KnowledgeBase:
                 for name, enum in self.enums.items()
             },
         }
+
+
+# ============================================================
+# Iteration #31: API Version Tagging
+# ============================================================
+
+@dataclass
+class ApiVersionTag:
+    """
+    API 版本标记
+
+    记录 API 的版本历史信息。
+    """
+    api_name: str
+    introduced_in: str  # 引入版本
+    deprecated_in: str | None = None  # 废弃版本
+    removed_in: str | None = None  # 移除版本
+    notes: list[str] = field(default_factory=list)  # 备注
+
+    def is_deprecated(self) -> bool:
+        """是否已废弃"""
+        return self.deprecated_in is not None
+
+    def is_removed(self) -> bool:
+        """是否已移除"""
+        return self.removed_in is not None
+
+    def get_replacement(self) -> str | None:
+        """获取替代 API 建议"""
+        if self.notes:
+            for note in self.notes:
+                if "请使用" in note or "use" in note.lower():
+                    return note
+        return None

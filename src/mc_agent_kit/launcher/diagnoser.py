@@ -822,6 +822,15 @@ class LauncherDiagnoser:
                 for i, (c, r) in enumerate(zip(current, reference)):
                     self._deep_compare(c, r, f"{path}[{i}]", result)
 
+        else:
+            # 基本类型值比较
+            if current != reference:
+                result["differences"].append({
+                    "field": path,
+                    "current": current,
+                    "mc_studio": reference,
+                })
+
     def _find_mc_studio_config(self) -> str | None:
         """查找 MC Studio 配置文件"""
         config_dir = self.MC_STUDIO_PATHS.get("config", "")
@@ -1236,3 +1245,266 @@ def fix_config(
     """
     fixer = ConfigAutoFixer()
     return fixer.fix_from_file(config_path, output_path)
+
+
+# ============================================================
+# Iteration #31: Memory Issue Diagnosis
+# ============================================================
+
+@dataclass
+class MemoryDiagnosticReport:
+    """内存问题诊断报告"""
+    addon_path: str
+    config_path: str
+    has_memory_issues: bool
+    issues: list[dict[str, Any]] = field(default_factory=list)
+    suggestions: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "addon_path": self.addon_path,
+            "config_path": self.config_path,
+            "has_memory_issues": self.has_memory_issues,
+            "issues": self.issues,
+            "suggestions": self.suggestions,
+        }
+
+
+class AddonResourceAnalyzer:
+    """
+    Addon 资源分析器
+
+    分析 Addon 中的资源文件，识别可能导致内存问题的资源。
+    """
+
+    # 纹理文件大小阈值（字节）
+    TEXTURE_SIZE_WARNING = 2 * 1024 * 1024  # 2MB
+    TEXTURE_SIZE_ERROR = 5 * 1024 * 1024  # 5MB
+
+    # 模型文件大小阈值
+    MODEL_SIZE_WARNING = 500 * 1024  # 500KB
+
+    def analyze_texture_sizes(self, textures_dir: str) -> dict[str, Any]:
+        """
+        分析纹理文件大小。
+
+        Args:
+            textures_dir: 纹理目录路径
+
+        Returns:
+            分析结果字典
+        """
+        result = {
+            "total_files": 0,
+            "total_size_bytes": 0,
+            "large_files": [],
+            "warnings": [],
+        }
+
+        if not os.path.exists(textures_dir):
+            return result
+
+        for root, _, files in os.walk(textures_dir):
+            for file in files:
+                if file.endswith((".png", ".jpg", ".jpeg")):
+                    file_path = os.path.join(root, file)
+                    size = os.path.getsize(file_path)
+
+                    result["total_files"] += 1
+                    result["total_size_bytes"] += size
+
+                    if size >= self.TEXTURE_SIZE_ERROR:
+                        result["large_files"].append({
+                            "path": file_path,
+                            "size_bytes": size,
+                            "severity": "error",
+                        })
+                    elif size >= self.TEXTURE_SIZE_WARNING:
+                        result["large_files"].append({
+                            "path": file_path,
+                            "size_bytes": size,
+                            "severity": "warning",
+                        })
+
+        return result
+
+    def analyze_model_files(self, models_dir: str) -> dict[str, Any]:
+        """
+        分析模型文件。
+
+        Args:
+            models_dir: 模型目录路径
+
+        Returns:
+            分析结果字典
+        """
+        result = {
+            "total_models": 0,
+            "total_size_bytes": 0,
+            "complex_models": [],
+        }
+
+        if not os.path.exists(models_dir):
+            return result
+
+        for root, _, files in os.walk(models_dir):
+            for file in files:
+                if file.endswith(".geo.json"):
+                    file_path = os.path.join(root, file)
+                    size = os.path.getsize(file_path)
+
+                    result["total_models"] += 1
+                    result["total_size_bytes"] += size
+
+                    if size >= self.MODEL_SIZE_WARNING:
+                        result["complex_models"].append({
+                            "path": file_path,
+                            "size_bytes": size,
+                        })
+
+        return result
+
+    def analyze_scripts(self, scripts_dir: str) -> dict[str, Any]:
+        """
+        分析脚本文件。
+
+        Args:
+            scripts_dir: 脚本目录路径
+
+        Returns:
+            分析结果字典
+        """
+        result = {
+            "total_scripts": 0,
+            "total_lines": 0,
+            "large_scripts": [],
+        }
+
+        if not os.path.exists(scripts_dir):
+            return result
+
+        for root, _, files in os.walk(scripts_dir):
+            for file in files:
+                if file.endswith(".py"):
+                    file_path = os.path.join(root, file)
+
+                    try:
+                        with open(file_path, "r", encoding="utf-8") as f:
+                            lines = f.readlines()
+
+                        result["total_scripts"] += 1
+                        result["total_lines"] += len(lines)
+
+                        if len(lines) > 500:
+                            result["large_scripts"].append({
+                                "path": file_path,
+                                "lines": len(lines),
+                            })
+                    except Exception:
+                        continue
+
+        return result
+
+
+class GameVersionChecker:
+    """
+    游戏版本检查器
+
+    检查游戏版本兼容性和特性支持。
+    """
+
+    # 版本特性映射
+    VERSION_FEATURES = {
+        "1.21.0": ["新实体 API", "改进的渲染系统"],
+        "1.20.50": ["UI 增强", "网络 API 改进"],
+        "1.20.0": ["基础 Addon 支持"],
+        "1.19.0": ["早期 Addon 支持"],
+        "1.18.0": ["实验性 Addon"],
+        "1.17.0": ["实验性 Addon"],
+        "1.16.0": ["初始 Addon 支持"],
+    }
+
+    def parse_version(self, version_str: str) -> dict[str, int] | None:
+        """
+        解析版本字符串。
+
+        Args:
+            version_str: 版本字符串，如 "1.21.0"
+
+        Returns:
+            版本字典 {"major": 1, "minor": 21, "patch": 0}
+        """
+        try:
+            parts = version_str.split(".")
+            return {
+                "major": int(parts[0]) if len(parts) > 0 else 0,
+                "minor": int(parts[1]) if len(parts) > 1 else 0,
+                "patch": int(parts[2]) if len(parts) > 2 else 0,
+            }
+        except (ValueError, IndexError):
+            return None
+
+    def check_compatibility(
+        self,
+        addon_version: str,
+        game_version: str,
+    ) -> dict[str, Any]:
+        """
+        检查版本兼容性。
+
+        Args:
+            addon_version: Addon 目标版本
+            game_version: 游戏版本
+
+        Returns:
+            兼容性结果 {"compatible": bool, "message": str}
+        """
+        addon_parsed = self.parse_version(addon_version)
+        game_parsed = self.parse_version(game_version)
+
+        if not addon_parsed or not game_parsed:
+            return {
+                "compatible": False,
+                "message": "无法解析版本号",
+            }
+
+        # 游戏版本 >= Addon 版本则兼容
+        if game_parsed["major"] > addon_parsed["major"]:
+            return {"compatible": True, "message": "兼容"}
+        elif game_parsed["major"] < addon_parsed["major"]:
+            return {
+                "compatible": False,
+                "message": "游戏版本过低",
+            }
+
+        # 主版本相同，比较次版本
+        if game_parsed["minor"] >= addon_parsed["minor"]:
+            return {"compatible": True, "message": "兼容"}
+        else:
+            return {
+                "compatible": False,
+                "message": "游戏版本过低",
+            }
+
+    def get_version_features(self, version: str) -> list[str]:
+        """
+        获取指定版本支持的特性。
+
+        Args:
+            version: 版本号
+
+        Returns:
+            特性列表
+        """
+        # 查找最接近的版本
+        parsed = self.parse_version(version)
+        if not parsed:
+            return []
+
+        # 按版本降序查找
+        for v in sorted(self.VERSION_FEATURES.keys(), reverse=True):
+            v_parsed = self.parse_version(v)
+            if v_parsed and parsed["major"] >= v_parsed["major"] and parsed["minor"] >= v_parsed["minor"]:
+                return self.VERSION_FEATURES.get(v, [])
+
+        return []

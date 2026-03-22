@@ -6,6 +6,7 @@
 
 import re
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Any
 
 
@@ -373,3 +374,43 @@ class CodeExtractor:
                 tags.add("chat")
 
         return sorted(tags)
+
+
+# ============================================================
+# Iteration #31: Enhanced Code Examples
+# ============================================================
+
+class CodeExampleCategory(Enum):
+    """代码示例类别"""
+    BASIC = "basic"  # 基础示例
+    ADVANCED = "advanced"  # 高级示例
+    COMPLETE = "complete"  # 完整示例
+    SNIPPET = "snippet"  # 代码片段
+
+
+@dataclass
+class EnhancedCodeExample(CodeExample):
+    """
+    增强代码示例
+
+    在 CodeExample 基础上添加：
+    - 难度级别
+    - 预计完成时间
+    - 类别
+    - 前置知识
+    """
+    difficulty: str = "beginner"  # beginner, intermediate, advanced
+    estimated_time_minutes: int = 5
+    category: CodeExampleCategory = CodeExampleCategory.BASIC
+    prerequisites: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        """转换为字典"""
+        base = super().to_dict()
+        base.update({
+            "difficulty": self.difficulty,
+            "estimated_time_minutes": self.estimated_time_minutes,
+            "category": self.category.value,
+            "prerequisites": self.prerequisites,
+        })
+        return base
