@@ -203,10 +203,15 @@ CLI 命令集成与用户工作流优化
 - `config/` - 配置管理 ✅
 - `docs/` - 文档生成 ✅
 
-### 贡献模块（后续迭代）
-- `contrib/completion/` - 代码补全
-- `contrib/performance/` - 性能优化
-- `contrib/plugin/` - 插件系统
+### 贡献模块（已移除）
+
+以下模块在 MVP 阶段不需要，已从项目中移除：
+
+- ~~`completion/` - 代码补全~~
+- ~~`performance/` - 性能优化~~
+- ~~`plugin/` - 插件系统~~
+
+理由：Agent 通过 Skills 调用能力，不需要内部插件机制。保持项目精简，聚焦核心闭环。
 
 ---
 

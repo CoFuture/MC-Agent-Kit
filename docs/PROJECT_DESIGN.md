@@ -830,11 +830,13 @@ pytest tests/e2e/ --run-e2e
 - [Minecraft ModSDK 官方文档](https://mc.163.com/developer/)
 - [OpenClaw 文档](https://docs.openclaw.ai)
 - [ChromaDB 文档](https://docs.trychroma.com/)
+- [Microsoft Minecraft Bedrock Documentation](https://learn.microsoft.com/en-us/minecraft/creator/)
 
 ### B. 版本历史
 
 | 版本 | 日期 | 变更说明 |
 |------|------|---------|
+| v1.14.0 | 2026-03-22 | 移除非 MVP 模块（plugin/completion/performance），聚焦核心能力 |
 | v1.0.0 | 2026-03-22 | 初始版本 |
 
 ---
