@@ -8,11 +8,17 @@ from .indexer import KnowledgeIndexer
 from .models import (
     APIEntry,
     APIParameter,
+    ApiUsageStats,
+    ApiUsageTracker,
+    ApiVersionTag,
     CodeExample,
+    DifficultyLevel,
+    EnhancedCodeExample,
     EnumEntry,
     EnumValue,
     EventEntry,
     EventParameter,
+    ExampleCategory,
     KnowledgeBase,
     Scope,
 )
@@ -30,6 +36,14 @@ __all__ = [
     "CodeExample",
     "KnowledgeBase",
     "Scope",
+    # Iteration #31
+    "ApiVersionTag",
+    # Iteration #32
+    "DifficultyLevel",
+    "ExampleCategory",
+    "EnhancedCodeExample",
+    "ApiUsageStats",
+    "ApiUsageTracker",
     # Parser
     "MarkdownParser",
     "DocumentParser",

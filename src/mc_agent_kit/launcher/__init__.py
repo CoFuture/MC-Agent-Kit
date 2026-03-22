@@ -5,6 +5,18 @@
 """
 
 from .addon_scanner import AddonInfo, list_addons, scan_addon
+from .auto_fixer import (
+    FixSeverity,
+    FixSuggestion,
+    FixType,
+    MemoryAutoFixer,
+    MemoryFixReport,
+    ModelAnalyzer,
+    ScriptAnalyzer,
+    TextureAnalyzer,
+    analyze_addon_memory,
+    get_memory_optimization_tips,
+)
 from .config_generator import GameConfig, PlayerInfo, ServerInfo, WorldInfo, generate_config
 from .diagnoser import (
     ConfigAutoFixer,
@@ -47,4 +59,15 @@ __all__ = [
     "MemoryDiagnosticReport",
     "AddonResourceAnalyzer",
     "GameVersionChecker",
+    # Iteration #32 - Auto Fixer
+    "MemoryAutoFixer",
+    "MemoryFixReport",
+    "FixType",
+    "FixSeverity",
+    "FixSuggestion",
+    "TextureAnalyzer",
+    "ModelAnalyzer",
+    "ScriptAnalyzer",
+    "analyze_addon_memory",
+    "get_memory_optimization_tips",
 ]

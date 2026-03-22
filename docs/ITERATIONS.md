@@ -38,6 +38,8 @@
 | #28 | v1.15.0 | 2026-03-22 | 知识检索增强与脚手架完善 | ✅ 完成 |
 | #29 | v1.16.0 | 2026-03-22 | 启动器诊断与CLI增强 | ✅ 完成 |
 | #30 | v1.17.0 | 2026-03-22 | 配置文件对比与故障排除文档 | ✅ 完成 |
+| #31 | v1.18.0 | 2026-03-22 | 内存问题诊断与知识库增强 | ✅ 完成 |
+| #32 | v1.19.0 | 2026-03-22 | 内存问题自动修复与性能优化 | ✅ 完成 |
 
 ---
 
@@ -2638,4 +2640,157 @@ v1.16.0
 - [x] CLI 新增命令有测试覆盖
 - [x] 知识检索支持代码示例搜索
 - [x] 新增代码有测试覆盖 (34 个测试)
+
+---
+
+## 迭代 #31 (2026-03-22)
+
+### 版本
+v1.18.0
+
+### 目标
+内存问题深入调查与知识库增强
+
+### 完成内容
+
+#### 1. 内存问题诊断工具 ✅
+- `MemoryDiagnosticReport`: 内存诊断报告
+- `AddonResourceAnalyzer`: 资源分析器（纹理/模型/脚本）
+- `GameVersionChecker`: 版本兼容性检查
+
+#### 2. 知识库增强 ✅
+- `ApiVersionTag`: API 版本标记
+- `EnhancedKnowledgeRetrieval`: 增强搜索（版本过滤、精确匹配加分）
+- `EnhancedCodeExample`: 增强代码示例（难度、时间、类别）
+
+#### 3. Bug 修复 ✅
+- CLI 参数冲突修复
+- 模块导出完善
+- 日志解析修复
+- 知识检索 examples 加载修复
+- _deep_compare 值差异检测
+
+#### 4. 测试完善 ✅
+- 新增 21 个测试
+- 总测试数：1523 个（1521 passed, 2 skipped）
+
+### 验收标准
+- [x] Addon 资源分析工具可用
+- [x] 版本兼容性检查可用
+- [x] API 版本标记实现
+- [x] 搜索相关性优化
+- [x] 所有测试通过
+
+### 文件变更
+- 新增：`src/mc_agent_kit/launcher/diagnoser.py` (MemoryDiagnosticReport 等)
+- 新增：`src/tests/test_iteration_31.py`
+- 修改：`src/mc_agent_kit/knowledge_base/models.py` (ApiVersionTag)
+- 修改：`src/mc_agent_kit/knowledge/retrieval.py` (EnhancedKnowledgeRetrieval)
+- 修改：`pyproject.toml` (版本升级到 1.18.0)
+- 修改：`docs/ITERATIONS.md`
+- 修改：`docs/NEXT_ITERATION.md`
+
+---
+
+## 迭代 #32 (2026-03-22)
+
+### 版本
+v1.19.0
+
+### 目标
+内存问题自动修复与性能优化
+
+### 完成内容
+
+#### 1. 内存问题自动修复 🔥
+新增 `src/mc_agent_kit/launcher/auto_fixer.py` 模块：
+- `MemoryAutoFixer`: 内存自动修复器主类
+- `MemoryFixReport`: 修复报告数据结构
+- `FixSuggestion`: 修复建议数据结构
+- `FixType`: 修复类型枚举（纹理压缩、模型简化、脚本优化等）
+- `FixSeverity`: 修复严重程度枚举
+- `TextureAnalyzer`: 纹理分析器（检测大纹理、非标准尺寸）
+- `ModelAnalyzer`: 模型分析器（检测复杂模型）
+- `ScriptAnalyzer`: 脚本分析器（检测大脚本、性能问题）
+- `analyze_addon_memory()`: 便捷分析函数
+- `get_memory_optimization_tips()`: 获取优化技巧列表
+
+功能特性：
+- 纹理文件大小和尺寸分析
+- 模型复杂度分析（顶点数、骨骼数）
+- 脚本文件大小和性能问题检测
+- 自动修复建议生成
+- 内存优化技巧列表
+
+#### 2. 知识库内容完善 ✅
+新增 `src/mc_agent_kit/knowledge_base/models.py` 增强：
+- `DifficultyLevel`: 代码示例难度等级枚举（beginner/intermediate/advanced/expert）
+- `ExampleCategory`: 代码示例类别枚举（basic/entity/item/block/ui/network/performance/advanced）
+- `EnhancedCodeExample`: 增强代码示例数据结构
+  - 难度标记、时间估算、类别、前置知识
+  - API/事件关联、标签系统
+  - to_dict()/from_dict() 序列化支持
+- `ApiUsageStats`: API 使用统计数据结构
+- `ApiUsageTracker`: API 使用追踪器
+  - 记录 API 使用次数、成功率
+  - 追踪常见错误
+  - 相关 API 推荐
+  - 热门 API 统计
+  - 问题 API 检测
+  - 持久化保存/加载
+
+#### 3. 模块导出更新 ✅
+- 更新 `src/mc_agent_kit/launcher/__init__.py` 导出 auto_fixer 模块
+- 更新 `src/mc_agent_kit/knowledge_base/__init__.py` 导出新模型
+
+#### 4. 测试完善 ✅
+新增 `src/tests/test_iteration_32.py` (39 个测试)：
+- TestFixType: 修复类型枚举测试 (2 个)
+- TestFixSeverity: 修复严重程度测试 (2 个)
+- TestFixSuggestion: 修复建议测试 (2 个)
+- TestMemoryFixReport: 修复报告测试 (3 个)
+- TestTextureAnalyzer: 纹理分析器测试 (2 个)
+- TestModelAnalyzer: 模型分析器测试 (3 个)
+- TestScriptAnalyzer: 脚本分析器测试 (2 个)
+- TestMemoryAutoFixer: 内存修复器测试 (2 个)
+- TestEnhancedCodeExample: 增强代码示例测试 (3 个)
+- TestDifficultyLevel: 难度等级测试 (1 个)
+- TestExampleCategory: 示例类别测试 (1 个)
+- TestApiUsageStats: API 使用统计测试 (4 个)
+- TestApiUsageTracker: API 使用追踪器测试 (6 个)
+- TestMemoryOptimizationTips: 优化技巧测试 (2 个)
+- TestAnalyzeAddonMemory: 便捷函数测试 (2 个)
+- TestIteration32Integration: 集成测试 (2 个)
+
+测试验证：
+- 总测试数：1560 个 (1560 passed, 2 skipped)
+- 所有测试通过 ✅
+- 测试覆盖率保持 90%+
+
+### 遇到的问题
+1. 无重大问题
+
+### 经验总结
+- 内存问题自动修复工具可以帮助开发者识别和修复潜在的内存问题
+- 纹理/模型/脚本分析器提供了全面的资源检查
+- API 使用统计可以帮助识别问题 API 和热门 API
+- 增强代码示例使得学习路径更清晰（难度分级、时间估算）
+- 测试驱动开发确保新功能质量
+
+### 文件变更
+- 新增：`src/mc_agent_kit/launcher/auto_fixer.py` (约 600 行)
+- 新增：`src/tests/test_iteration_32.py` (39 个测试)
+- 修改：`src/mc_agent_kit/knowledge_base/models.py` (新增 DifficultyLevel, ExampleCategory, EnhancedCodeExample, ApiUsageStats, ApiUsageTracker)
+- 修改：`src/mc_agent_kit/launcher/__init__.py` (导出 auto_fixer 模块)
+- 修改：`src/mc_agent_kit/knowledge_base/__init__.py` (导出新模型)
+- 修改：`pyproject.toml` (版本升级到 1.19.0)
+- 修改：`docs/ITERATIONS.md`
+- 修改：`docs/NEXT_ITERATION.md`
+
+### 验收标准完成情况
+- [x] 内存问题自动修复工具可用 ✅
+- [x] 纹理/模型/脚本分析器可用 ✅
+- [x] 知识库内容完善（难度标记、API 统计） ✅
+- [x] 所有测试通过 (1560 passed, 2 skipped) ✅
+- [x] 测试覆盖率保持 90%+ ✅
 
