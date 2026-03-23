@@ -109,6 +109,62 @@ from .smart_conversation import (
     process_message,
 )
 
+# Iteration #50: LLM Integration
+from .llm_integration import (
+    AzureOpenAIClient,
+    BaseLLMClient,
+    ChatMessage,
+    CostTracker,
+    LLMClientFactory,
+    LLMConfig as IntegrationLLMConfig,
+    LLMProvider as IntegrationLLMProvider,
+    LLMResponse,
+    LLMService,
+    LMStudioClient,
+    MessageRole,
+    MockLLMClient,
+    OllamaClient,
+    OpenAIClient,
+    StreamChunk,
+    TokenUsage,
+    chat,
+    get_llm_service,
+)
+
+# Iteration #50: Prompt Engineering
+from .prompt_engineering import (
+    ChainOfThoughtConfig,
+    ChainOfThoughtPrompter,
+    FewShotConfig,
+    FewShotExample,
+    FewShotLearner,
+    PromptEngineeringService,
+    PromptOptimizer,
+    PromptOptimizationResult,
+    PromptTemplate,
+    PromptTemplateRegistry,
+    PromptTemplateType,
+    ReasoningType,
+    build_cot_prompt,
+    get_prompt_service,
+    render_prompt,
+)
+
+# Iteration #50: Async Generation
+from .async_generation import (
+    AsyncCodeGenerator,
+    AsyncGenerationResult,
+    BatchGenerationConfig,
+    BatchGenerationResult,
+    IncrementalCache,
+    LazyLoader,
+    MemoryOptimizedGenerator,
+    generate_code_async,
+    generate_codes_batch_async,
+    get_async_generator,
+    get_memory_optimized_generator,
+)
+
 __all__ = [
     # 基类和工具
     "BaseSkill",
@@ -206,6 +262,53 @@ __all__ = [
     "create_session",
     "get_smart_conversation_manager",
     "process_message",
+    # LLM Integration (Iteration #50)
+    "BaseLLMClient",
+    "OpenAIClient",
+    "AzureOpenAIClient",
+    "OllamaClient",
+    "LMStudioClient",
+    "MockLLMClient",
+    "LLMClientFactory",
+    "LLMService",
+    "ChatMessage",
+    "MessageRole",
+    "TokenUsage",
+    "CostTracker",
+    "LLMResponse",
+    "StreamChunk",
+    "IntegrationLLMConfig",
+    "IntegrationLLMProvider",
+    "get_llm_service",
+    "chat",
+    # Prompt Engineering (Iteration #50)
+    "PromptTemplateRegistry",
+    "PromptTemplate",
+    "PromptTemplateType",
+    "FewShotExample",
+    "FewShotConfig",
+    "FewShotLearner",
+    "ChainOfThoughtPrompter",
+    "ChainOfThoughtConfig",
+    "ReasoningType",
+    "PromptOptimizer",
+    "PromptOptimizationResult",
+    "PromptEngineeringService",
+    "get_prompt_service",
+    "render_prompt",
+    "build_cot_prompt",
+    # Async Generation (Iteration #50)
+    "AsyncCodeGenerator",
+    "AsyncGenerationResult",
+    "BatchGenerationConfig",
+    "BatchGenerationResult",
+    "IncrementalCache",
+    "LazyLoader",
+    "MemoryOptimizedGenerator",
+    "get_async_generator",
+    "get_memory_optimized_generator",
+    "generate_code_async",
+    "generate_codes_batch_async",
 ]
 
 

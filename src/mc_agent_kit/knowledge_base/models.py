@@ -4,6 +4,8 @@
 定义 ModSDK 文档的结构化数据模型，包括 API、事件、枚举等。
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any

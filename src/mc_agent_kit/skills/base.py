@@ -4,6 +4,8 @@ Skill 基类定义
 定义 Agent Skill 的基础接口和元数据格式。
 """
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
