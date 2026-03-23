@@ -28,6 +28,14 @@ from .enhancer import (
     success,
     warning,
 )
+from .rich_output import (
+    OutputTheme,
+    ProgressInfo,
+    RichOutputConfig,
+    RichOutputManager,
+    create_rich_output,
+    get_rich_output,
+)
 
 __all__ = [
     # Base enhancer
@@ -52,4 +60,11 @@ __all__ = [
     "TemplateRegistry",
     "get_ux_manager",
     "localized_message",
+    # Rich output
+    "OutputTheme",
+    "ProgressInfo",
+    "RichOutputConfig",
+    "RichOutputManager",
+    "create_rich_output",
+    "get_rich_output",
 ]

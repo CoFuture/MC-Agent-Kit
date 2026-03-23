@@ -15,8 +15,21 @@ from mc_agent_kit.contrib.performance.optimization import (
     OptimizationStats,
     TemplatePool,
 )
+from .optimized import (
+    CacheEntry,
+    CacheMetrics,
+    EnhancedLRUCache,
+    LazyLoader,
+    ParallelProcessor,
+    PerformanceMonitor,
+    SmartCache,
+    get_parallel_processor,
+    get_performance_monitor,
+    get_smart_cache,
+)
 
 __all__ = [
+    # Original exports
     "LRUCache",
     "KnowledgeCache",
     "LogBatchProcessor",
@@ -26,4 +39,15 @@ __all__ = [
     "CodeGenOptimizer",
     "TemplatePool",
     "OptimizationStats",
+    # Optimized exports
+    "CacheEntry",
+    "CacheMetrics",
+    "EnhancedLRUCache",
+    "LazyLoader",
+    "ParallelProcessor",
+    "PerformanceMonitor",
+    "SmartCache",
+    "get_parallel_processor",
+    "get_performance_monitor",
+    "get_smart_cache",
 ]

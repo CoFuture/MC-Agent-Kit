@@ -21,6 +21,24 @@ from .modsdk import (
     ModSDKDebugSkill,
     ModSDKEventSearchSkill,
 )
+from .ai_enhanced import (
+    CodeContextAnalyzer,
+    CodeContextInfo,
+    ConversationContext,
+    ConversationManager,
+    ConversationMessage,
+    ConversationRole,
+    IntentRecognitionResult,
+    IntentRecognizer,
+    IntentType,
+    SmartRecommender,
+    create_code_analyzer,
+    create_conversation_manager,
+    create_smart_recommender,
+    get_code_analyzer,
+    get_conversation_manager,
+    get_smart_recommender,
+)
 
 __all__ = [
     # 基类和工具
@@ -38,6 +56,23 @@ __all__ = [
     "ModSDKCodeGenSkill",
     "ModSDKDebugSkill",
     "ModSDKEventSearchSkill",
+    # AI Enhanced
+    "CodeContextAnalyzer",
+    "CodeContextInfo",
+    "ConversationContext",
+    "ConversationManager",
+    "ConversationMessage",
+    "ConversationRole",
+    "IntentRecognitionResult",
+    "IntentRecognizer",
+    "IntentType",
+    "SmartRecommender",
+    "create_code_analyzer",
+    "create_conversation_manager",
+    "create_smart_recommender",
+    "get_code_analyzer",
+    "get_conversation_manager",
+    "get_smart_recommender",
 ]
 
 
