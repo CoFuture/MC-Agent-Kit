@@ -1304,7 +1304,7 @@ wheels = [
 
 [[package]]
 name = "mc-agent-kit"
-version = "1.37.0"
+version = "1.38.0"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
