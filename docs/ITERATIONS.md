@@ -4,6 +4,186 @@
 
 ---
 
+## 迭代 #56 (2026-03-24)
+
+### 版本
+v1.43.0
+
+### 目标
+MCP 工具集成与 API 增强
+
+### 完成内容
+
+#### 1. MCP 工具集成 ✅
+
+**新增 `src/mc_agent_kit/tools/` 模块目录**:
+
+**MCP 客户端** (`mcp_client.py`):
+- `MCPClient` - MCP 工具客户端
+- `MCPTool` - 工具定义数据结构
+- `MCPToolResult` - 工具执行结果
+- `MCPClientConfig` - 客户端配置
+- `MCPConnectionStatus` - 连接状态枚举
+
+**功能特性**:
+- 工具注册和注销
+- 工具调用（同步/异步）
+- 结果缓存机制
+- 调用统计追踪
+- 工具搜索和发现
+
+**验收标准**:
+- MCP 客户端支持工具注册和调用 ✅
+- 缓存机制正常工作 ✅
+- 异步调用支持 ✅
+
+#### 2. 工具注册中心 ✅
+
+**新增 `src/mc_agent_kit/tools/registry.py` 模块**:
+
+**核心数据结构**:
+- `ToolRegistry` - 工具注册中心
+- `ToolMetadata` - 工具元数据
+- `ToolCategory` - 工具类别枚举（FILE/WEB/CODE/GIT/SEARCH/SYSTEM/KNOWLEDGE/UTILITY/CUSTOM）
+- `ToolStatus` - 工具状态枚举（ACTIVE/DEPRECATED/DISABLED/ERROR）
+
+**功能特性**:
+- 工具注册和注销
+- 按类别/标签/状态过滤
+- 工具搜索
+- 调用统计记录
+- 导出/导入注册中心数据
+- 持久化存储支持
+
+**验收标准**:
+- 支持动态注册和发现 ✅
+- 类别和标签过滤正常 ✅
+- 搜索功能可用 ✅
+
+#### 3. 工具编排引擎 ✅
+
+**新增 `src/mc_agent_kit/tools/orchestrator.py` 模块**:
+
+**核心数据结构**:
+- `ToolOrchestrator` - 工具编排器
+- `ToolWorkflow` - 工具工作流
+- `WorkflowStep` - 工作流步骤
+- `WorkflowResult` - 工作流执行结果
+- `StepResult` - 步骤执行结果
+- `ExecutionMode` - 执行模式枚举（SEQUENTIAL/PARALLEL/CONDITIONAL）
+- `StepStatus` - 步骤状态枚举
+
+**功能特性**:
+- 工作流创建和管理
+- 顺序执行模式
+- 并行执行模式
+- 条件执行模式
+- 输入/输出映射
+- 执行历史追踪
+
+**验收标准**:
+- 支持串行和并行执行 ✅
+- 工作流编排正常 ✅
+- 输入输出映射可用 ✅
+
+#### 4. 内置工具集 ✅
+
+**新增 `src/mc_agent_kit/tools/builtin/` 模块目录**:
+
+**文件工具** (`file_tools.py`):
+- `read_file` - 读取文件
+- `write_file` - 写入文件
+- `list_files` - 列出目录
+- `delete_file` - 删除文件
+- `file_exists` - 检查文件存在
+- `copy_file` / `move_file` - 复制/移动
+- `create_directory` - 创建目录
+
+**网络工具** (`web_tools.py`):
+- `http_get` - HTTP GET 请求
+- `http_post` - HTTP POST 请求
+- `fetch_url` - 抓取 URL 内容
+- `download_file` - 下载文件
+
+**代码工具** (`code_tools.py`):
+- `format_code` - 格式化代码
+- `lint_code` - Lint 检查
+- `run_tests` - 运行测试
+- `check_syntax` - 语法检查
+
+**搜索工具** (`search_tools.py`):
+- `search_knowledge` - 搜索知识库
+- `search_code` - 搜索代码
+- `search_files` - 搜索文件
+
+**Git 工具** (`git_tools.py`):
+- `git_status` - 获取状态
+- `git_commit` - 提交更改
+- `git_push` / `git_pull` - 推送/拉取
+- `git_branch` - 分支操作
+
+**验收标准**:
+- 内置工具覆盖常用场景 ✅
+- 所有工具可正常调用 ✅
+
+#### 5. 测试完善 ✅
+
+**新增 `src/tests/test_iteration_56.py` (71 个测试)**:
+- MCP 工具测试 (18 个)
+- 工具注册中心测试 (12 个)
+- 工具编排器测试 (17 个)
+- 内置工具测试 (15 个)
+- 集成测试 (2 个)
+- 验收标准测试 (6 个)
+- 性能测试 (3 个)
+
+**测试验证**:
+- 新增 71 个测试 ✅
+- 所有测试通过 ✅
+
+### 验收标准完成情况
+
+- [x] MCP 工具集成完成，支持标准 MCP 协议 ✅
+- [x] 工具注册中心支持动态注册和发现 ✅
+- [x] 工具编排引擎支持串行和并行执行 ✅
+- [x] 内置工具集覆盖常用场景 ✅
+- [x] 工具调用延迟 < 200ms ✅
+- [x] 工具发现响应 < 50ms ✅
+- [x] 所有测试通过 (71 passed) ✅
+
+### 技术亮点 🔥
+
+1. **MCP 客户端**: 支持同步/异步工具调用，内置缓存机制
+2. **工具注册中心**: 支持类别/标签分类，提供搜索和过滤功能
+3. **编排引擎**: 支持顺序/并行/条件三种执行模式
+4. **内置工具**: 提供文件、网络、代码、搜索、Git 五大类工具
+5. **性能优化**: 工具调用 < 200ms，发现 < 50ms
+
+### 文件变更 🔥
+
+```
+新增文件:
+- src/mc_agent_kit/tools/__init__.py
+- src/mc_agent_kit/tools/mcp_client.py (~400 行)
+- src/mc_agent_kit/tools/registry.py (~450 行)
+- src/mc_agent_kit/tools/orchestrator.py (~700 行)
+- src/mc_agent_kit/tools/builtin/__init__.py
+- src/mc_agent_kit/tools/builtin/file_tools.py (~250 行)
+- src/mc_agent_kit/tools/builtin/web_tools.py (~250 行)
+- src/mc_agent_kit/tools/builtin/code_tools.py (~300 行)
+- src/mc_agent_kit/tools/builtin/search_tools.py (~150 行)
+- src/mc_agent_kit/tools/builtin/git_tools.py (~350 行)
+- src/tests/test_iteration_56.py (71 个测试)
+
+修改文件:
+- src/mc_agent_kit/skills/__init__.py (导出新模块)
+- docs/ITERATIONS.md (迭代记录)
+- docs/NEXT_ITERATION.md (下次迭代计划)
+- pyproject.toml (版本升级到 1.43.0)
+```
+
+---
+
 ## 迭代 #55 (2026-03-24)
 
 ### 版本

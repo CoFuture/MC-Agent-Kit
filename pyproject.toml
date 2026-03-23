@@ -1,6 +1,6 @@
 [project]
 name = "mc-agent-kit"
-version = "1.42.0"
+version = "1.43.0"
 description = "MC-Agent-Kit - AI Agent 工具集，用于 Minecraft 网易版 ModSDK 开发"
 readme = "README.md"
 requires-python = ">=3.13"
