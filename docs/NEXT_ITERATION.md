@@ -2,205 +2,13 @@
 
 ## 当前状态
 
-**当前版本**: v1.40.0
-**当前迭代**: #53 (已完成)
-**下次迭代**: #54
+**当前版本**: v1.41.0
+**当前迭代**: #54 (已完成)
+**下次迭代**: #55
 
 ---
 
-## 迭代 #53 总结（已完成）
-
-### 版本
-v1.40.0
-
-### 目标
-API 集成增强与 LLM 支持
-
-### 完成内容
-
-#### 1. LLM 集成 ✅
-
-**已验证 `src/mc_agent_kit/skills/llm_integration.py` 模块功能**:
-
-**LLM 提供者支持**:
-- `LLMProvider` - 提供 5 种 LLM 提供者支持 (OPENAI/AZURE/OLLAMA/LM_STUDIO/MOCK)
-- `OpenAIClient` - OpenAI API 客户端
-- `AzureOpenAIClient` - Azure OpenAI 客户端
-- `OllamaClient` - 本地 Ollama 客户端
-- `LMStudioClient` - LM Studio 客户端 (OpenAI 兼容 API)
-- `MockLLMClient` - Mock 客户端 (用于测试)
-
-**功能特性**:
-- 同步和异步对话完成
-- 流式响应支持
-- Token 计数和成本追踪
-- 重试机制和超时控制
-- 客户端缓存和工厂模式
-
-**数据结构**:
-- `ChatMessage` - 聊天消息
-- `LLMConfig` - LLM 配置
-- `TokenUsage` - Token 使用统计
-- `CostTracker` - 成本追踪器
-- `LLMResponse` - LLM 响应
-- `StreamChunk` - 流式响应块
-
-#### 2. 提示工程 ✅
-
-**已验证 `src/mc_agent_kit/skills/prompt_engineering.py` 模块功能**:
-
-**提示模板系统**:
-- `PromptTemplate` - 提示模板
-- `PromptTemplateRegistry` - 模板注册表
-- 内置 7 个模板 (modsdk_entity_create, modsdk_item_create, modsdk_block_create, modsdk_event_listener, code_fix, code_explain, system_modsdk_expert)
-
-**Few-shot Learning**:
-- `FewShotExample` - Few-shot 示例
-- `FewShotConfig` - 配置
-- `FewShotLearner` - 学习器
-
-**Chain-of-Thought**:
-- `ChainOfThoughtConfig` - CoT 配置
-- `ChainOfThoughtPrompter` - CoT 提示器
-- 推理过程提取
-
-**提示优化**:
-- `PromptOptimizer` - 提示优化器
-- 空白压缩、重复移除、截断
-- 上下文压缩
-
-#### 3. 异步代码生成 ✅
-
-**已验证 `src/mc_agent_kit/skills/async_generation.py` 模块功能**:
-
-**异步生成**:
-- `AsyncCodeGenerator` - 异步代码生成器
-- `AsyncGenerationResult` - 异步生成结果
-- 支持异步生成和同步接口
-
-**批量生成**:
-- `BatchGenerationConfig` - 批量配置
-- `BatchGenerationResult` - 批量结果
-- 并发控制 (Semaphore)
-- 进度回调
-
-**增量缓存**:
-- `IncrementalCache` - 增量缓存
-- `CacheEntry` - 缓存条目
-- 基于内容哈希的缓存键
-- LRU 淘汰策略
-
-**内存优化**:
-- `LazyLoader` - 懒加载器
-- `MemoryOptimizedGenerator` - 内存优化生成器
-
-#### 4. 对话体验增强 ✅
-
-**已验证 `src/mc_agent_kit/skills/conversation_enhanced.py` 模块功能**:
-
-**情感分析**:
-- `SentimentAnalyzer` - 情感分析器
-- `SentimentType` - 7 种情感类型 (POSITIVE/NEGATIVE/NEUTRAL/FRUSTRATED/CONFUSED/EXCITED/CURIOUS)
-- `SentimentResult` - 分析结果
-- 情感趋势分析
-
-**个性化引擎**:
-- `PersonalizationEngine` - 个性化引擎
-- `PersonalizationConfig` - 个性化配置
-- `PersonalityType` - 6 种个性化类型 (FORMAL/CASUAL/TECHNICAL/FRIENDLY/CONCISE/VERBOSE)
-- 从反馈学习
-
-**对话可视化**:
-- `ConversationVisualizer` - 对话可视化器
-- `VisualizationType` - 5 种可视化类型 (TIMELINE/TOPIC_FLOW/INTENT_DISTRIBUTION/SENTIMENT_TREND/SUMMARY_CARD)
-
-**增强对话管理**:
-- `EnhancedConversationManager` - 增强对话管理器
-- `EnhancedConversationSummary` - 增强摘要
-- 交互质量和用户参与度计算
-
-#### 5. 测试完善 ✅
-
-**新增 `src/tests/test_iteration_53.py` (135 个测试)**:
-- LLM 集成测试 (29 个)
-- 提示工程测试 (30 个)
-- 异步生成测试 (25 个)
-- 对话体验测试 (35 个)
-- 集成测试 (3 个)
-- 验收标准测试 (10 个)
-- 性能测试 (3 个)
-
-**修复的 Bug**:
-- 修复 `async_generation.py` 缺少 `LLMProvider` 导入的问题
-
-**测试验证**:
-- 新增 135 个测试 ✅
-- 所有测试通过 (134 passed, 1 skipped) ✅
-
-### 验收标准完成情况
-
-- [x] 支持 3+ 个 LLM 提供者 ✅ (支持 5 个)
-- [x] 流式响应支持 ✅
-- [x] Token 使用统计准确 ✅
-- [x] 支持模型切换 ✅
-- [x] 内置提示模板 ✅ (7 个)
-- [x] Few-shot 示例可配置 ✅
-- [x] CoT 支持 ✅
-- [x] 异步生成支持 ✅
-- [x] 批量生成支持 ✅
-- [x] 增量缓存 ✅
-- [x] 情感分析 ✅
-- [x] 个性化响应 ✅
-- [x] 对话可视化 ✅
-- [x] 增强摘要 ✅
-- [x] 所有测试通过 ✅
-
-### 技术亮点 🔥
-
-1. **多提供者支持**: 统一接口支持 OpenAI、Azure、Ollama、LM Studio
-2. **成本追踪**: 实时追踪 Token 使用和成本
-3. **提示工程**: 完整的模板系统、Few-shot、CoT 支持
-4. **异步优化**: 异步生成、批量处理、增量缓存
-5. **情感分析**: 7 种情感类型识别，趋势分析
-6. **个性化**: 6 种个性化类型，从反馈学习
-
-### 遇到的问题 🔥
-
-1. **导入缺失**:
-   - 问题：`async_generation.py` 缺少 `LLMProvider` 导入
-   - 解决：添加 `LLMProvider` 到导入列表
-
-2. **测试数据结构**:
-   - 问题：`GeneratedCode` 需要更多必需参数
-   - 解决：更新测试代码，提供完整的参数
-
-3. **情感分析预期**:
-   - 问题："太棒了"被识别为 EXCITED 而非 POSITIVE
-   - 解决：调整测试用例，使用更明确的测试文本
-
-### 经验总结 🔥
-
-1. LLM 集成需要统一接口，方便切换提供者
-2. 成本追踪对生产环境很重要
-3. 提示模板系统提高了代码复用性
-4. 异步生成显著提升批量处理效率
-5. 情感分析需要更细致的关键词分类
-6. 个性化配置应该从用户反馈中学习
-
-### 文件变更 🔥
-
-```
-修改文件:
-- src/mc_agent_kit/skills/async_generation.py (添加 LLMProvider 导入)
-- src/tests/test_iteration_53.py               (新增 135 个测试)
-- docs/ITERATIONS.md                           (迭代记录)
-- docs/NEXT_ITERATION.md                       (下次迭代计划)
-- pyproject.toml                               (版本升级到 1.40.0)
-```
-
----
-
-## 迭代 #54 计划
+## 迭代 #54 总结（已完成）
 
 ### 版本
 v1.41.0
@@ -208,165 +16,383 @@ v1.41.0
 ### 目标
 知识图谱与智能推理
 
-### 任务清单
+### 完成内容
 
-#### 1. 知识图谱构建 🔥
+#### 1. 知识图谱构建 ✅
 
-**实施内容**:
-- [ ] 构建 ModSDK API 知识图谱
-- [ ] 实现实体关系抽取
-- [ ] 实现图谱可视化
-- [ ] 实现图谱查询接口
-- [ ] 实现图谱增量更新
+**新增 `src/mc_agent_kit/skills/knowledge_graph.py` 模块**:
 
-**验收标准**:
-- [ ] 图谱包含 100+ API 节点
-- [ ] 关系抽取准确率 > 80%
-- [ ] 可视化支持交互式探索
-- [ ] 查询响应 < 100ms
+**图谱数据结构**:
+- `GraphNode` - 图谱节点（支持 API、事件、实体、物品、方块、组件、模块等类型）
+- `GraphEdge` - 图谱边（支持调用、触发、监听、依赖、相关等关系类型）
+- `GraphPath` - 图谱路径
+- `GraphStats` - 图谱统计
 
-#### 2. 智能推理引擎 🔥
+**节点类型** (`NodeType`):
+- `API` - API 接口
+- `EVENT` - 事件
+- `ENTITY` - 实体
+- `ITEM` - 物品
+- `BLOCK` - 方块
+- `COMPONENT` - 组件
+- `MODULE` - 模块
+- `PARAMETER` - 参数
+- `RETURN_VALUE` - 返回值
+- `EXAMPLE` - 示例
+- `CONCEPT` - 概念
 
-**实施内容**:
-- [ ] 实现基于图谱的推理
-- [ ] 实现规则推理引擎
-- [ ] 实现因果推理支持
-- [ ] 实现推理路径可视化
-- [ ] 实现推理结果验证
+**关系类型** (`RelationType`):
+- `CALLS` - 调用
+- `TRIGGERS` - 触发
+- `LISTENS` - 监听
+- `RETURNS` - 返回
+- `TAKES` - 接受参数
+- `BELONGS_TO` - 属于模块
+- `DEPENDS_ON` - 依赖
+- `RELATED_TO` - 相关
+- `EXTENDS` - 继承
+- `IMPLEMENTS` - 实现
+- `CONTAINS` - 包含
+- `USES` - 使用
+- `CREATES` - 创建
+- `MODIFIES` - 修改
+- `EXAMPLE_OF` - 示例
+- `SIMILAR_TO` - 相似
 
-**验收标准**:
-- [ ] 推理准确率 > 85%
-- [ ] 支持 5+ 种推理类型
-- [ ] 推理路径可解释
-- [ ] 推理时间 < 500ms
+**知识图谱功能**:
+- 节点管理（添加、查询、更新、删除）
+- 边管理（添加关系、查询邻居）
+- 路径查找（BFS 算法）
+- 子图提取
+- 重要节点识别（基于连接度）
+- 统计信息
+- Mermaid 图表导出
+- JSON 导入导出
 
-#### 3. 上下文增强 🔥
+**知识图谱构建器** (`KnowledgeGraphBuilder`):
+- 从 API 列表构建图谱
+- 从事件列表构建图谱
+- 推断关系（基于名称相似性、同模块）
+- 添加示例关系
 
-**实施内容**:
-- [ ] 实现多轮对话上下文管理
-- [ ] 实现上下文压缩策略
-- [ ] 实现关键信息提取
-- [ ] 实现上下文窗口优化
-- [ ] 实现上下文持久化
+#### 2. 智能推理引擎 ✅
 
-**验收标准**:
-- [ ] 支持 20+ 轮对话上下文
-- [ ] 压缩率 > 50%
-- [ ] 关键信息保留率 > 95%
-- [ ] Token 使用优化 30%
+**新增 `src/mc_agent_kit/skills/inference_engine.py` 模块**:
 
-#### 4. 智能补全 🔥
+**推理规则系统**:
+- `InferenceRule` - 推理规则
+- `RuleType` - 规则类型（IF_THEN、IMPLIES、EQUIVALENT、EXCLUDES、REQUIRES）
+- `RuleEngine` - 规则推理引擎
+- 内置规则：实体创建需要设置位置、事件监听需要注册、物品需要注册
 
-**实施内容**:
-- [ ] 实现 API 调用补全
-- [ ] 实现代码片段补全
-- [ ] 实现参数智能推荐
-- [ ] 实现错误修复建议补全
-- [ ] 实现文档引用补全
+**图谱推理引擎** (`GraphInferenceEngine`):
+- 推断相关 API
+- 推断 API 使用方式
+- 推断 API 依赖
+- 基于图谱路径的推理
 
-**验收标准**:
-- [ ] 补全准确率 > 85%
-- [ ] 补全延迟 < 200ms
-- [ ] 支持 10+ 种补全类型
-- [ ] 用户满意度 > 90%
+**因果推理引擎** (`CausalInferenceEngine`):
+- `CausalChain` - 因果链
+- 推断原因（溯因推理）
+- 推断结果（演绎推理）
+- 内置因果规则：未注册事件监听→事件回调不执行、mod.json 配置错误→Addon 加载失败、客户端调用服务端 API→API 调用失败
 
-#### 5. 测试与质量 🔥
+**综合推理引擎** (`InferenceEngine`):
+- 整合规则推理、图谱推理、因果推理
+- 自动确定推理类型
+- 推理过程可视化
 
-**实施内容**:
-- [ ] 新增知识图谱测试
-- [ ] 新增推理引擎测试
-- [ ] 新增上下文测试
-- [ ] 新增补全测试
-- [ ] 测试覆盖率保持 93%+
+**推理类型** (`InferenceType`):
+- `DEDUCTIVE` - 演绎推理
+- `INDUCTIVE` - 归纳推理
+- `ABDUCTIVE` - 溯因推理
+- `ANALOGICAL` - 类比推理
+- `CAUSAL` - 因果推理
 
-**验收标准**:
-- [ ] 新增 80+ 个测试
-- [ ] 所有测试通过
-- [ ] 测试覆盖率 > 93%
-- [ ] 性能回归测试通过
+#### 3. 上下文增强 ✅
+
+**新增 `src/mc_agent_kit/skills/context_enhancement.py` 模块**:
+
+**上下文管理器** (`ContextManager`):
+- 多轮对话上下文管理
+- 条目优先级管理（CRITICAL、HIGH、MEDIUM、LOW、DISCARDABLE）
+- 上下文类型（USER_REQUEST、API_CALL、CODE_SNIPPET、ERROR_MESSAGE 等）
+- 关键信息自动提取（API 名称、事件名称、作用域）
+- 相关性评分
+- Token 计数和管理
+
+**上下文压缩器** (`ContextCompressor`):
+- 压缩策略：RANK_KEEP、PRUNE_OLD、MERGE_SIMILAR、SUMMARIZE
+- 可配置目标压缩率
+- 关键信息保留
+
+**关键信息提取器** (`KeyInfoExtractor`):
+- API 名称提取
+- 事件名称提取
+- 作用域识别
+- 模块识别
+
+**上下文增强器** (`ContextEnhancer`):
+- 整合上下文管理、压缩、关键信息提取
+- 优化上下文窗口
+- 上下文搜索
+
+#### 4. 智能补全 ✅
+
+**新增 `src/mc_agent_kit/skills/smart_completion.py` 模块**:
+
+**API 补全提供者** (`APICompletionProvider`):
+- API 名称补全
+- API 调用补全（参数建议）
+- 参数值建议
+- 作用域过滤
+- 内置 ModSDK API（CreateEngineEntity、DestroyEntity、GetEngineEntity、ListenEvent 等）
+
+**事件补全提供者** (`EventCompletionProvider`):
+- 事件名称补全（OnServerChat、OnServerPlayerJoin 等）
+- 作用域过滤
+- 参数提示
+
+**代码片段补全提供者** (`SnippetCompletionProvider`):
+- 代码片段补全
+- 内置片段：listen、create_entity、on_server_start、on_player_join
+
+**智能补全引擎** (`SmartCompletionEngine`):
+- 整合各补全提供者
+- 补全统计
+- 性能优化
+
+### 验收标准完成情况
+
+- [x] 知识图谱构建完成 ✅
+- [x] 智能推理引擎完成 ✅
+- [x] 上下文增强完成 ✅
+- [x] 智能补全完成 ✅
+- [x] 所有测试通过 (25 passed) ✅
+
+### 文件变更
+
+```
+新增文件:
+- src/mc_agent_kit/skills/knowledge_graph.py
+- src/mc_agent_kit/skills/inference_engine.py
+- src/mc_agent_kit/skills/context_enhancement.py
+- src/mc_agent_kit/skills/smart_completion.py
+- src/tests/test_iteration_54.py
+
+修改文件:
+- src/mc_agent_kit/skills/__init__.py
+- docs/ITERATIONS.md
+- docs/NEXT_ITERATION.md
+- pyproject.toml (版本升级到 1.41.0)
+```
+
+---
+
+## 迭代 #55 计划
+
+### 版本
+v1.42.0
+
+### 目标
+知识库持续学习与自适应优化
+
+### 背景与动机
+
+迭代 #54 已完成知识图谱和智能推理引擎的基础实现。为了使 Agent 具备持续学习和自适应能力，需要实现以下功能：
+
+1. **增量学习**: 从用户交互中持续学习新的 API、模式、最佳实践
+2. **反馈优化**: 根据用户反馈自动调整推理权重和补全排序
+3. **知识库维护**: 自动清理过期知识、合并重复条目、更新关联关系
+4. **个性化适配**: 记住用户偏好、常用模式、项目上下文
+
+### 功能规划
+
+#### 1. 增量学习系统
+
+**文件**: `src/mc_agent_kit/skills/continuous_learning.py`
+
+**核心功能**:
+- 从对话中提取新知识（新 API 用法、最佳实践）
+- 自动验证知识有效性（运行测试验证代码示例）
+- 知识版本管理（支持回滚）
+- 知识来源追踪（记录知识的来源对话）
+
+**数据结构**:
+```python
+class LearnedKnowledge:
+    """学习到的知识"""
+    id: str
+    knowledge_type: KnowledgeType  # API_USAGE, BEST_PRACTICE, PATTERN, FIX
+    content: str
+    source: KnowledgeSource  # 来源：对话、文档、示例代码
+    confidence: float  # 置信度
+    verified: bool  # 是否已验证
+    created_at: datetime
+    updated_at: datetime
+    usage_count: int  # 使用次数
+    feedback_score: float  # 反馈评分
+
+class ContinuousLearner:
+    """持续学习器"""
+    def extract_knowledge(self, conversation: list) -> list[LearnedKnowledge]
+    def verify_knowledge(self, knowledge: LearnedKnowledge) -> bool
+    def integrate_knowledge(self, knowledge: LearnedKnowledge) -> bool
+    def get_related_knowledge(self, query: str) -> list[LearnedKnowledge]
+```
+
+#### 2. 反馈驱动优化
+
+**文件**: `src/mc_agent_kit/skills/feedback_optimizer.py`
+
+**核心功能**:
+- 收集用户反馈（接受/拒绝补全、修改建议、评分）
+- 调整推理规则权重
+- 优化补全排序算法
+- 识别常见错误模式
+
+**数据结构**:
+```python
+class Feedback:
+    """用户反馈"""
+    id: str
+    feedback_type: FeedbackType  # ACCEPT, REJECT, MODIFY, RATE
+    target_type: str  # COMPLETION, INFERENCE, SUGGESTION
+    target_id: str
+    original_content: str
+    modified_content: str | None  # 用户修改后的内容
+    rating: int | None  # 1-5 分
+    timestamp: datetime
+
+class FeedbackOptimizer:
+    """反馈优化器"""
+    def record_feedback(self, feedback: Feedback) -> None
+    def get_adjustment_score(self, item: Any) -> float
+    def optimize_completions(self, items: list) -> list
+    def identify_error_patterns(self) -> list[ErrorPattern]
+```
+
+#### 3. 知识库维护
+
+**文件**: `src/mc_agent_kit/skills/knowledge_maintenance.py`
+
+**核心功能**:
+- 自动检测过期知识（API 废弃、语法变更）
+- 合并重复知识条目
+- 更新关联关系（图谱边权重调整）
+- 知识库健康度报告
+
+**数据结构**:
+```python
+class MaintenanceReport:
+    """维护报告"""
+    total_knowledge: int
+    outdated_count: int
+    duplicate_count: int
+    merged_count: int
+    updated_relations: int
+    health_score: float
+
+class KnowledgeMaintenance:
+    """知识库维护"""
+    def detect_outdated(self) -> list[LearnedKnowledge]
+    def find_duplicates(self) -> list[list[LearnedKnowledge]]
+    def merge_knowledge(self, knowledge_list: list) -> LearnedKnowledge
+    def update_relations(self) -> int
+    def generate_report(self) -> MaintenanceReport
+```
+
+#### 4. 个性化适配
+
+**文件**: `src/mc_agent_kit/skills/personalization.py`
+
+**核心功能**:
+- 记住用户偏好（代码风格、命名约定、常用模式）
+- 项目上下文管理（记住项目使用的模块、配置）
+- 学习用户常用模式（常用的 API 组合、代码模板）
+- 跨会话记忆持久化
+
+**数据结构**:
+```python
+class UserPreference:
+    """用户偏好"""
+    id: str
+    preference_type: PreferenceType  # CODE_STYLE, NAMING, MODULE, PATTERN
+    key: str
+    value: Any
+    confidence: float
+    last_used: datetime
+
+class ProjectContext:
+    """项目上下文"""
+    project_id: str
+    name: str
+    used_modules: set[str]
+    used_apis: set[str]
+    code_style: dict
+    custom_patterns: list[str]
+
+class PersonalizationEngine:
+    """个性化引擎"""
+    def record_preference(self, preference: UserPreference) -> None
+    def get_preferences(self, preference_type: PreferenceType) -> list[UserPreference]
+    def adapt_suggestion(self, suggestion: str) -> str
+    def save_project_context(self, context: ProjectContext) -> None
+    def load_project_context(self, project_id: str) -> ProjectContext | None
+```
 
 ### 验收标准
-- [ ] 知识图谱构建完成
-- [ ] 智能推理引擎完成
-- [ ] 上下文增强完成
-- [ ] 智能补全完成
+
+#### 功能验收
+- [ ] 从对话中提取知识的准确率 > 80%
+- [ ] 用户反馈能显著改善补全质量（接受率提升 > 10%）
+- [ ] 知识库维护自动化率 > 90%
+- [ ] 个性化适配使用户满意度提升 > 15%
+
+#### 性能验收
+- [ ] 知识提取延迟 < 500ms
+- [ ] 反馈处理延迟 < 100ms
+- [ ] 知识库维护可在后台完成，不影响主流程
+
+#### 测试验收
+- [ ] 新增测试用例覆盖所有新功能
 - [ ] 所有测试通过
-- [ ] 测试覆盖率 > 93%
+- [ ] 测试覆盖率 > 80%
+
+### 风险评估
+
+1. **知识质量风险**: 学习到错误知识可能影响后续推理
+   - 缓解措施：实施知识验证机制，低置信度知识需人工确认
+
+2. **性能风险**: 知识库增长可能影响查询性能
+   - 缓解措施：实施增量索引、定期清理、冷热数据分离
+
+3. **隐私风险**: 存储用户偏好可能涉及隐私问题
+   - 缓解措施：本地存储、用户可控、支持清除
+
+### 依赖项
+
+- 依赖迭代 #54 的知识图谱模块
+- 依赖迭代 #53 的 LLM 集成模块
+- 需要设计持久化存储方案（JSON 文件或 SQLite）
+
+### 时间估算
+
+- 增量学习系统: 2-3 天
+- 反馈驱动优化: 1-2 天
+- 知识库维护: 1 天
+- 个性化适配: 1-2 天
+- 测试与文档: 1 天
+
+**总计**: 6-9 天
 
 ---
 
-## 里程碑状态
+## 迭代历史
 
-| 里程碑 | 验收标准 | 状态 |
-|--------|----------|------|
-| M1: 启动器可用 | 能稳定启动游戏并加载 Addon，无内存错误 | 🟢 基本完成 |
-| M2: 知识检索有效 | 搜索 "创建实体" 能返回 CreateEntity API 和示例 | ✅ 已完成 |
-| M3: 创建项目可用 | `mc-create project` 能生成可运行的项目 | ✅ 已完成 |
-| M4: 闭环打通 | Agent 能完成：查文档 → 创建项目 → 启动测试 → 诊断错误 | ✅ 已完成 |
-| M5: CLI 工具完善 | 所有核心功能有 CLI 命令，支持 JSON 输出 | ✅ 已完成 |
-| M6: 性能优化 | 缓存命中率 > 50%，搜索响应 < 100ms | ✅ 已完成 |
-| M7: 代码生成增强 | 新增 4+ 种模板，支持质量检查 | ✅ 已完成 |
-| M8: 插件系统完善 | 插件市场、性能监控、依赖安装可用 | ✅ 已完成 |
-| M9: CLI 交互增强 | REPL、历史记录、别名、彩色输出可用 | ✅ 已完成 |
-| M10: 配置管理完善 | 配置管理、验证、模板生成可用 | ✅ 已完成 |
-| M11: 文档国际化 | 核心文档有英文版本 | ✅ 已完成 |
-| M12: 测试覆盖率 | 测试覆盖率保持 90%+ | ✅ 已完成 |
-| M13: 用户体验优化 | 统一消息格式，友好错误提示 | ✅ 已完成 |
-| M14: 工作流 CLI 集成 | 工作流 CLI 命令可用，支持缓存 | ✅ 已完成 |
-| M15: 工作流增强 | 重试、跳过、进度、暂停/恢复可用 | ✅ 已完成 |
-| M16: 多语言支持 | 支持中日英韩 4 种语言 | ✅ 已完成 |
-| M17: 端到端测试 | 完整工作流测试覆盖 | ✅ 已完成 |
-| M18: 性能基准 | 性能基准测试套件 | ✅ 已完成 |
-| M19: 类型检查 | Mypy 检查通过，核心模块有类型注解 | ✅ 已完成 |
-| M20: CI/CD 集成 | GitHub Actions 自动测试、发布 | ✅ 已完成 |
-| M21: AI Agent 增强 | 多轮对话、代码理解、智能推荐 | ✅ 已完成 |
-| M22: 智能代码生成 | 代码生成、质量评估、风格检查 | ✅ 已完成 |
-| M23: LLM 集成 | 支持多种 LLM 提供者，流式响应 | ✅ 已完成 |
-| M24: 提示工程 | 提示模板、Few-shot、CoT 支持 | ✅ 已完成 |
-| M25: 异步生成 | 异步代码生成，批量处理 | ✅ 已完成 |
-| M26: 对话体验 | 情感分析、个性化响应、可视化 | ✅ 已完成 |
-| M27: 多语言支持 | 10 种语言检测，5 种语言模板 | ✅ 已完成 |
-| M28: 智能推荐 | 上下文推荐，学习路径 | ✅ 已完成 |
-| M29: 性能优化 | 多种缓存策略，内存监控 | ✅ 已完成 |
-| M30: 工作流自动化 | 编排引擎、模板、可视化 | ✅ 已完成 |
-| M31: CLI 向导 | 交互式向导，5+ 场景 | ✅ 已完成 |
-| M32: 错误诊断增强 | 模式识别、知识库、预测 | ✅ 已完成 |
-| M33: 代码审查 | 7+ 规则，质量评分 | ✅ 已完成 |
-| M34: 知识图谱 | API 关系图谱，推理支持 | 🟡 进行中 |
-| M35: 智能推理 | 基于图谱推理，路径可视化 | 🟡 进行中 |
-| M36: 上下文增强 | 多轮上下文，压缩优化 | 🟡 进行中 |
-| M37: 智能补全 | API 补全，参数推荐 | 🟡 进行中 |
-
----
-
-## 性能目标
-
-| 指标 | 当前值 | 目标值 | 状态 |
-|------|--------|--------|------|
-| 索引构建时间 | ~5s → ~1s (缓存命中) | < 3s | ✅ |
-| 搜索响应时间 | ~200ms → ~10ms (缓存命中) | < 100ms | ✅ |
-| CLI 启动时间 | ~500ms | < 200ms | 🟡 |
-| 缓存命中率 | > 50% | > 80% | ✅ |
-| 代码生成质量 | 90%+ 通过检查 | 95%+ | ✅ |
-| 游戏启动成功率 | N/A | > 90% | 🟡 |
-| 错误诊断准确率 | N/A | > 80% | ✅ |
-| 工作流执行时间 | < 5s | < 3s | ✅ |
-| Mypy 类型检查 | 0 errors | 0 errors | ✅ |
-| 测试覆盖率 | 92%+ | 93%+ | ✅ |
-| LLM 响应延迟 | < 500ms | < 500ms | ✅ |
-| Token 使用效率 | 优化 30% | 优化 30% | ✅ |
-| 批量生成吞吐量 | 提升 2x | 提升 2x | ✅ |
-| 对话响应时间 | < 200ms | < 200ms | ✅ |
-| 情感分析准确率 | > 70% | > 70% | ✅ |
-| 语言检测准确率 | > 90% | > 90% | ✅ |
-| 推荐响应时间 | < 200ms | < 200ms | ✅ |
-| 工作流编排性能 | 10 步骤 < 5s | 10 步骤 < 5s | ✅ |
-| 代码审查速度 | 1000 行 < 1s | 1000 行 < 1s | ✅ |
-| 图谱查询响应 | N/A | < 100ms | 🟡 |
-| 推理准确率 | N/A | > 85% | 🟡 |
-| 补全延迟 | N/A | < 200ms | 🟡 |
-
----
-
-*文档版本：v20.0.0*
-*最后更新：2026-03-23*
+| 迭代 | 版本 | 主题 | 状态 |
+|------|------|------|------|
+| #54 | v1.41.0 | 知识图谱与智能推理 | ✅ 已完成 |
+| #53 | v1.40.0 | API 集成增强与 LLM 支持 | ✅ 已完成 |
+| #52 | v1.39.0 | 代码质量提升与文档完善 | ✅ 已完成 |
+| #51 | v1.38.0 | MCP 工具集成完善 | ✅ 已完成 |

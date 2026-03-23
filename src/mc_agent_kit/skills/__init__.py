@@ -165,6 +165,72 @@ from .async_generation import (
     get_memory_optimized_generator,
 )
 
+# Iteration #54: Knowledge Graph
+from .knowledge_graph import (
+    GraphEdge,
+    GraphNode,
+    GraphPath,
+    GraphStats,
+    KnowledgeGraph,
+    KnowledgeGraphBuilder,
+    NodeType,
+    RelationStrength,
+    RelationType,
+    get_graph_builder,
+    get_knowledge_graph,
+)
+
+# Iteration #54: Inference Engine
+from .inference_engine import (
+    CausalChain,
+    CausalInferenceEngine,
+    GraphInferenceEngine,
+    InferenceContext,
+    InferenceEngine,
+    InferenceResult,
+    InferenceStatus,
+    InferenceRule,
+    InferenceType,
+    RuleEngine,
+    RuleType,
+    get_inference_engine,
+    infer,
+    infer_api_relations,
+)
+
+# Iteration #54: Context Enhancement
+from .context_enhancement import (
+    CompressionResult,
+    CompressionStrategy,
+    ContextCompressor,
+    ContextEnhancer,
+    ContextEntry,
+    ContextManager,
+    ContextPriority,
+    ContextType,
+    ContextWindow,
+    KeyInfo,
+    KeyInfoExtractor,
+    add_context,
+    get_context_enhancer,
+)
+
+# Iteration #54: Smart Completion
+from .smart_completion import (
+    APICompletionProvider,
+    CompletionContext,
+    CompletionItem,
+    CompletionResult,
+    CompletionSource,
+    CompletionStats,
+    CompletionType,
+    EventCompletionProvider,
+    SmartCompletionEngine,
+    SnippetCompletionProvider,
+    complete,
+    get_completion_engine,
+)
+
 __all__ = [
     # 基类和工具
     "BaseSkill",
@@ -309,6 +375,60 @@ __all__ = [
     "get_memory_optimized_generator",
     "generate_code_async",
     "generate_codes_batch_async",
+    # Knowledge Graph (Iteration #54)
+    "KnowledgeGraph",
+    "GraphEdge",
+    "GraphNode",
+    "GraphPath",
+    "GraphStats",
+    "NodeType",
+    "RelationType",
+    "RelationStrength",
+    "KnowledgeGraphBuilder",
+    "get_knowledge_graph",
+    "get_graph_builder",
+    # Inference Engine (Iteration #54)
+    "InferenceEngine",
+    "InferenceRule",
+    "InferenceResult",
+    "InferenceType",
+    "InferenceStatus",
+    "InferenceContext",
+    "RuleType",
+    "CausalChain",
+    "RuleEngine",
+    "GraphInferenceEngine",
+    "CausalInferenceEngine",
+    "get_inference_engine",
+    "infer",
+    "infer_api_relations",
+    # Context Enhancement (Iteration #54)
+    "ContextManager",
+    "ContextEntry",
+    "ContextWindow",
+    "ContextPriority",
+    "ContextType",
+    "CompressionStrategy",
+    "CompressionResult",
+    "KeyInfo",
+    "ContextCompressor",
+    "KeyInfoExtractor",
+    "ContextEnhancer",
+    "get_context_enhancer",
+    "add_context",
+    # Smart Completion (Iteration #54)
+    "SmartCompletionEngine",
+    "CompletionItem",
+    "CompletionContext",
+    "CompletionResult",
+    "CompletionType",
+    "CompletionSource",
+    "CompletionStats",
+    "APICompletionProvider",
+    "EventCompletionProvider",
+    "SnippetCompletionProvider",
+    "get_completion_engine",
+    "complete",
 ]
 
 
