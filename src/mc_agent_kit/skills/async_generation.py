@@ -17,6 +17,7 @@ from typing import Any, Callable, Optional, Union
 from mc_agent_kit.skills.llm_integration import (
     ChatMessage,
     LLMConfig,
+    LLMProvider,
     LLMResponse,
     LLMService,
     MessageRole,
