@@ -1,0 +1,29 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "test_project",
+    "description": "test_project Behavior Pack",
+    "uuid": "6d0e618e-73e9-4132-990a-782db859d768",
+    "version": [
+      1,
+      0,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      16,
+      0
+    ]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "297b4582-67df-4beb-80b8-24201b543d39",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    }
+  ]
+}

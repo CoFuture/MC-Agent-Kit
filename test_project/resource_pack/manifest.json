@@ -1,0 +1,29 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "test_project Resources",
+    "description": "test_project Resource Pack",
+    "uuid": "db25edf0-adde-4aad-aa5a-aeee0415cab3",
+    "version": [
+      1,
+      0,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      16,
+      0
+    ]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "691506cc-a1e4-4e42-a68f-a014bae9b3f1",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    }
+  ]
+}
