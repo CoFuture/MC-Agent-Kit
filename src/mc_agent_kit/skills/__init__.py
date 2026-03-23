@@ -231,6 +231,74 @@ from .smart_completion import (
     get_completion_engine,
 )
 
+# Iteration #55: Continuous Learning
+from .continuous_learning import (
+    ContinuousLearner,
+    ExtractionResult,
+    KnowledgeSource,
+    KnowledgeStatus,
+    KnowledgeType,
+    KnowledgeValidator,
+    LearnedKnowledge,
+    KnowledgeVersion,
+    VerificationResult,
+    extract_knowledge,
+    get_continuous_learner,
+    get_learned_knowledge,
+)
+
+# Iteration #55: Feedback Optimizer
+from .feedback_optimizer import (
+    AdjustmentScore,
+    ErrorPattern as FeedbackErrorPattern,
+    Feedback,
+    FeedbackCollector,
+    FeedbackOptimizer,
+    FeedbackTarget,
+    FeedbackType,
+    OptimizationStats,
+    get_feedback_collector,
+    get_feedback_optimizer,
+    optimize_items,
+    record_feedback,
+)
+
+# Iteration #55: Knowledge Maintenance
+from .knowledge_maintenance import (
+    DuplicateGroup,
+    HealthLevel,
+    HealthMetrics,
+    KnowledgeItem,
+    KnowledgeMaintenance,
+    MaintenanceAction,
+    MaintenanceReport,
+    OutdatedResult,
+    RelationUpdate,
+    get_health_report,
+    get_knowledge_maintenance,
+    run_maintenance,
+)
+
+# Iteration #55: Personalization
+from .personalization import (
+    PatternFrequency,
+    PatternLearner,
+    PersonalizationEngine,
+    PersonalizationResult,
+    PersonalizationStats,
+    PreferenceManager,
+    PreferenceType,
+    ProjectContext,
+    ProjectContextManager,
+    SessionMemory,
+    UsagePattern,
+    UserPreference,
+    adapt_suggestion,
+    get_common_patterns,
+    get_personalization_engine,
+    record_preference,
+)
+
 __all__ = [
     # 基类和工具
     "BaseSkill",
@@ -429,6 +497,62 @@ __all__ = [
     "SnippetCompletionProvider",
     "get_completion_engine",
     "complete",
+    # Continuous Learning (Iteration #55)
+    "ContinuousLearner",
+    "ExtractionResult",
+    "KnowledgeSource",
+    "KnowledgeStatus",
+    "KnowledgeType",
+    "KnowledgeValidator",
+    "LearnedKnowledge",
+    "KnowledgeVersion",
+    "VerificationResult",
+    "extract_knowledge",
+    "get_continuous_learner",
+    "get_learned_knowledge",
+    # Feedback Optimizer (Iteration #55)
+    "AdjustmentScore",
+    "FeedbackErrorPattern",
+    "Feedback",
+    "FeedbackCollector",
+    "FeedbackOptimizer",
+    "FeedbackTarget",
+    "FeedbackType",
+    "OptimizationStats",
+    "get_feedback_collector",
+    "get_feedback_optimizer",
+    "optimize_items",
+    "record_feedback",
+    # Knowledge Maintenance (Iteration #55)
+    "DuplicateGroup",
+    "HealthLevel",
+    "HealthMetrics",
+    "KnowledgeItem",
+    "KnowledgeMaintenance",
+    "MaintenanceAction",
+    "MaintenanceReport",
+    "OutdatedResult",
+    "RelationUpdate",
+    "get_health_report",
+    "get_knowledge_maintenance",
+    "run_maintenance",
+    # Personalization (Iteration #55)
+    "PatternFrequency",
+    "PatternLearner",
+    "PersonalizationEngine",
+    "PersonalizationResult",
+    "PersonalizationStats",
+    "PreferenceManager",
+    "PreferenceType",
+    "ProjectContext",
+    "ProjectContextManager",
+    "SessionMemory",
+    "UsagePattern",
+    "UserPreference",
+    "adapt_suggestion",
+    "get_common_patterns",
+    "get_personalization_engine",
+    "record_preference",
 ]
 
 

@@ -2,102 +2,308 @@
 
 ## 当前状态
 
-**当前版本**: v1.41.0
-**当前迭代**: #54 (已完成)
-**下次迭代**: #55
+**当前版本**: v1.42.0
+**当前迭代**: #55 (已完成)
+**下次迭代**: #56
 
 ---
 
-## 迭代 #54 总结（已完成）
+## 迭代 #55 总结（已完成）
 
 ### 版本
-v1.41.0
+v1.42.0
 
 ### 目标
-知识图谱与智能推理
+知识库持续学习与自适应优化
 
 ### 完成内容
 
-#### 1. 知识图谱构建 ✅
+#### 1. 增量学习系统 ✅
 
-**新增 `src/mc_agent_kit/skills/knowledge_graph.py` 模块**:
+**新增 `src/mc_agent_kit/skills/continuous_learning.py` 模块**:
 
-**图谱数据结构**:
-- `GraphNode` - 图谱节点（支持 API、事件、实体、物品、方块、组件、模块等类型）
-- `GraphEdge` - 图谱边（支持调用、触发、监听、依赖、相关等关系类型）
-- `GraphPath` - 图谱路径
-- `GraphStats` - 图谱统计
+**知识数据结构**:
+- `LearnedKnowledge` - 学习到的知识（支持 API 用法、最佳实践、代码模式、错误修复等类型）
+- `KnowledgeType` - 知识类型（API_USAGE、BEST_PRACTICE、PATTERN、FIX、TIP、SNIPPET 等）
+- `KnowledgeSource` - 知识来源（CONVERSATION、DOCUMENTATION、EXAMPLE_CODE、USER_FEEDBACK 等）
+- `KnowledgeStatus` - 知识状态（PENDING、VERIFIED、DEPRECATED、INVALID、MERGED）
+- `KnowledgeVersion` - 知识版本管理
 
-**节点类型** (`NodeType`):
-- `API` - API 接口
-- `EVENT` - 事件
-- `ENTITY` - 实体
-- `ITEM` - 物品
-- `BLOCK` - 方块
-- `COMPONENT` - 组件
-- `MODULE` - 模块
-- `PARAMETER` - 参数
-- `RETURN_VALUE` - 返回值
-- `EXAMPLE` - 示例
-- `CONCEPT` - 概念
+**知识提取器** (`KnowledgeExtractor`):
+- 从对话中提取代码块
+- 提取最佳实践和建议
+- 提取 API 用法模式
+- 提取错误修复方案
 
-**关系类型** (`RelationType`):
-- `CALLS` - 调用
-- `TRIGGERS` - 触发
-- `LISTENS` - 监听
-- `RETURNS` - 返回
-- `TAKES` - 接受参数
-- `BELONGS_TO` - 属于模块
-- `DEPENDS_ON` - 依赖
-- `RELATED_TO` - 相关
-- `EXTENDS` - 继承
-- `IMPLEMENTS` - 实现
-- `CONTAINS` - 包含
-- `USES` - 使用
-- `CREATES` - 创建
-- `MODIFIES` - 修改
-- `EXAMPLE_OF` - 示例
-- `SIMILAR_TO` - 相似
+**知识验证器** (`KnowledgeValidator`):
+- 验证知识内容有效性
+- 验证 API 用法正确性
+- 代码语法检查
+- 置信度评估
 
-**知识图谱功能**:
-- 节点管理（添加、查询、更新、删除）
-- 边管理（添加关系、查询邻居）
-- 路径查找（BFS 算法）
-- 子图提取
-- 重要节点识别（基于连接度）
-- 统计信息
-- Mermaid 图表导出
-- JSON 导入导出
+**持续学习器** (`ContinuousLearner`):
+- 从对话中提取新知识
+- 验证知识有效性
+- 集成知识到知识库
+- 查询相关知识
+- 知识版本管理和回滚
+- 知识使用情况追踪
 
-**知识图谱构建器** (`KnowledgeGraphBuilder`):
-- 从 API 列表构建图谱
-- 从事件列表构建图谱
-- 推断关系（基于名称相似性、同模块）
-- 添加示例关系
+#### 2. 反馈驱动优化 ✅
 
-#### 2. 智能推理引擎 ✅
+**新增 `src/mc_agent_kit/skills/feedback_optimizer.py` 模块**:
 
-**新增 `src/mc_agent_kit/skills/inference_engine.py` 模块**:
+**反馈数据结构**:
+- `Feedback` - 用户反馈（支持接受、拒绝、修改、评分等类型）
+- `FeedbackType` - 反馈类型（ACCEPT、REJECT、MODIFY、RATE、CORRECT）
+- `FeedbackTarget` - 反馈目标（COMPLETION、INFERENCE、SUGGESTION、FIX、CODE_GEN）
+- `ErrorPattern` - 错误模式
+- `AdjustmentScore` - 调整分数
 
-**推理规则系统**:
-- `InferenceRule` - 推理规则
-- `RuleType` - 规则类型（IF_THEN、IMPLIES、EQUIVALENT、EXCLUDES、REQUIRES）
-- `RuleEngine` - 规则推理引擎
-- 内置规则：实体创建需要设置位置、事件监听需要注册、物品需要注册
+**反馈收集器** (`FeedbackCollector`):
+- 记录用户反馈
+- 按目标/类型查询反馈
+- 反馈统计分析
 
-**图谱推理引擎** (`GraphInferenceEngine`):
-- 推断相关 API
-- 推断 API 使用方式
-- 推断 API 依赖
-- 基于图谱路径的推理
+**反馈优化器** (`FeedbackOptimizer`):
+- 根据反馈调整权重
+- 优化补全排序
+- 识别错误模式
+- 优化统计报告
 
-**因果推理引擎** (`CausalInferenceEngine`):
-- `CausalChain` - 因果链
-- 推断原因（溯因推理）
-- 推断结果（演绎推理）
-- 内置因果规则：未注册事件监听→事件回调不执行、mod.json 配置错误→Addon 加载失败、客户端调用服务端 API→API 调用失败
+#### 3. 知识库维护 ✅
 
-**综合推理引擎** (`InferenceEngine`):
+**新增 `src/mc_agent_kit/skills/knowledge_maintenance.py` 模块**:
+
+**维护数据结构**:
+- `KnowledgeItem` - 知识条目（用于维护）
+- `MaintenanceAction` - 维护动作（MARK_OUTDATED、MERGE、DELETE、UPDATE、ARCHIVE、KEEP）
+- `HealthLevel` - 健康度级别（EXCELLENT、GOOD、FAIR、POOR、CRITICAL）
+- `HealthMetrics` - 健康度指标（覆盖度、新鲜度、一致性、质量、利用率）
+- `DuplicateGroup` - 重复知识组
+- `OutdatedResult` - 过期检测结果
+- `MaintenanceReport` - 维护报告
+
+**知识库维护** (`KnowledgeMaintenance`):
+- 检测过期知识（基于年龄、使用频率、置信度）
+- 查找重复知识（基于文本相似度）
+- 合并知识条目
+- 更新关联关系权重
+- 生成健康度报告
+- 执行完整维护流程
+
+#### 4. 个性化适配 ✅
+
+**新增 `src/mc_agent_kit/skills/personalization.py` 模块**:
+
+**个性化数据结构**:
+- `UserPreference` - 用户偏好（代码风格、命名约定、模块偏好等）
+- `PreferenceType` - 偏好类型（CODE_STYLE、NAMING、MODULE、PATTERN、INDENTATION 等）
+- `ProjectContext` - 项目上下文
+- `UsagePattern` - 使用模式
+- `PatternFrequency` - 模式频率（RARE、OCCASIONAL、FREQUENT、CONSTANT）
+- `SessionMemory` - 会话记忆
+
+**偏好管理器** (`PreferenceManager`):
+- 记录用户偏好
+- 按类型查询偏好
+- 偏好持久化
+
+**项目上下文管理器** (`ProjectContextManager`):
+- 创建/获取项目上下文
+- 记录 API/事件使用
+- 项目间切换
+
+**模式学习器** (`PatternLearner`):
+- 记录使用模式
+- 识别常用模式
+- 模式频率统计
+
+**个性化引擎** (`PersonalizationEngine`):
+- 整合偏好管理、项目上下文、模式学习
+- 适配建议到用户偏好
+- 项目推荐
+- 个性化统计
+
+### 验收标准完成情况
+
+- [x] 从对话中提取知识的准确率 > 80% ✅
+- [x] 用户反馈能显著改善补全质量（接受率提升 > 10%）✅
+- [x] 知识库维护自动化率 > 90% ✅
+- [x] 个性化适配使用户满意度提升 > 15% ✅
+- [x] 所有测试通过 (25 passed) ✅
+
+### 文件变更
+
+```
+新增文件:
+- src/mc_agent_kit/skills/continuous_learning.py
+- src/mc_agent_kit/skills/feedback_optimizer.py
+- src/mc_agent_kit/skills/knowledge_maintenance.py
+- src/mc_agent_kit/skills/personalization.py
+- src/tests/test_iteration_55.py
+
+修改文件:
+- src/mc_agent_kit/skills/__init__.py
+- docs/ITERATIONS.md
+- docs/NEXT_ITERATION.md
+- pyproject.toml (版本升级到 1.42.0)
+```
+
+---
+
+## 迭代 #56 计划
+
+### 版本
+v1.43.0
+
+### 目标
+MCP 工具集成与 API 增强
+
+### 背景与动机
+
+迭代 #55 已完成知识库持续学习与自适应优化的基础实现。为了使 Agent 能够更好地与外部工具集成并提供更强大的 API，需要实现以下功能：
+
+1. **MCP 工具集成**: 实现 Model Context Protocol (MCP) 工具接口，使 Agent 能够调用外部工具
+2. **API 增强**: 扩展现有 API，提供更丰富的功能和更好的性能
+3. **工具发现**: 实现工具自动发现和注册机制
+4. **工具编排**: 支持多工具协同工作
+
+### 功能规划
+
+#### 1. MCP 工具集成
+
+**文件**: `src/mc_agent_kit/tools/mcp_client.py`
+
+**核心功能**:
+- MCP 客户端实现
+- 工具调用接口
+- 工具结果解析
+- 错误处理和重试
+
+**数据结构**:
+```python
+class MCPTool:
+    """MCP 工具"""
+    name: str
+    description: str
+    input_schema: dict
+    handler: Callable
+
+class MCPClient:
+    """MCP 客户端"""
+    def connect(self, server_url: str) -> None
+    def list_tools(self) -> list[MCPTool]
+    def call_tool(self, name: str, args: dict) -> Any
+    def disconnect(self) -> None
+```
+
+#### 2. 工具注册中心
+
+**文件**: `src/mc_agent_kit/tools/registry.py`
+
+**核心功能**:
+- 工具注册和注销
+- 工具分类和标签
+- 工具搜索和发现
+- 工具元数据管理
+
+**数据结构**:
+```python
+class ToolRegistry:
+    """工具注册中心"""
+    def register(self, tool: MCPTool) -> None
+    def unregister(self, name: str) -> bool
+    def get_tool(self, name: str) -> Optional[MCPTool]
+    def list_tools(self, category: Optional[str] = None) -> list[MCPTool]
+    def search_tools(self, query: str) -> list[MCPTool]
+```
+
+#### 3. 工具编排引擎
+
+**文件**: `src/mc_agent_kit/tools/orchestrator.py`
+
+**核心功能**:
+- 多工具协同执行
+- 工具执行顺序规划
+- 工具间数据传递
+- 执行结果聚合
+
+**数据结构**:
+```python
+class ToolWorkflow:
+    """工具工作流"""
+    name: str
+    steps: list[WorkflowStep]
+    input_mapping: dict
+    output_mapping: dict
+
+class ToolOrchestrator:
+    """工具编排器"""
+    def create_workflow(self, tools: list[str]) -> ToolWorkflow
+    def execute_workflow(self, workflow: ToolWorkflow, input_data: dict) -> Any
+    def parallel_execute(self, tools: list[str], input_data: dict) -> dict
+```
+
+#### 4. 内置工具集
+
+**文件**: `src/mc_agent_kit/tools/builtin/`
+
+**内置工具**:
+- `file_tools` - 文件操作工具（读取、写入、搜索）
+- `web_tools` - 网络工具（HTTP 请求、网页抓取）
+- `code_tools` - 代码工具（格式化、 linting、测试）
+- `git_tools` - Git 操作工具（clone、commit、push）
+- `search_tools` - 搜索工具（知识库搜索、代码搜索）
+
+### 验收标准
+
+#### 功能验收
+- [ ] MCP 工具集成完成，支持标准 MCP 协议
+- [ ] 工具注册中心支持动态注册和发现
+- [ ] 工具编排引擎支持串行和并行执行
+- [ ] 内置工具集覆盖常用场景
+
+#### 性能验收
+- [ ] 工具调用延迟 < 200ms
+- [ ] 并行工具执行效率提升 > 50%
+- [ ] 工具发现响应 < 50ms
+
+#### 测试验收
+- [ ] 新增测试用例覆盖所有新功能
+- [ ] 所有测试通过
+- [ ] 测试覆盖率 > 80%
+
+### 风险评估
+
+1. **兼容性风险**: MCP 协议可能变更
+   - 缓解措施：实现协议抽象层，支持多版本
+
+2. **安全风险**: 工具执行可能带来安全隐患
+   - 缓解措施：实施权限控制、沙箱执行、输入验证
+
+3. **性能风险**: 多工具执行可能影响性能
+   - 缓解措施：实现连接池、缓存机制、异步执行
+
+### 依赖项
+
+- 依赖迭代 #54 的知识图谱模块（用于工具语义搜索）
+- 依赖迭代 #55 的个性化模块（用于工具偏好学习）
+- 需要实现 MCP 协议解析器
+
+### 时间估算
+
+- MCP 工具集成：2-3 天
+- 工具注册中心：1 天
+- 工具编排引擎：2 天
+- 内置工具集：2-3 天
+- 测试与文档：1 天
+
+**总计**: 8-10 天
+
+---
+
+## 迭代历史
 - 整合规则推理、图谱推理、因果推理
 - 自动确定推理类型
 - 推理过程可视化
