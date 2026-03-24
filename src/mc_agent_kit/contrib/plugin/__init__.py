@@ -16,6 +16,29 @@ from mc_agent_kit.contrib.plugin.manager import (
     PluginManager,
     PluginManagerConfig,
 )
+from mc_agent_kit.contrib.plugin.marketplace import (
+    PluginMarketplace,
+    PluginMarketInfo,
+    MarketplaceConfig,
+    PluginCategory,
+    PluginStatus,
+)
+from mc_agent_kit.contrib.plugin.hooks import (
+    HookRegistry,
+    HookInfo,
+    HookResult,
+    HookPriority,
+    HookType,
+    register_hook,
+    trigger_hooks,
+    get_hook_registry,
+    hook_decorator,
+)
+from mc_agent_kit.contrib.plugin.config import (
+    PluginConfig,
+    PluginConfigManager,
+    PluginConfigSchema,
+)
 
 __all__ = [
     # Base
@@ -31,4 +54,24 @@ __all__ = [
     # Manager
     "PluginManager",
     "PluginManagerConfig",
+    # Marketplace
+    "PluginMarketplace",
+    "PluginMarketInfo",
+    "MarketplaceConfig",
+    "PluginCategory",
+    "PluginStatus",
+    # Hooks
+    "HookRegistry",
+    "HookInfo",
+    "HookResult",
+    "HookPriority",
+    "HookType",
+    "register_hook",
+    "trigger_hooks",
+    "get_hook_registry",
+    "hook_decorator",
+    # Config
+    "PluginConfig",
+    "PluginConfigManager",
+    "PluginConfigSchema",
 ]
