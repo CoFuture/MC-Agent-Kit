@@ -2700,5 +2700,399 @@ def main() -> int:
         return 0
 
 
+def cmd_llm_chat(args: argparse.Namespace) -> int:
+    """LLM 聊天命令"""
+    from mc_agent_kit.cli_llm import (
+        ChatSessionConfig,
+        create_chat_session,
+        chat_interactive,
+    )
+    from mc_agent_kit.cli_llm.config import load_llm_cli_config
+
+    config = load_llm_cli_config()
+    session_config = ChatSessionConfig(
+        max_history=config.max_history_entries,
+        history_file=config.history_file,
+    )
+
+    session = create_chat_session(config, session_config)
+
+    welcome = """
+╔═══════════════════════════════════════════════════════════╗
+║                    MC-Agent-Kit Chat                       ║
+║                                                           ║
+║  AI 助手，帮助您进行 ModSDK 开发                            ║
+║  输入 /help 查看帮助，/exit 退出                            ║
+╚═══════════════════════════════════════════════════════════╝
+"""
+
+    # 单次查询模式
+    if args.query:
+        session.initialize()
+        response = session.send(args.query, stream=config.stream_output)
+        print(response)
+        return 0
+
+    # 列出提供商
+    if args.list_providers:
+        manager = get_llm_manager()
+        providers = manager.list_providers()
+        print("可用提供商:")
+        for p in providers:
+            marker = " (当前)" if p == config.default_provider else ""
+            print(f"  - {p}{marker}")
+        return 0
+
+    # 配置提供商
+    if args.set_provider:
+        config.default_provider = args.set_provider
+        print(f"✅ 已设置默认提供商: {args.set_provider}")
+        return 0
+
+    # 交互模式
+    chat_interactive(session, prompt=args.prompt or "mc-llm> ", welcome=welcome)
+    return 0
+
+
+def cmd_llm_gen(args: argparse.Namespace) -> int:
+    """LLM 代码生成命令"""
+    from mc_agent_kit.cli_llm import generate_command, OutputFormat
+    from mc_agent_kit.cli_llm.config import load_llm_cli_config
+
+    config = load_llm_cli_config()
+    output_format = OutputFormat.JSON if args.format == "json" else OutputFormat.TEXT
+
+    # 构建上下文
+    context = {}
+    if args.project:
+        context["project_name"] = args.project
+    if args.module:
+        context["module_name"] = args.module
+
+    result = generate_command(
+        prompt=args.prompt,
+        generation_type=args.type or "custom",
+        target=args.target or "server",
+        context=context,
+        config=config,
+        stream=args.stream,
+        format=output_format,
+    )
+
+    if args.format == "json":
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    else:
+        if result.get("success"):
+            print("\n✅ 代码生成成功:\n")
+            print(result.get("code", ""))
+            if result.get("imports"):
+                print("\n需要导入:")
+                for imp in result["imports"]:
+                    print(f"  {imp}")
+        else:
+            print(f"\n❌ 代码生成失败: {result.get('error')}")
+
+    return 0 if result.get("success") else 1
+
+
+def cmd_llm_review(args: argparse.Namespace) -> int:
+    """LLM 代码审查命令"""
+    from mc_agent_kit.cli_llm import review_command, OutputFormat
+    from mc_agent_kit.cli_llm.config import load_llm_cli_config
+
+    config = load_llm_cli_config()
+    output_format = OutputFormat.JSON if args.format == "json" else OutputFormat.TEXT
+
+    # 读取代码
+    code = args.code
+    if args.file:
+        try:
+            code = Path(args.file).read_text(encoding="utf-8")
+        except FileNotFoundError:
+            print(f"错误: 文件不存在: {args.file}")
+            return 1
+
+    if not code:
+        print("错误: 请提供代码内容 (-c) 或代码文件 (--file)")
+        return 1
+
+    result = review_command(
+        code=code,
+        categories=args.categories.split(",") if args.categories else None,
+        min_score=args.min_score,
+        config=config,
+        format=output_format,
+    )
+
+    if args.format == "json":
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    else:
+        passed = result.get("passed", False)
+        score = result.get("score", 0)
+        grade = result.get("grade", "F")
+
+        print(f"\n{'✅' if passed else '❌'} 代码审查结果:")
+        print(f"  分数: {score}/100")
+        print(f"  等级: {grade}")
+        print(f"  通过: {'是' if passed else '否'}")
+
+        issues = result.get("issues", [])
+        if issues:
+            print(f"\n问题 ({len(issues)} 个):")
+            for i, issue in enumerate(issues[:10], 1):
+                severity = issue.get("severity", "info")
+                icon = {"critical": "🔴", "error": "❌", "warning": "⚠️", "info": "ℹ️"}.get(severity, "📝")
+                print(f"  {icon} [{issue.get('category', 'unknown')}] {issue.get('message')}")
+                if issue.get("line"):
+                    print(f"      行: {issue.get('line')}")
+
+    return 0 if result.get("passed", False) else 1
+
+
+def cmd_llm_diagnose(args: argparse.Namespace) -> int:
+    """LLM 错误诊断命令"""
+    from mc_agent_kit.cli_llm import diagnose_command, OutputFormat
+    from mc_agent_kit.cli_llm.config import load_llm_cli_config
+
+    config = load_llm_cli_config()
+    output_format = OutputFormat.JSON if args.format == "json" else OutputFormat.TEXT
+
+    # 读取代码
+    code = args.code
+    if args.code_file:
+        try:
+            code = Path(args.code_file).read_text(encoding="utf-8")
+        except FileNotFoundError:
+            print(f"错误: 文件不存在: {args.code_file}")
+
+    result = diagnose_command(
+        error_message=args.error,
+        code=code,
+        stack_trace=args.stack_trace,
+        config=config,
+        format=output_format,
+    )
+
+    if args.format == "json":
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    else:
+        print(f"\n🔍 错误诊断结果:")
+        print(f"  类型: {result.get('error_type', 'Unknown')}")
+        print(f"  消息: {result.get('error_message', args.error)}")
+
+        suggestions = result.get("suggestions", [])
+        if suggestions:
+            print(f"\n修复建议:")
+            for i, s in enumerate(suggestions, 1):
+                print(f"  {i}. {s.get('description') or s}")
+                if isinstance(s, dict) and s.get("code"):
+                    print(f"     代码: {s.get('code')}")
+
+    return 0
+
+
+def cmd_llm_fix(args: argparse.Namespace) -> int:
+    """LLM 自动修复命令"""
+    from mc_agent_kit.cli_llm import fix_command, OutputFormat
+    from mc_agent_kit.cli_llm.config import load_llm_cli_config
+
+    config = load_llm_cli_config()
+    output_format = OutputFormat.JSON if args.format == "json" else OutputFormat.TEXT
+
+    # 读取代码
+    code = args.code
+    if args.code_file:
+        try:
+            code = Path(args.code_file).read_text(encoding="utf-8")
+        except FileNotFoundError:
+            print(f"错误: 文件不存在: {args.code_file}")
+            return 1
+
+    if not code:
+        print("错误: 请提供代码内容 (-c) 或代码文件 (--file)")
+        return 1
+
+    result = fix_command(
+        error_message=args.error,
+        code=code,
+        apply=args.apply,
+        config=config,
+        format=output_format,
+    )
+
+    if args.format == "json":
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    else:
+        if result.get("success"):
+            print("\n✅ 修复建议:\n")
+            fixed_code = result.get("fixed_code", "")
+            if fixed_code:
+                print("修复后代码:")
+                print("-" * 40)
+                print(fixed_code)
+                print("-" * 40)
+
+                if args.apply and args.code_file:
+                    Path(args.code_file).write_text(fixed_code, encoding="utf-8")
+                    print(f"\n✅ 已应用修复到: {args.code_file}")
+        else:
+            print(f"\n❌ 自动修复失败: {result.get('error')}")
+
+    return 0 if result.get("success") else 1
+
+
+def cmd_llm_providers(args: argparse.Namespace) -> int:
+    """列出 LLM 提供商"""
+    from mc_agent_kit.llm import get_llm_manager
+
+    manager = get_llm_manager()
+    providers = manager.list_providers()
+    models = manager.list_models()
+
+    if args.format == "json":
+        data = {
+            "providers": providers,
+            "models": models,
+        }
+        print(json.dumps(data, ensure_ascii=False, indent=2))
+    else:
+        print("可用的 LLM 提供商:\n")
+        for p in providers:
+            print(f"  • {p}")
+            if p in models and models[p]:
+                for m in models[p][:5]:
+                    print(f"      - {m}")
+                if len(models[p]) > 5:
+                    print(f"      ... 还有 {len(models[p]) - 5} 个模型")
+
+    return 0
+
+
+def llm_main() -> int:
+    """mc-llm 命令入口"""
+    parser = argparse.ArgumentParser(
+        prog="mc-llm",
+        description="MC-Agent-Kit LLM CLI - AI 助手交互工具",
+    )
+
+    subparsers = parser.add_subparsers(dest="command", help="可用命令")
+
+    # chat 子命令
+    chat_parser = subparsers.add_parser("chat", help="交互式聊天")
+    chat_parser.add_argument("-q", "--query", help="单次查询")
+    chat_parser.add_argument("--prompt", help="自定义提示符")
+    chat_parser.add_argument("--list-providers", action="store_true", help="列出提供商")
+    chat_parser.add_argument("--set-provider", help="设置默认提供商")
+
+    # gen 子命令
+    gen_parser = subparsers.add_parser("gen", help="代码生成")
+    gen_parser.add_argument("prompt", help="生成描述")
+    gen_parser.add_argument("-t", "--type", help="生成类型 (event_listener, entity_behavior, etc.)")
+    gen_parser.add_argument("--target", choices=["server", "client"], help="目标环境")
+    gen_parser.add_argument("-p", "--project", help="项目名称")
+    gen_parser.add_argument("-m", "--module", help="模块名称")
+    gen_parser.add_argument("--stream", action="store_true", help="流式输出")
+    gen_parser.add_argument("--format", choices=["text", "json"], default="text", help="输出格式")
+
+    # review 子命令
+    review_parser = subparsers.add_parser("review", help="代码审查")
+    review_parser.add_argument("-c", "--code", help="代码内容")
+    review_parser.add_argument("--file", help="代码文件路径")
+    review_parser.add_argument("--categories", help="审查类别 (逗号分隔)")
+    review_parser.add_argument("--min-score", type=int, default=60, help="最低分数")
+    review_parser.add_argument("--format", choices=["text", "json"], default="text", help="输出格式")
+
+    # diagnose 子命令
+    diagnose_parser = subparsers.add_parser("diagnose", help="错误诊断")
+    diagnose_parser.add_argument("-e", "--error", required=True, help="错误信息")
+    diagnose_parser.add_argument("-c", "--code", help="相关代码")
+    diagnose_parser.add_argument("--code-file", help="代码文件路径")
+    diagnose_parser.add_argument("--stack-trace", help="堆栈跟踪")
+    diagnose_parser.add_argument("--format", choices=["text", "json"], default="text", help="输出格式")
+
+    # fix 子命令
+    fix_parser = subparsers.add_parser("fix", help="自动修复")
+    fix_parser.add_argument("-e", "--error", required=True, help="错误信息")
+    fix_parser.add_argument("-c", "--code", help="代码内容")
+    fix_parser.add_argument("--code-file", help="代码文件路径")
+    fix_parser.add_argument("--apply", action="store_true", help="自动应用修复")
+    fix_parser.add_argument("--format", choices=["text", "json"], default="text", help="输出格式")
+
+    # providers 子命令
+    providers_parser = subparsers.add_parser("providers", help="列出提供商")
+    providers_parser.add_argument("--format", choices=["text", "json"], default="text", help="输出格式")
+
+    args = parser.parse_args()
+
+    if args.command == "chat":
+        return cmd_llm_chat(args)
+    elif args.command == "gen":
+        return cmd_llm_gen(args)
+    elif args.command == "review":
+        return cmd_llm_review(args)
+    elif args.command == "diagnose":
+        return cmd_llm_diagnose(args)
+    elif args.command == "fix":
+        return cmd_llm_fix(args)
+    elif args.command == "providers":
+        return cmd_llm_providers(args)
+    else:
+        parser.print_help()
+        return 0
+
+
+def gen_main() -> int:
+    """mc-gen 命令入口 (简写)"""
+    parser = argparse.ArgumentParser(
+        prog="mc-gen",
+        description="MC-Agent-Kit Code Generation - 代码生成工具",
+    )
+
+    subparsers = parser.add_subparsers(dest="command", help="可用命令")
+
+    # code 子命令
+    code_parser = subparsers.add_parser("code", help="生成代码")
+    code_parser.add_argument("prompt", help="生成描述")
+    code_parser.add_argument("-t", "--type", help="生成类型")
+    code_parser.add_argument("--target", choices=["server", "client"], help="目标环境")
+    code_parser.add_argument("--stream", action="store_true", help="流式输出")
+    code_parser.add_argument("--format", choices=["text", "json"], default="text", help="输出格式")
+
+    # review 子命令
+    review_parser = subparsers.add_parser("review", help="审查代码")
+    review_parser.add_argument("file", help="代码文件")
+    review_parser.add_argument("--min-score", type=int, default=60, help="最低分数")
+    review_parser.add_argument("--format", choices=["text", "json"], default="text", help="输出格式")
+
+    # diagnose 子命令
+    diagnose_parser = subparsers.add_parser("diagnose", help="诊断错误")
+    diagnose_parser.add_argument("-e", "--error", required=True, help="错误信息")
+    diagnose_parser.add_argument("-c", "--code", help="相关代码")
+    diagnose_parser.add_argument("--format", choices=["text", "json"], default="text", help="输出格式")
+
+    # fix 子命令
+    fix_parser = subparsers.add_parser("fix", help="修复错误")
+    fix_parser.add_argument("-e", "--error", required=True, help="错误信息")
+    fix_parser.add_argument("-c", "--code", help="代码内容")
+    fix_parser.add_argument("--apply", action="store_true", help="自动应用修复")
+    fix_parser.add_argument("--format", choices=["text", "json"], default="text", help="输出格式")
+
+    args = parser.parse_args()
+
+    if args.command == "code":
+        return cmd_llm_gen(args)
+    elif args.command == "review":
+        # 转换参数格式
+        args.file = args.file if hasattr(args, "file") else None
+        return cmd_llm_review(args)
+    elif args.command == "diagnose":
+        return cmd_llm_diagnose(args)
+    elif args.command == "fix":
+        return cmd_llm_fix(args)
+    else:
+        parser.print_help()
+        return 0
+
+
 if __name__ == "__main__":
     sys.exit(main())

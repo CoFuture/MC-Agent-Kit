@@ -1,6 +1,6 @@
 [project]
 name = "mc-agent-kit"
-version = "1.52.0"
+version = "1.53.0"
 description = "MC-Agent-Kit - AI Agent 工具集，用于 Minecraft 网易版 ModSDK 开发"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -57,6 +57,8 @@ mc-kb = "mc_agent_kit.cli:kb_main"
 mc-run = "mc_agent_kit.cli:run_main"
 mc-logs = "mc_agent_kit.cli:logs_main"
 mc-launcher = "mc_agent_kit.cli:launcher_main"
+mc-llm = "mc_agent_kit.cli:llm_main"
+mc-gen = "mc_agent_kit.cli:gen_main"
 
 [build-system]
 requires = ["hatchling"]
