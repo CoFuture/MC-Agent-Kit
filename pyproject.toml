@@ -1,6 +1,6 @@
 [project]
 name = "mc-agent-kit"
-version = "1.51.0"
+version = "1.52.0"
 description = "MC-Agent-Kit - AI Agent 工具集，用于 Minecraft 网易版 ModSDK 开发"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -38,6 +38,16 @@ semantic = [
     "llama-index>=0.10.0",
     "chromadb>=0.4.0",
     "sentence-transformers>=2.0.0",
+]
+llm = [
+    "openai>=1.0.0",
+    "anthropic>=0.18.0",
+    "google-generativeai>=0.3.0",
+    "ollama>=0.1.0",
+    "tiktoken>=0.5.0",
+]
+all = [
+    "mc-agent-kit[semantic,llm,dev]",
 ]
 
 [project.scripts]

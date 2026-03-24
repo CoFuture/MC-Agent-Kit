@@ -4,6 +4,319 @@
 
 ---
 
+## 迭代 #65 (2026-03-24)
+
+### 版本
+v1.52.0
+
+### 目标
+AI 能力增强与智能代码生成
+
+### 完成内容
+
+#### 1. LLM 集成 ✅
+
+**新增 `src/mc_agent_kit/llm/` 模块目录**:
+
+**基础接口** (`base.py`):
+- `ChatRole` - 聊天消息角色枚举（system, user, assistant, function）
+- `ChatMessage` - 聊天消息数据结构
+- `CompletionResult` - 补全结果数据结构
+- `StreamChunk` - 流式响应块
+- `LLMConfig` - LLM 配置
+- `LLMProvider` - LLM 提供商抽象基类
+  - 同步/异步补全接口
+  - 流式响应支持
+  - Token 计数
+
+**提供商实现** (`providers.py`):
+- `MockProvider` - Mock 提供商（测试用）
+  - 支持中文关键词识别
+  - 生成 ModSDK 相关模拟代码
+- `OpenAIProvider` - OpenAI GPT 提供商
+  - 支持 GPT-4o, GPT-4, GPT-3.5 等模型
+  - 异步 API 支持
+  - Token 计数（tiktoken）
+- `AnthropicProvider` - Anthropic Claude 提供商
+  - 支持 Claude 3 系列模型
+  - 系统消息特殊处理
+  - 异步 API 支持
+- `GeminiProvider` - Google Gemini 提供商
+  - 支持 Gemini Pro, Gemini 1.5 等模型
+  - 对话历史管理
+  - Token 计数
+- `OllamaProvider` - Ollama 本地模型提供商
+  - 支持 Llama3, Mistral, CodeLlama 等
+  - 本地部署，无需 API key
+  - 异步 API 支持
+
+**LLM 管理器** (`manager.py`):
+- `LLMManager` - LLM 管理器（单例）
+  - 提供商注册和管理
+  - 统一调用接口
+  - 默认提供商设置
+  - 提供商实例缓存
+- `get_llm_manager()` - 获取管理器单例
+
+**验收标准**:
+- 多提供商支持完成 ✅
+- 统一接口完成 ✅
+- 异步支持完成 ✅
+- Mock 提供商可用 ✅
+
+#### 2. 智能代码生成 ✅
+
+**新增 `src/mc_agent_kit/llm/code_generation.py` 模块**:
+
+**代码生成器**:
+- `CodeGenerationType` - 代码生成类型枚举
+  - EVENT_LISTENER, ENTITY_BEHAVIOR, ITEM_LOGIC
+  - UI_SCREEN, NETWORK_SYNC, CONFIG_HANDLER
+  - ERROR_HANDLER, CUSTOM
+- `GenerationContext` - 生成上下文
+  - 项目名称、模块名、描述
+  - 运行环境（server/client）
+  - 代码风格设置
+- `GeneratedCode` - 生成的代码
+  - 代码内容、语言
+  - 导入语句、依赖
+  - 说明、警告
+  - 置信度评分
+- `CodeGenerationPromptBuilder` - 提示构建器
+  - 系统提示（ModSDK 专家角色）
+  - 用户提示（需求 + 上下文）
+- `IntelligentCodeGenerator` - 智能代码生成器
+  - 基于 LLM 生成代码
+  - 代码提取和解析
+  - 导入语句提取
+  - 依赖分析
+  - 置信度计算
+  - 说明和警告生成
+- `generate_code()` - 便捷函数
+
+**验收标准**:
+- 代码生成功能完成 ✅
+- 多种生成类型支持 ✅
+- 上下文支持完成 ✅
+- 置信度评估完成 ✅
+
+#### 3. 智能代码审查 ✅
+
+**新增 `src/mc_agent_kit/llm/code_review.py` 模块**:
+
+**代码审查器**:
+- `ReviewSeverity` - 审查严重程度枚举
+  - CRITICAL, ERROR, WARNING, INFO, HINT
+- `ReviewCategory` - 审查类别枚举
+  - SECURITY, PERFORMANCE, MAINTAINABILITY
+  - STYLE, MODSDK, LOGIC, SYNTAX, BEST_PRACTICE
+- `ReviewIssue` - 审查问题数据结构
+- `ReviewResult` - 审查结果数据结构
+- `CodeReviewPromptBuilder` - 提示构建器
+- `IntelligentCodeReviewer` - 智能代码审查器
+  - 静态分析（安全问题、性能问题、ModSDK 规范）
+  - LLM 审查（代码质量、最佳实践）
+  - 分数计算
+  - 等级评定（A/B/C/D/F）
+  - 审查摘要生成
+- `review_code()` - 便捷函数
+
+**内置审查规则**:
+- 安全问题：eval/exec 使用、敏感信息泄露
+- 性能问题：range(len()) 迭代
+- ModSDK 规范：客户端/服务端 API 混用
+
+**验收标准**:
+- 代码审查功能完成 ✅
+- 多维度审查完成 ✅
+- 分数和等级完成 ✅
+- 静态分析完成 ✅
+
+#### 4. 智能修复 ✅
+
+**新增 `src/mc_agent_kit/llm/intelligent_fix.py` 模块**:
+
+**错误诊断和修复**:
+- `FixConfidence` - 修复置信度枚举
+- `ErrorContext` - 错误上下文
+  - 错误类型、错误信息
+  - 文件路径、行号
+  - 代码、堆栈跟踪
+- `FixSuggestion` - 修复建议
+- `DiagnosisResult` - 诊断结果
+- `FixResult` - 修复结果
+- `IntelligentFixer` - 智能修复器
+  - 错误诊断（基于 LLM）
+  - 根因分析
+  - 修复建议生成
+  - 最佳修复选择
+  - 修复应用
+- `diagnose_error()` - 便捷函数
+- `fix_error()` - 便捷函数
+
+**验收标准**:
+- 错误诊断完成 ✅
+- 修复建议完成 ✅
+- 修复应用完成 ✅
+- 置信度评估完成 ✅
+
+#### 5. 测试覆盖 ✅
+
+**新增 `src/tests/test_iteration_65.py` (82 个测试)**:
+
+**基础接口测试** (11 个):
+- TestChatMessage: 聊天消息测试 (5 个)
+- TestCompletionResult: 补全结果测试 (3 个)
+- TestLLMConfig: LLM 配置测试 (3 个)
+
+**Mock 提供商测试** (7 个):
+- TestMockProvider: Mock 提供商测试 (7 个)
+
+**LLM 管理器测试** (7 个):
+- TestLLMManager: 管理器测试 (7 个)
+
+**代码生成测试** (16 个):
+- TestCodeGenerationType: 生成类型测试 (1 个)
+- TestGenerationContext: 生成上下文测试 (2 个)
+- TestGeneratedCode: 生成代码测试 (2 个)
+- TestIntelligentCodeGenerator: 生成器测试 (9 个)
+- TestGenerateCode: 便捷函数测试 (1 个)
+
+**代码审查测试** (12 个):
+- TestReviewSeverity: 严重程度测试 (1 个)
+- TestReviewCategory: 审查类别测试 (1 个)
+- TestReviewIssue: 审查问题测试 (1 个)
+- TestReviewResult: 审查结果测试 (2 个)
+- TestIntelligentCodeReviewer: 审查器测试 (7 个)
+- TestReviewCode: 便捷函数测试 (1 个)
+
+**智能修复测试** (14 个):
+- TestFixConfidence: 置信度测试 (1 个)
+- TestErrorContext: 错误上下文测试 (1 个)
+- TestFixSuggestion: 修复建议测试 (1 个)
+- TestDiagnosisResult: 诊断结果测试 (1 个)
+- TestFixResult: 修复结果测试 (1 个)
+- TestIntelligentFixer: 修复器测试 (6 个)
+- TestDiagnoseError: 便捷函数测试 (1 个)
+- TestFixError: 便捷函数测试 (1 个)
+
+**验收标准测试** (6 个):
+- TestIteration65AcceptanceCriteria: 验收测试 (6 个)
+
+**性能测试** (3 个):
+- TestIteration65Performance: 性能测试 (3 个)
+
+**集成测试** (1 个):
+- TestIntegration: 完整工作流测试 (1 个)
+
+**边缘情况测试** (5 个):
+- TestEdgeCases: 边缘情况测试 (5 个)
+
+**测试验证**:
+- 新增 82 个测试 ✅
+- 所有测试通过 (82 passed) ✅
+- 性能指标达标 ✅
+
+### 验收标准完成情况
+
+- [x] LLM 集成完成 ✅
+  - [x] 多提供商支持（OpenAI, Anthropic, Gemini, Ollama, Mock） ✅
+  - [x] 统一接口 ✅
+  - [x] 异步支持 ✅
+  - [x] 流式响应 ✅
+- [x] 智能代码生成完成 ✅
+  - [x] 基于自然语言生成 ✅
+  - [x] 多种生成类型 ✅
+  - [x] 上下文支持 ✅
+  - [x] 置信度评估 ✅
+- [x] 智能代码审查完成 ✅
+  - [x] 多维度审查 ✅
+  - [x] 静态分析 ✅
+  - [x] LLM 审查 ✅
+  - [x] 分数和等级 ✅
+- [x] 智能修复完成 ✅
+  - [x] 错误诊断 ✅
+  - [x] 修复建议 ✅
+  - [x] 修复应用 ✅
+- [x] 所有测试通过 (82 passed) ✅
+- [x] 性能指标达标 ✅
+
+### 性能指标
+
+| 指标 | 目标 | 实际 | 状态 |
+|------|------|------|------|
+| Mock 补全响应时间 | < 100ms | < 10ms | ✅ |
+| 代码审查响应时间 | < 5s | < 1s | ✅ |
+| 错误诊断响应时间 | < 5s | < 1s | ✅ |
+| 测试覆盖率 | > 85% | ~90% | ✅ |
+
+### 技术亮点 🔥
+
+1. **多 LLM 提供商支持**: 统一接口支持 OpenAI, Anthropic, Google, Ollama 和本地 Mock
+2. **智能代码生成**: 基于 LLM 生成 ModSDK 代码，支持多种类型和上下文
+3. **智能代码审查**: 结合静态分析和 LLM 审查，多维度评估代码质量
+4. **智能修复**: 基于 LLM 诊断错误根因，提供修复建议和自动修复
+5. **异步支持**: 所有 LLM 操作支持同步和异步接口
+6. **流式响应**: 支持流式输出，提升用户体验
+7. **置信度评估**: 对生成和修复结果进行置信度评分
+8. **完善的测试**: 82 个测试覆盖所有功能和边缘情况
+
+### 文件变更 🔥
+
+```
+新增文件:
+- src/mc_agent_kit/llm/__init__.py                  (导出模块)
+- src/mc_agent_kit/llm/base.py                      (~200 行)
+- src/mc_agent_kit/llm/providers.py                 (~550 行)
+- src/mc_agent_kit/llm/manager.py                   (~200 行)
+- src/mc_agent_kit/llm/code_generation.py           (~350 行)
+- src/mc_agent_kit/llm/code_review.py               (~400 行)
+- src/mc_agent_kit/llm/intelligent_fix.py           (~350 行)
+- src/tests/test_iteration_65.py                    (82 个测试)
+
+修改文件:
+- docs/ITERATIONS.md                                (迭代记录)
+- docs/NEXT_ITERATION.md                            (下次迭代计划)
+- pyproject.toml                                    (版本升级到 1.52.0)
+```
+
+### 依赖项
+
+- `openai` (可选，用于 OpenAI 提供商)
+- `anthropic` (可选，用于 Anthropic 提供商)
+- `google-generativeai` (可选，用于 Gemini 提供商)
+- `ollama` (可选，用于 Ollama 提供商)
+- `tiktoken` (可选，用于 OpenAI Token 计数)
+
+### 遇到的问题 🔥
+
+1. **循环导入问题**:
+   - 问题：code_generation.py 等模块从 .llm 导入导致循环依赖
+   - 解决：明确从 .base 和 .manager 分别导入
+   - 记录：避免从 __init__.py 导入同一包内的模块
+
+2. **Mock 响应关键词匹配**:
+   - 问题：Mock  provider 对中文关键词匹配不准确
+   - 解决：同时检查中文和英文关键词
+   - 记录：content.lower() 只影响英文，中文需要直接匹配
+
+3. **LLM 响应解析**:
+   - 问题：LLM 返回的 JSON 格式可能不标准
+   - 解决：使用正则表达式提取 JSON 块，添加异常处理
+   - 记录：始终提供降级方案
+
+### 经验总结 🔥
+
+1. 统一接口设计使得切换 LLM 提供商非常容易
+2. Mock 提供商对开发和测试非常重要
+3. 异步接口为高并发场景提供了基础
+4. 代码审查结合静态分析和 LLM 审查效果更好
+5. 置信度评估帮助用户判断生成结果的可靠性
+6. 完善的测试覆盖确保代码质量
+7. 文档字符串和类型注解提升代码可维护性
+
+---
+
 ## 迭代 #64 (2026-03-24)
 
 ### 版本
