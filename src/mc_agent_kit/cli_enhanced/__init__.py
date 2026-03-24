@@ -5,6 +5,8 @@ This module provides enhanced CLI features including:
 - Command history persistence
 - Command aliases and shortcuts
 - Colored output and progress bars
+- Command completion
+- Enhanced error messages
 """
 
 from mc_agent_kit.cli_enhanced.aliases import (
@@ -13,6 +15,32 @@ from mc_agent_kit.cli_enhanced.aliases import (
     CommandAlias,
     create_alias_manager,
     get_builtin_aliases,
+)
+from mc_agent_kit.cli_enhanced.completion import (
+    CompletionContext,
+    CompletionItem,
+    CompletionType,
+    Completer,
+    CommandCompleter,
+    FilePathCompleter,
+    ApiNameCompleter,
+    EventNameCompleter,
+    CompositeCompleter,
+    ArgumentCompleter,
+    parse_completion_context,
+    create_default_completer,
+    format_completions,
+)
+from mc_agent_kit.cli_enhanced.errors import (
+    ErrorCategory,
+    ErrorSeverity,
+    FixSuggestion,
+    EnhancedError,
+    ErrorEnhancer,
+    ErrorPattern,
+    create_error_enhancer,
+    format_error,
+    get_error_message,
 )
 from mc_agent_kit.cli_enhanced.history import (
     CommandHistory,
@@ -43,6 +71,30 @@ from mc_agent_kit.cli_enhanced.repl import (
 )
 
 __all__ = [
+    # Completion
+    "CompletionContext",
+    "CompletionItem",
+    "CompletionType",
+    "Completer",
+    "CommandCompleter",
+    "FilePathCompleter",
+    "ApiNameCompleter",
+    "EventNameCompleter",
+    "CompositeCompleter",
+    "ArgumentCompleter",
+    "parse_completion_context",
+    "create_default_completer",
+    "format_completions",
+    # Error enhancement
+    "ErrorCategory",
+    "ErrorSeverity",
+    "FixSuggestion",
+    "EnhancedError",
+    "ErrorEnhancer",
+    "ErrorPattern",
+    "create_error_enhancer",
+    "format_error",
+    "get_error_message",
     # REPL
     "CLIRepl",
     "ReplConfig",

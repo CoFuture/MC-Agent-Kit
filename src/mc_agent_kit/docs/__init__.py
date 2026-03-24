@@ -5,8 +5,22 @@ This module provides:
 - Example code generation
 - Multi-language support
 - Version management
+- Documentation templates
+- Code examples library
 """
 
+from mc_agent_kit.docs.examples import (
+    ExampleCategory,
+    CodeExample,
+    get_examples_by_category,
+    get_all_examples,
+    get_example_by_name,
+    search_examples,
+    BASIC_EXAMPLES,
+    ENTITY_EXAMPLES,
+    UI_EXAMPLES,
+    PERFORMANCE_EXAMPLES,
+)
 from mc_agent_kit.docs.formatter import (
     DocFormatter,
     FormatterConfig,
@@ -21,6 +35,15 @@ from mc_agent_kit.docs.generator import (
     ExampleDoc,
     GeneratorConfig,
     create_doc_generator,
+)
+from mc_agent_kit.docs.templates import (
+    TemplateType,
+    DocTemplate,
+    get_template,
+    render_template,
+    create_api_doc,
+    create_user_guide,
+    create_example_doc,
 )
 
 __all__ = [
@@ -37,4 +60,23 @@ __all__ = [
     "FormatterConfig",
     "OutputFormat",
     "create_formatter",
+    # Templates
+    "TemplateType",
+    "DocTemplate",
+    "get_template",
+    "render_template",
+    "create_api_doc",
+    "create_user_guide",
+    "create_example_doc",
+    # Examples
+    "ExampleCategory",
+    "CodeExample",
+    "get_examples_by_category",
+    "get_all_examples",
+    "get_example_by_name",
+    "search_examples",
+    "BASIC_EXAMPLES",
+    "ENTITY_EXAMPLES",
+    "UI_EXAMPLES",
+    "PERFORMANCE_EXAMPLES",
 ]
