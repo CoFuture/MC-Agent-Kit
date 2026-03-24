@@ -4,6 +4,134 @@
 
 ---
 
+## 迭代 #61 (2026-03-24)
+
+### 版本
+v1.48.0
+
+### 目标
+AI 能力增强与智能代码生成
+
+### 完成内容
+
+#### 1. AI 能力增强 ✅
+
+**新增 LLM 提供者支持**:
+- `AnthropicClient` - 支持 Claude 3 系列模型（Opus/Sonnet/Haiku）
+- `GeminiClient` - 支持 Google Gemini 系列模型（1.5 Pro/Flash/1.0 Pro）
+- `EnhancedLLMClientFactory` - 增强的工厂类，统一所有 LLM 提供者
+
+**模型选择器**:
+- `ClaudeModelSelector` - 根据任务类型自动选择 Claude 模型
+- `GeminiModelSelector` - 根据任务类型自动选择 Gemini 模型
+- 支持任务类型：code_gen, analysis, creative, simple
+- 支持优先级：quality, speed, cost, balanced
+
+**提供者信息**:
+- 支持 7 个 LLM 提供者：openai, azure, anthropic, gemini, ollama, lm_studio, mock
+- 提供提供者详细信息（模型列表、API 密钥要求、流式支持等）
+- 便捷函数：`create_llm_client()`, `get_recommended_model()`
+
+**验收标准**:
+- Anthropic Claude 支持 ✅
+- Google Gemini 支持 ✅
+- 增强的工厂类 ✅
+- 模型推荐功能 ✅
+
+#### 2. 代码结构优化 ✅
+
+**新增模块**:
+- `src/mc_agent_kit/skills/llm_providers/__init__.py` - 模块导出
+- `src/mc_agent_kit/skills/llm_providers/anthropic_client.py` - Anthropic 客户端（~450 行）
+- `src/mc_agent_kit/skills/llm_providers/gemini_client.py` - Gemini 客户端（~450 行）
+- `src/mc_agent_kit/skills/llm_providers/enhanced_factory.py` - 增强工厂类（~200 行）
+
+**与现有模块集成**:
+- 继承 `BaseLLMClient` 基类，保持接口一致
+- 支持 `complete()`, `complete_async()`, `stream()` 方法
+- 支持 Token 使用统计和成本追踪
+- 支持流式响应
+
+#### 3. 测试覆盖 ✅
+
+**新增 `src/tests/test_iteration_61.py` (45 个测试)**:
+
+**配置测试**:
+- TestAnthropicConfig: Anthropic 配置测试 (2 个)
+- TestGeminiConfig: Gemini 配置测试 (3 个)
+
+**模型选择器测试**:
+- TestClaudeModelSelector: Claude 模型选择器测试 (7 个)
+- TestGeminiModelSelector: Gemini 模型选择器测试 (5 个)
+
+**工厂类测试**:
+- TestEnhancedLLMClientFactory: 增强工厂类测试 (6 个)
+- TestCreateLLMClient: 创建客户端便捷函数测试 (2 个)
+- TestGetRecommendedModel: 推荐模型函数测试 (6 个)
+
+**客户端测试**:
+- TestAnthropicClient: Anthropic 客户端测试 (3 个)
+- TestGeminiClient: Gemini 客户端测试 (2 个)
+
+**集成与验收测试**:
+- TestIteration61Integration: 集成测试 (3 个)
+- TestIteration61AcceptanceCriteria: 验收标准测试 (4 个)
+- TestIteration61Performance: 性能测试 (2 个)
+
+**测试验证**:
+- 新增 45 个测试 ✅
+- 所有测试通过 (45 passed) ✅
+- 性能指标达标 ✅
+
+### 验收标准完成情况
+
+- [x] Anthropic Claude 支持完成 ✅
+  - [x] Claude 3 模型支持 ✅
+  - [x] 流式响应支持 ✅
+  - [x] Token 使用统计 ✅
+  - [x] 成本追踪 ✅
+- [x] Google Gemini 支持完成 ✅
+  - [x] Gemini 1.5 模型支持 ✅
+  - [x] 安全设置支持 ✅
+  - [x] 流式响应支持 ✅
+  - [x] Token 使用统计 ✅
+- [x] 增强的工厂类完成 ✅
+  - [x] 统一接口 ✅
+  - [x] 提供者信息 ✅
+  - [x] 便捷函数 ✅
+- [x] 模型推荐功能完成 ✅
+  - [x] 按任务类型推荐 ✅
+  - [x] 按优先级推荐 ✅
+- [x] 所有测试通过 (45 passed) ✅
+- [x] 性能指标达标 ✅
+
+### 技术亮点 🔥
+
+1. **多 LLM 提供者支持**: 统一接口支持 7 个主流 LLM 提供者
+2. **智能模型选择**: 根据任务类型和优先级自动推荐最佳模型
+3. **完整的流式支持**: 所有提供者都支持流式响应
+4. **成本追踪**: 实时追踪 Token 使用和成本
+5. **类型安全**: 完整的类型注解，通过 mypy 检查
+6. **全面测试**: 45 个新测试覆盖所有新功能
+
+### 文件变更 🔥
+
+```
+新增文件:
+- src/mc_agent_kit/skills/llm_providers/__init__.py
+- src/mc_agent_kit/skills/llm_providers/anthropic_client.py    (~450 行)
+- src/mc_agent_kit/skills/llm_providers/gemini_client.py       (~450 行)
+- src/mc_agent_kit/skills/llm_providers/enhanced_factory.py    (~200 行)
+- src/tests/test_iteration_61.py                               (45 个测试)
+
+修改文件:
+- docs/ITERATIONS.md                                           (迭代记录)
+- docs/NEXT_ITERATION.md                                       (下次迭代计划)
+- pyproject.toml                                               (版本升级到 1.48.0)
+```
+
+---
+
 ## 迭代 #60 (2026-03-24)
 
 ### 版本
