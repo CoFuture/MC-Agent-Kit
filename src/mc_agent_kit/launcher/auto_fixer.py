@@ -4,6 +4,7 @@
 提供内存问题的自动修复建议和工具集成。
 """
 
+from __future__ import annotations
 import json
 import os
 from dataclasses import dataclass, field

@@ -4,6 +4,7 @@ ModSDK API 检索 Skill
 提供 ModSDK API 文档的检索功能。
 """
 
+from __future__ import annotations
 import logging
 from dataclasses import dataclass
 

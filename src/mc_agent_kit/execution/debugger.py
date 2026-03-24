@@ -4,6 +4,7 @@
 提供断点调试、变量监视、调用栈追踪和条件断点功能。
 """
 
+from __future__ import annotations
 import ast
 import logging
 from collections.abc import Callable

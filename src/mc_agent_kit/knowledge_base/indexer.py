@@ -4,6 +4,7 @@
 扫描 ModSDK 文档目录，解析所有文档，构建知识库索引。
 """
 
+from __future__ import annotations
 import json
 import logging
 from pathlib import Path

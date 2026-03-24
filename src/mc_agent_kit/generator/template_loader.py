@@ -4,6 +4,7 @@
 支持从文件系统加载自定义模板，支持模板热重载。
 """
 
+from __future__ import annotations
 import hashlib
 import logging
 from dataclasses import dataclass, field

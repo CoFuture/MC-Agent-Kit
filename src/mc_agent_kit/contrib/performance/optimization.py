@@ -1,5 +1,6 @@
 """Code generation optimization for MC-Agent-Kit."""
 
+from __future__ import annotations
 import hashlib
 import time
 from collections.abc import Callable

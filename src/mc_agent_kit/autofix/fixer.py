@@ -4,6 +4,7 @@
 根据诊断结果自动修复代码错误。
 """
 
+from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from datetime import datetime

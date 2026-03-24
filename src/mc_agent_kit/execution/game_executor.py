@@ -4,6 +4,7 @@
 整合游戏启动器与代码执行器，实现在游戏环境中执行代码。
 """
 
+from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Callable

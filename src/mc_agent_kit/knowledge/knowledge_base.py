@@ -4,6 +4,7 @@ MC-Agent-Kit 知识库主类
 基于 LlamaIndex + ChromaDB 实现的知识检索系统。
 """
 
+from __future__ import annotations
 import hashlib
 import json
 import logging

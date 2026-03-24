@@ -4,6 +4,7 @@
 生成事件监听器代码和事件文档索引。
 """
 
+from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from pathlib import Path

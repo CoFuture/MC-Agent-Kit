@@ -8,6 +8,7 @@ CLI 性能优化模块
 - 输出格式优化
 """
 
+from __future__ import annotations
 import importlib
 import time
 from dataclasses import dataclass

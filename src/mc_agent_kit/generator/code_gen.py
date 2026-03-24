@@ -4,6 +4,7 @@
 使用 Jinja2 模板引擎生成 ModSDK 代码。
 """
 
+from __future__ import annotations
 import logging
 import re
 from typing import Any

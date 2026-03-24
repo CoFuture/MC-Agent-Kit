@@ -4,6 +4,7 @@
 提供代码格式化检查、复杂度分析等功能。
 """
 
+from __future__ import annotations
 import ast
 import logging
 import subprocess

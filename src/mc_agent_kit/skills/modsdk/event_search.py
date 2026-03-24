@@ -4,6 +4,7 @@ ModSDK 事件检索 Skill
 提供 ModSDK 事件文档的检索功能。
 """
 
+from __future__ import annotations
 import logging
 
 from ...knowledge_base import KnowledgeRetriever, Scope

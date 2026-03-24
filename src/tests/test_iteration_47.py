@@ -9,8 +9,16 @@
 
 import os
 import subprocess
-import tomllib
 from pathlib import Path
+
+# Python 3.11+ has tomllib, for older versions use tomli
+try:
+    import tomllib
+except ImportError:
+    try:
+        import tomli as tomllib
+    except ImportError:
+        tomllib = None
 
 import pytest
 import yaml
@@ -166,6 +174,7 @@ class TestDocumentation:
         assert "v1." in content, "Should have version entries"
 
 
+@pytest.mark.skipif(tomllib is None, reason="tomllib/tomli not available")
 class TestPyprojectConfig:
     """pyproject.toml 配置测试"""
 
@@ -287,6 +296,7 @@ class TestIntegration:
         # 这个测试本身通过就证明了测试可以运行
         assert True
 
+    @pytest.mark.skipif(tomllib is None, reason="tomllib/tomli not available")
     def test_version_format(self) -> None:
         """测试版本号格式"""
         pyproject_path = PROJECT_ROOT / "pyproject.toml"
@@ -301,6 +311,7 @@ class TestIntegration:
         assert len(parts) >= 2, "Version should have at least major.minor"
         assert all(p.isdigit() for p in parts), "Version parts should be numbers"
 
+    @pytest.mark.skipif(tomllib is None, reason="tomllib/tomli not available")
     def test_all_cli_entry_points(self) -> None:
         """测试 CLI 入口点定义"""
         pyproject_path = PROJECT_ROOT / "pyproject.toml"

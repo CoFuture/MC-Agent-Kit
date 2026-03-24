@@ -4,6 +4,7 @@
 解析游戏日志，提取结构化信息。
 """
 
+from __future__ import annotations
 import re
 from dataclasses import dataclass
 from datetime import datetime

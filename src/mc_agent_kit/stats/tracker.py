@@ -4,6 +4,7 @@ API 使用统计追踪器
 追踪和统计 API 使用情况，帮助开发者了解热门 API 和问题 API。
 """
 
+from __future__ import annotations
 import json
 import os
 from dataclasses import dataclass, field

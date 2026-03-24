@@ -4,6 +4,7 @@
 管理项目模板和代码模板。
 """
 
+from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any

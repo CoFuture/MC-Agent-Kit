@@ -4,6 +4,7 @@
 基于 ChromaDB 实现向量存储和检索功能。
 """
 
+from __future__ import annotations
 import hashlib
 import logging
 from dataclasses import dataclass, field

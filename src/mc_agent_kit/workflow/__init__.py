@@ -4,6 +4,12 @@
 整合 MCP 闭环：查文档 → 创建项目 → 启动测试 → 诊断错误
 """
 
+from .batch_workflow import (
+    BatchWorkflow,
+    WorkflowResult,
+    WorkflowStatus,
+    WorkflowStep,
+)
 from .cache import (
     CacheEntry,
     WorkflowCache,
@@ -42,6 +48,11 @@ from .enhanced import (
 )
 
 __all__ = [
+    # Batch workflow
+    "BatchWorkflow",
+    "WorkflowStatus",
+    "WorkflowStep",
+    "WorkflowResult",
     # End-to-end workflow
     "EndToEndWorkflow",
     "WorkflowConfig",

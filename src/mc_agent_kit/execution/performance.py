@@ -4,6 +4,7 @@
 提供代码性能分析、内存监控和性能报告功能。
 """
 
+from __future__ import annotations
 import cProfile
 import io
 import logging

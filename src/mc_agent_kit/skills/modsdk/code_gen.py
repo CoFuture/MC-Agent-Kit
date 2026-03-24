@@ -4,6 +4,7 @@ ModSDK 代码生成 Skill
 提供 ModSDK 代码生成功能，支持事件监听器、API 调用等模板。
 """
 
+from __future__ import annotations
 import logging
 from dataclasses import dataclass
 

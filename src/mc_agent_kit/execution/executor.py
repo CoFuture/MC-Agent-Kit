@@ -4,6 +4,7 @@
 执行 Python 代码并捕获结果，支持错误反馈和超时控制。
 """
 
+from __future__ import annotations
 import ast
 import logging
 import sys

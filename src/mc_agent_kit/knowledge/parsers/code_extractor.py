@@ -4,6 +4,7 @@
 从文档中提取和分析代码示例。
 """
 
+from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from enum import Enum

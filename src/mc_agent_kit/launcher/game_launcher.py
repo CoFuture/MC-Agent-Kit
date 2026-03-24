@@ -4,6 +4,7 @@
 启动 Minecraft 游戏进程，并管理其生命周期。
 """
 
+from __future__ import annotations
 import os
 import socket
 import subprocess

@@ -4,6 +4,7 @@
 支持文档变更检测和增量向量化。
 """
 
+from __future__ import annotations
 import hashlib
 import json
 import logging

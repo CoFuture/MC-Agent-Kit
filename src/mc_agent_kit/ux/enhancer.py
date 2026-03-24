@@ -4,6 +4,7 @@
 提供友好的 CLI 输出、错误消息增强和使用提示
 """
 
+from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum

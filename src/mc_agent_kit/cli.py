@@ -5,6 +5,7 @@ MC-Agent-Kit CLI
 命令行工具，用于调用 ModSDK Skills 和自动修复功能。
 """
 
+from __future__ import annotations
 import argparse
 import json
 import sys

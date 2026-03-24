@@ -5,6 +5,7 @@
 """
 
 
+from __future__ import annotations
 from .templates import CodeTemplate, TemplateParameter, TemplateType
 
 # 实体行为模板

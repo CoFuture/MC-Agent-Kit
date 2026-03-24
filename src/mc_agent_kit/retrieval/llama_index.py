@@ -4,6 +4,7 @@ LlamaIndex 集成模块
 提供与 LlamaIndex 框架的集成，支持高级 RAG 功能。
 """
 
+from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from pathlib import Path

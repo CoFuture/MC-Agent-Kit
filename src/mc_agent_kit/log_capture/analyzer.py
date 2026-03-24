@@ -4,6 +4,7 @@
 实现实时日志流处理、错误模式匹配和告警机制。
 """
 
+from __future__ import annotations
 import re
 import threading
 from collections import defaultdict

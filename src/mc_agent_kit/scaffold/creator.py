@@ -4,6 +4,7 @@
 提供 Addon 项目创建和管理功能。
 """
 
+from __future__ import annotations
 import json
 import uuid
 from dataclasses import dataclass

@@ -4,6 +4,7 @@
 提供知识库检索功能，支持关键词搜索、模块过滤、作用域过滤。
 """
 
+from __future__ import annotations
 import json
 import logging
 from pathlib import Path

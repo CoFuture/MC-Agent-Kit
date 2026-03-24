@@ -4,6 +4,7 @@ API 绑定生成器
 生成 ModSDK API 的类型存根文件 (.pyi) 和文档索引。
 """
 
+from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path

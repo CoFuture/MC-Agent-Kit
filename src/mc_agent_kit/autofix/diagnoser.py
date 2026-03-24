@@ -4,6 +4,7 @@
 分析错误日志，诊断问题并提供修复建议。
 """
 
+from __future__ import annotations
 import ast
 import re
 from dataclasses import dataclass, field

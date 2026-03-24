@@ -4,6 +4,7 @@
 提供工作流中间结果缓存，优化执行速度
 """
 
+from __future__ import annotations
 import hashlib
 import json
 import time

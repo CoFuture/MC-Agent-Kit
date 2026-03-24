@@ -4,6 +4,7 @@ Markdown 文档解析器
 解析 ModSDK Markdown 文档，提取结构化信息。
 """
 
+from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from typing import Any

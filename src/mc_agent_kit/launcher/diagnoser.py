@@ -4,6 +4,7 @@
 诊断游戏启动配置问题，帮助排查内存分配错误等问题。
 """
 
+from __future__ import annotations
 import json
 import os
 from dataclasses import dataclass, field

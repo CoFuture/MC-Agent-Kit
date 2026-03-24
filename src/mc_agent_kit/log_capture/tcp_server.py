@@ -4,6 +4,7 @@ TCP 日志服务器
 接收游戏进程发送的日志数据。
 """
 
+from __future__ import annotations
 import socket
 import threading
 from collections.abc import Callable

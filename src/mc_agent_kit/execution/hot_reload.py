@@ -4,6 +4,7 @@
 提供代码热重载功能，支持文件监控和自动重载。
 """
 
+from __future__ import annotations
 import hashlib
 import importlib
 import importlib.util

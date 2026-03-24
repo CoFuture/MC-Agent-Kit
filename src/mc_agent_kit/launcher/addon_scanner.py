@@ -4,6 +4,7 @@ Addon 扫描模块
 扫描 MC Studio 的 Addon 目录，提取 Addon 信息。
 """
 
+from __future__ import annotations
 import json
 import os
 from dataclasses import dataclass, field

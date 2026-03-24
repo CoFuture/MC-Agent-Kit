@@ -8,6 +8,7 @@
 - 缓存统计和清理
 """
 
+from __future__ import annotations
 import hashlib
 import json
 import time

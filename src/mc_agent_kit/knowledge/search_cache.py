@@ -8,6 +8,7 @@
 - 缓存预热功能
 """
 
+from __future__ import annotations
 import hashlib
 import json
 import time

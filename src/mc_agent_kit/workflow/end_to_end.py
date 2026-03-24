@@ -4,6 +4,7 @@
 实现 MVP 闭环：查文档 → 创建项目 → 启动测试 → 诊断错误
 """
 
+from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 from datetime import datetime

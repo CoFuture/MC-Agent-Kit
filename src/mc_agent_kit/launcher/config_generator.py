@@ -4,6 +4,7 @@
 生成游戏启动所需的 cppconfig 配置文件。
 """
 
+from __future__ import annotations
 import base64
 import json
 import os

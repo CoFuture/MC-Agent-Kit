@@ -4,6 +4,7 @@
 检查生成的代码质量，包括语法检查、风格检查和最佳实践检查。
 """
 
+from __future__ import annotations
 import ast
 import logging
 import re

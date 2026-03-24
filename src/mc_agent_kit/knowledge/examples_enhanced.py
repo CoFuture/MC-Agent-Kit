@@ -4,6 +4,7 @@
 管理代码示例，支持难度分级、API 关联和搜索优化。
 """
 
+from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from enum import Enum

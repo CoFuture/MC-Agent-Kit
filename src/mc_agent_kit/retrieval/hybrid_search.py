@@ -4,6 +4,7 @@
 结合关键词搜索和语义搜索，提供更准确的检索结果。
 """
 
+from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from typing import Any

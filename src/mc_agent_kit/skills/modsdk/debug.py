@@ -4,6 +4,7 @@ ModSDK 调试辅助 Skill
 提供错误诊断和解决方案建议功能。
 """
 
+from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass

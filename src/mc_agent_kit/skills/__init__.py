@@ -4,6 +4,7 @@ MC-Agent-Kit Skills 模块
 提供 AI Agent 的技能扩展接口。
 """
 
+from __future__ import annotations
 from .base import (
     BaseSkill,
     SkillCategory,
