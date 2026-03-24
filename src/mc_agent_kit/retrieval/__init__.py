@@ -1,7 +1,7 @@
 """
 MC-Agent-Kit 检索模块
 
-提供向量检索、语义搜索、混合搜索等功能。
+提供向量检索、语义搜索、混合搜索、增强检索等功能。
 """
 
 from .hybrid_search import HybridSearchConfig, HybridSearchEngine, HybridSearchResult
@@ -9,7 +9,80 @@ from .llama_index import LlamaIndexConfig, LlamaIndexRetriever
 from .semantic_search import IndexStats, SemanticSearchConfig, SemanticSearchEngine
 from .vector_store import Document, SearchResult, VectorStore, VectorStoreConfig
 
+# 增强检索模块（迭代 #62）
+from .enhanced_index import (
+    ChunkConfig,
+    ChunkStrategy,
+    DocumentChunk,
+    HNSWConfig,
+    HNSWIndex,
+    IndexCompressor,
+    IndexEntry,
+    IndexStats as EnhancedIndexStats,
+    IndexType,
+    IncrementalIndexer,
+    SemanticChunker,
+    get_hnsw_index,
+    get_incremental_indexer,
+    get_semantic_chunker,
+)
+from .embedding_manager import (
+    BatchEmbeddingResult,
+    CacheStrategy,
+    EmbeddingCache,
+    EmbeddingConfig,
+    EmbeddingManager,
+    EmbeddingModel,
+    EmbeddingModelType,
+    EmbeddingResult,
+    LocalEmbeddingModel,
+    MockEmbeddingModel,
+    embed,
+    embed_batch,
+    get_embedding_manager,
+)
+from .query_expansion import (
+    ExpansionStrategy,
+    ExpandedQuery,
+    FuzzyMatch,
+    FuzzyMatcher,
+    QueryExpander,
+    SearchResultFilter,
+    SynonymDictionary,
+    SynonymEntry,
+    expand_query,
+    fuzzy_match,
+    get_query_expander,
+    get_search_filter,
+    get_synonym_dictionary,
+)
+from .reranker import (
+    DiversityReranker,
+    HybridReranker,
+    RerankConfig,
+    RerankEngine,
+    RerankReport,
+    RerankResult,
+    RerankStrategy,
+    RelevanceReranker,
+    Reranker,
+    ScoreBasedReranker,
+    get_rerank_engine,
+    rerank,
+)
+from .enhanced_retrieval import (
+    EnhancedRetriever,
+    EnhancedSearchResult,
+    FusionConfig,
+    FusionStrategy,
+    ResultFusion,
+    SearchReport,
+    enhanced_search,
+    get_enhanced_retriever,
+)
+
 __all__ = [
+    # 原有模块
     "VectorStore",
     "VectorStoreConfig",
     "Document",
@@ -22,4 +95,69 @@ __all__ = [
     "HybridSearchConfig",
     "LlamaIndexRetriever",
     "LlamaIndexConfig",
+    # 增强索引
+    "ChunkConfig",
+    "ChunkStrategy",
+    "DocumentChunk",
+    "HNSWConfig",
+    "HNSWIndex",
+    "IndexCompressor",
+    "IndexEntry",
+    "EnhancedIndexStats",
+    "IndexType",
+    "IncrementalIndexer",
+    "SemanticChunker",
+    "get_hnsw_index",
+    "get_incremental_indexer",
+    "get_semantic_chunker",
+    # Embedding 管理
+    "BatchEmbeddingResult",
+    "CacheStrategy",
+    "EmbeddingCache",
+    "EmbeddingConfig",
+    "EmbeddingManager",
+    "EmbeddingModel",
+    "EmbeddingModelType",
+    "EmbeddingResult",
+    "LocalEmbeddingModel",
+    "MockEmbeddingModel",
+    "embed",
+    "embed_batch",
+    "get_embedding_manager",
+    # 查询扩展
+    "ExpansionStrategy",
+    "ExpandedQuery",
+    "FuzzyMatch",
+    "FuzzyMatcher",
+    "QueryExpander",
+    "SearchResultFilter",
+    "SynonymDictionary",
+    "SynonymEntry",
+    "expand_query",
+    "fuzzy_match",
+    "get_query_expander",
+    "get_search_filter",
+    "get_synonym_dictionary",
+    # 重排序
+    "DiversityReranker",
+    "HybridReranker",
+    "RerankConfig",
+    "RerankEngine",
+    "RerankReport",
+    "RerankResult",
+    "RerankStrategy",
+    "RelevanceReranker",
+    "Reranker",
+    "ScoreBasedReranker",
+    "get_rerank_engine",
+    "rerank",
+    # 增强检索
+    "EnhancedRetriever",
+    "EnhancedSearchResult",
+    "FusionConfig",
+    "FusionStrategy",
+    "ResultFusion",
+    "SearchReport",
+    "enhanced_search",
+    "get_enhanced_retriever",
 ]
