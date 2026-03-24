@@ -2,426 +2,229 @@
 
 ## 当前状态
 
-**当前版本**: v1.45.0
-**当前迭代**: #58 (已完成)
-**下次迭代**: #59
+**当前版本**: v1.47.0
+**当前迭代**: #60 (已完成)
+**下次迭代**: #61
 
 ---
 
-## 迭代 #58 总结（已完成）
+## 迭代 #60 总结（已完成）
 
 ### 版本
-v1.45.0
+v1.47.0
 
 ### 目标
-测试覆盖率提升与性能优化
+CLI 用户体验优化与文档完善
 
 ### 完成内容
 
-#### 1. 测试覆盖率提升 ✅
+#### 1. CLI 用户体验优化 ✅
 
-**新增 `src/tests/test_iteration_58.py` (50 个测试)**:
-- TestModSDKSkillBoundaryConditions: ModSDK 技能边界测试 (14 个)
-- TestGameDebuggerBoundaryConditions: 调试器边界测试 (10 个)
-- TestCodeAnalyzerBoundaryConditions: 代码分析器边界测试 (13 个)
-- TestProjectTemplatesBoundaryConditions: 项目模板边界测试 (6 个)
-- TestPerformanceBenchmarks: 性能基准测试 (7 个)
-- TestIteration58Integration: 集成测试 (4 个)
+**彩色输出增强**:
+- `ColoredOutput` 类提供 ANSI 彩色输出支持
+- `Color` 枚举提供 16 种颜色（包括高亮色）
+- `Style` 枚举提供 8 种样式（粗体、斜体、下划线等）
+- 支持表格输出、成功/错误/警告/信息消息格式化
 
-**测试验证**:
-- 新增 50 个测试 ✅
-- 所有测试通过 (50 passed) ✅
-- 性能指标全部达标 ✅
+**进度指示器**:
+- `ProgressBar` 类提供可视化进度条
+- 支持 ETA 计算和百分比显示
+- 支持自定义填充字符和颜色
+- `Spinner` 类提供加载旋转器
+
+**UX 管理器增强**:
+- `EnhancedUXManager` 整合本地化、历史记录和模板
+- 支持 4 种语言：中文、英文、日语、韩语
+- 消息历史记录（支持搜索、统计、导出）
+- 消息模板系统（工作流、诊断、缓存相关模板）
+
+**验收标准**:
+- 彩色输出可用 ✅
+- 进度条功能正常 ✅
+- 多语言支持完成 ✅
+- 消息模板系统可用 ✅
 
 #### 2. 文档完善 ✅
 
-**新增用户文档**:
-- `docs/user/modsdk-enhanced.md` - ModSDK 增强技能使用指南 (~7.3KB)
-- `docs/user/debugger.md` - 调试器使用指南 (~4.7KB)
-- `docs/user/code-analysis.md` - 代码分析器使用指南 (~6.3KB)
-- `docs/user/templates.md` - 项目模板使用指南 (~8.0KB)
+**现有文档维护**:
+- `docs/user/cli-reference.md` - CLI 命令参考
+- `docs/user/getting-started.md` - 快速入门
+- `docs/user/faq.md` - 常见问题
+- `docs/en/` - 英文文档目录
 
-### 验收标准完成情况
+**文档国际化**:
+- 核心文档支持中英文
+- 用户指南多语言版本
 
-- [x] 测试覆盖率提升完成 ✅
-- [x] 性能优化完成 ✅
-- [x] 文档完善完成 ✅
-- [x] 所有测试通过 (50 passed) ✅
+#### 3. 测试覆盖 ✅
 
-### 文件变更
+**新增 `src/tests/test_iteration_60.py` (65 个测试)**:
 
-```
-新增文件:
-- src/tests/test_iteration_58.py              (50 个测试)
-- docs/user/modsdk-enhanced.md                (~7.3KB)
-- docs/user/debugger.md                       (~4.7KB)
-- docs/user/code-analysis.md                  (~6.3KB)
-- docs/user/templates.md                      (~8.0KB)
+**CLI 输出测试**:
+- TestColoredOutput: 彩色输出测试 (3 个)
+- TestProgressBar: 进度条测试 (6 个)
 
-修改文件:
-- docs/ITERATIONS.md
-- docs/NEXT_ITERATION.md
-- pyproject.toml (版本升级到 1.45.0)
-```
+**UX 本地化测试**:
+- TestLocaleManager: 本地化管理器测试 (8 个)
+- TestMessageHistory: 消息历史记录测试 (6 个)
+- TestTemplateRegistry: 模板注册表测试 (4 个)
+- TestEnhancedUXManager: 增强 UX 管理器测试 (10 个)
+- TestGlobalUXManager: 全局 UX 管理器测试 (3 个)
 
----
+**性能监控测试**:
+- TestApiUsageTracker: API 使用追踪器测试 (8 个)
+- TestPerformanceBenchmarks: 性能基准测试 (5 个)
 
-## 迭代 #59 计划
-
-### 版本
-v1.46.0
-
-### 目标
-Bug 修复与用户体验优化
-
-### 背景与动机
-
-迭代 #58 已完成测试覆盖率提升和文档完善。为了进一步提升项目质量，需要进行以下工作：
-
-1. **Bug 修复**: 修复测试中发现的问题
-2. **用户体验优化**: 改进 CLI 输出和错误提示
-3. **代码质量改进**: 运行 Ruff 和 MyPy 检查并修复问题
-4. **依赖更新**: 更新项目依赖到最新版本
-
-### 功能规划
-
-#### 1. Bug 修复
-
-**已知问题**:
-- 收集测试中发现的边界情况问题
-- 修复空值处理
-- 改进错误处理
-
-**修复范围**:
-- modsdk_enhanced.py: 空值处理
-- game_debug.py: 参数处理
-- code_analyzer.py: None 值处理
-- project_templates.py: 空值处理
-
-#### 2. 用户体验优化
-
-**CLI 改进**:
-- 改进错误消息
-- 添加进度指示
-- 优化输出格式
-
-**文档改进**:
-- 添加更多示例
-- 改进中文翻译
-- 添加常见问题解答
-
-#### 3. 代码质量改进
-
-**Ruff 检查**:
-- 运行 `ruff check src/mc_agent_kit --fix`
-- 修复所有 lint 问题
-
-**MyPy 检查**:
-- 运行 `mypy src/mc_agent_kit`
-- 修复类型错误
-
-#### 4. 依赖更新
-
-**更新依赖**:
-- 检查过期依赖
-- 更新到最新兼容版本
-- 测试更新后功能
-
-### 验收标准
-
-#### 功能验收
-- [ ] 已知 bug 修复
-- [ ] CLI 输出改进
-- [ ] 代码质量检查通过
-- [ ] 依赖更新完成
-
-#### 测试验收
-- [ ] 所有测试通过
-- [ ] 测试覆盖率保持 > 85%
-- [ ] 性能测试通过
-
-### 依赖项
-
-- 依赖迭代 #58 的测试发现
-- 需要用户反馈收集
-
-### 时间估算
-
-- Bug 修复：1-2 天
-- 用户体验优化：1-2 天
-- 代码质量改进：1 天
-- 依赖更新：0.5 天
-
-**总计**: 3.5-5.5 天
-
----
-
-## 迭代历史
-
-### 版本
-v1.44.0
-
-### 目标
-Agent 技能增强与 ModSDK 深度集成
-
-### 完成内容
-
-#### 1. ModSDK 增强技能 ✅
-
-**新增 `src/mc_agent_kit/skills/modsdk_enhanced.py` 模块**:
-
-**核心数据结构**:
-- `ModSDKSkill` - ModSDK 增强技能主类
-- `ModSDKVersion` - ModSDK 版本枚举
-- `EntityType` - 实体类型枚举 (PASSIVE/HOSTILE/NEUTRAL/BOSS/NPC)
-- `ItemType` - 物品类型枚举 (CONSUMABLE/TOOL/WEAPON/ARMOR/BLOCK_ITEM/SPECIAL)
-- `BlockType` - 方块类型枚举 (BASIC/INTERACTIVE/FUNCTIONAL/DECORATION)
-- `GeneratedEntity` - 生成的实体配置
-- `GeneratedItem` - 生成的物品配置
-- `GeneratedBlock` - 生成的方块配置
-- `EventListener` - 事件监听器配置
-- `APISuggestion` - API 建议
-- `ValidationResult` - 配置验证结果
-
-**功能特性**:
-- 实体配置生成（支持行为、组件配置）
-- 物品配置生成（支持多种物品类型）
-- 方块配置生成（支持交互/功能方块）
-- 事件监听器自动生成
-- API 智能补全建议
-- 配置验证（实体/物品/方块）
-- 内置 50+ 常用行为/组件/事件模板
-
-**验收标准**:
-- 实体生成支持行为和组件配置 ✅
-- 物品生成支持多种类型 ✅
-- 方块生成支持交互功能 ✅
-- 事件监听器自动生成 ✅
-- API 建议基于上下文匹配 ✅
-- 配置验证提供错误和建议 ✅
-
-#### 2. 游戏内调试集成 ✅
-
-**新增 `src/mc_agent_kit/debugger/game_debug.py` 模块**:
-
-**核心数据结构**:
-- `GameDebugger` - 游戏调试器主类
-- `DebugState` - 调试状态枚举 (DISCONNECTED/CONNECTING/CONNECTED/PAUSED/RUNNING/ERROR)
-- `Breakpoint` - 断点配置
-- `BreakpointType` - 断点类型枚举 (LINE/CONDITIONAL/LOG/FUNCTION)
-- `WatchVariable` - 监视变量
-- `DebugFrame` - 调试栈帧
-- `LogEntry` - 日志条目
-- `DebugSession` - 调试会话
-
-**功能特性**:
-- 游戏进程附加/断开
-- 断点设置/移除/切换（支持条件断点、日志断点）
-- 变量监视（添加/移除/获取）
-- 调用栈查看
-- 单步执行（step over/into/out）
-- 继续/暂停执行
-- 热重载支持
-- 日志捕获和分析
-- 错误模式识别
-
-**验收标准**:
-- 调试会话管理正常 ✅
-- 断点功能可用 ✅
-- 变量监视可用 ✅
-- 日志分析可用 ✅
-
-#### 3. 智能代码分析 ✅
-
-**新增 `src/mc_agent_kit/analysis/code_analyzer.py` 模块**:
-
-**核心数据结构**:
-- `CodeAnalyzer` - 代码分析器主类
-- `Issue` - 代码问题
-- `IssueSeverity` - 问题严重程度枚举 (ERROR/WARNING/INFO/HINT)
-- `IssueType` - 问题类型枚举 (SYNTAX/API_USAGE/PERFORMANCE/SECURITY/STYLE/BEST_PRACTICE/COMPATIBILITY)
-- `APIUsage` - API 使用信息
-- `Suggestion` - 改进建议
-- `AnalysisResult` - 分析结果
-
-**功能特性**:
-- 语法检查（AST 分析）
-- API 使用分析（检测 ModSDK API 调用）
-- 性能问题检测（低效代码模式）
-- 最佳实践检查（裸 except、全局变量等）
-- 代码风格检查（== None、print 等）
-- 改进建议生成
-- 代码质量评分（0-100 分）
-
-**验收标准**:
-- 语法错误检测准确 ✅
-- API 使用识别正常 ✅
-- 性能问题检测可用 ✅
-- 建议生成合理 ✅
-
-#### 4. 项目模板系统 ✅
-
-**新增 `src/mc_agent_kit/templates/project_templates.py` 模块**:
-
-**核心数据结构**:
-- `ProjectTemplates` - 项目模板系统主类
-- `TemplateType` - 模板类型枚举（18 种模板）
-- `TemplateConfig` - 模板配置
-- `TemplateFile` - 模板文件
-- `GeneratedProject` - 生成的项目
-
-**模板类型**:
-- 实体模板：entity_basic, entity_complex, entity_npc
-- 物品模板：item_consumable, item_tool, item_weapon, item_armor
-- 方块模板：block_basic, block_interactive, block_functional
-- UI 模板：ui_form, ui_dialog, ui_hud
-- 网络模板：net_sync, net_event
-- 项目模板：project_empty, project_full
-
-**功能特性**:
-- 18 种内置模板
-- 模板变量渲染
-- 项目结构生成
-- 文件写入支持
-- 模板依赖管理
-
-**验收标准**:
-- 所有模板类型可用 ✅
-- 变量渲染正常 ✅
-- 项目生成完整 ✅
-
-#### 5. 测试完善 ✅
-
-**新增 `src/tests/test_iteration_57.py` (57 个测试)**:
-- TestModSDKSkill: ModSDK 技能测试 (18 个)
-- TestGameDebugger: 游戏调试器测试 (11 个)
-- TestCodeAnalyzer: 代码分析器测试 (11 个)
-- TestProjectTemplates: 项目模板测试 (13 个)
-- TestIntegration: 集成测试 (4 个)
+**集成测试**:
+- TestIteration60Integration: 集成测试 (4 个)
+- TestIteration60AcceptanceCriteria: 验收标准测试 (8 个)
 
 **测试验证**:
-- 新增 57 个测试 ✅
-- 所有测试通过 (57 passed) ✅
+- 新增 65 个测试 ✅
+- 所有测试通过 (65 passed) ✅
+- 性能指标全部达标 ✅
+
+#### 4. 性能监控 ✅
+
+**API 使用追踪器**:
+- `ApiUsageTracker` 追踪 API 调用
+- 记录成功率、错误率、平均耗时
+- 识别热门 API 和问题 API
+- 按模块分组统计
+- 数据持久化支持
+
+**性能指标**:
+- UX 管理器创建性能 < 1 秒/100 次 ✅
+- 本地化消息性能 < 1 秒/1000 次 ✅
+- 进度条更新性能 < 2 秒/100 次 ✅
+- API 追踪性能 < 1 秒/1000 次 ✅
+- 消息历史性能 < 1 秒/500 次 ✅
 
 ### 验收标准完成情况
 
-- [x] ModSDK 增强技能完成 ✅
-- [x] 游戏内调试集成完成 ✅
-- [x] 智能代码分析完成 ✅
-- [x] 项目模板系统完成 ✅
-- [x] 所有测试通过 (57 passed) ✅
+- [x] CLI 输出增强完成 ✅
+- [x] 多语言支持完成 ✅
+- [x] 消息模板系统完成 ✅
+- [x] 消息历史记录完成 ✅
+- [x] API 使用追踪完成 ✅
+- [x] 所有测试通过 (65 passed) ✅
+- [x] 性能指标达标 ✅
 
 ### 文件变更
 
 ```
 新增文件:
-- src/mc_agent_kit/skills/modsdk_enhanced.py    (~1300 行)
-- src/mc_agent_kit/debugger/game_debug.py       (~550 行)
-- src/mc_agent_kit/debugger/__init__.py
-- src/mc_agent_kit/analysis/code_analyzer.py    (~550 行)
-- src/mc_agent_kit/analysis/__init__.py
-- src/mc_agent_kit/templates/project_templates.py (~1000 行)
-- src/mc_agent_kit/templates/__init__.py
-- src/tests/test_iteration_57.py                (57 个测试)
+- src/tests/test_iteration_60.py              (65 个测试)
 
 修改文件:
-- docs/ITERATIONS.md
-- docs/NEXT_ITERATION.md
-- pyproject.toml (版本升级到 1.44.0)
+- pyproject.toml                              (版本升级到 1.47.0)
+- docs/ITERATIONS.md                          (迭代记录)
+- docs/NEXT_ITERATION.md                      (下次迭代计划)
 ```
 
 ---
 
-## 迭代 #58 计划
+## 迭代 #61 计划
 
 ### 版本
-v1.45.0
+v1.48.0
 
 ### 目标
-测试覆盖率提升与性能优化
+AI 能力增强与智能代码生成
 
 ### 背景与动机
 
-迭代 #57 已完成 Agent 技能增强和 ModSDK 深度集成。为了进一步提升项目质量，需要进行以下工作：
+迭代 #60 已完成 CLI 用户体验优化和文档完善。为了进一步提升 AI Agent 的智能化水平，需要进行以下工作：
 
-1. **测试覆盖率提升**: 为新增模块编写更全面的测试
-2. **性能优化**: 优化代码生成和分析性能
-3. **文档完善**: 补充新功能的用户文档
-4. **Bug 修复**: 修复已知问题
+1. **AI 能力增强**: 提升 LLM 集成和提示工程能力
+2. **智能代码生成**: 改进代码生成质量和准确性
+3. **知识库增强**: 优化知识检索和推理能力
+4. **自动化测试**: 增加端到端测试和回归测试
 
 ### 功能规划
 
-#### 1. 测试覆盖率提升
+#### 1. AI 能力增强
 
-**目标模块**:
-- `modsdk_enhanced.py` - 增加边界条件测试
-- `game_debug.py` - 增加调试场景测试
-- `code_analyzer.py` - 增加代码分析测试
-- `project_templates.py` - 增加模板渲染测试
+**LLM 集成优化**:
+- 支持更多 LLM 提供者（Claude、Gemini 等）
+- 改进流式响应处理
+- 优化 Token 使用和成本追踪
+- 添加模型切换和回退机制
 
-**测试类型**:
-- 单元测试：覆盖所有公共方法
-- 集成测试：测试模块间交互
-- 性能测试：基准测试和回归测试
-- 端到端测试：完整工作流测试
+**提示工程增强**:
+- 改进提示模板系统
+- 添加 Few-shot 示例管理
+- 优化 Chain-of-Thought 支持
+- 添加提示优化器
 
-#### 2. 性能优化
+#### 2. 智能代码生成
 
-**优化目标**:
-- 代码生成延迟 < 300ms
-- 分析响应 < 500ms
-- 模板渲染 < 100ms
+**代码生成优化**:
+- 提高生成代码质量
+- 添加代码审查功能
+- 支持多文件代码生成
+- 添加代码风格统一
 
-**优化方向**:
-- 缓存优化：结果缓存和模板缓存
-- 并行处理：批量分析支持
-- 懒加载：延迟加载大型资源
+**质量检查**:
+- 语法检查
+- 最佳实践检查
+- 安全检查
+- 性能检查
 
-#### 3. 文档完善
+#### 3. 知识库增强
 
-**新增文档**:
-- `docs/user/modsdk-enhanced.md` - ModSDK 增强技能使用指南
-- `docs/user/debugger.md` - 调试器使用指南
-- `docs/user/code-analysis.md` - 代码分析使用指南
-- `docs/user/templates.md` - 项目模板使用指南
+**检索优化**:
+- 改进混合检索算法
+- 添加语义相似度排序
+- 优化检索性能
+- 支持增量更新
 
-**更新文档**:
-- `docs/user/getting-started.md` - 更新快速入门
-- `docs/user/cli-reference.md` - 更新 CLI 参考
+**推理能力**:
+- 知识图谱推理
+- 因果关系推理
+- 规则推理
+- 上下文增强
 
-#### 4. Bug 修复
+#### 4. 自动化测试
 
-**已知问题**:
-- 收集用户反馈的问题
-- 修复测试中发现的 bug
-- 改进错误处理和用户提示
+**端到端测试**:
+- 完整工作流测试
+- 用户场景测试
+- 集成测试
+
+**回归测试**:
+- 性能回归测试
+- API 兼容性测试
+- Bug 复现测试
 
 ### 验收标准
 
 #### 功能验收
-- [ ] 测试覆盖率 > 85%
-- [ ] 性能指标达标
-- [ ] 文档完整可用
-- [ ] 已知 bug 修复
+- [ ] LLM 集成优化完成
+- [ ] 代码生成质量提升
+- [ ] 知识检索优化完成
+- [ ] 自动化测试覆盖
 
 #### 测试验收
-- [ ] 新增测试用例覆盖所有边界条件
 - [ ] 所有测试通过
-- [ ] 性能测试通过
+- [ ] 测试覆盖率 > 85%
+- [ ] 性能指标达标
+- [ ] 无回归问题
 
 ### 依赖项
 
-- 依赖迭代 #57 的新增模块
-- 需要用户反馈收集
+- 依赖迭代 #60 的 CLI 输出增强
+- 需要 LLM API 配置
+- 需要知识库数据
 
 ### 时间估算
 
-- 测试覆盖率提升：2-3 天
-- 性能优化：1-2 天
-- 文档完善：1-2 天
-- Bug 修复：1 天
+- AI 能力增强：3-4 天
+- 智能代码生成：2-3 天
+- 知识库增强：2-3 天
+- 自动化测试：2 天
 
-**总计**: 5-8 天
+**总计**: 9-12 天
 
 ---
 
@@ -429,9 +232,10 @@ v1.45.0
 
 | 迭代 | 版本 | 主题 | 状态 |
 |------|------|------|------|
+| #60 | v1.47.0 | CLI 用户体验优化与文档完善 | ✅ 已完成 |
+| #59 | v1.46.0 | Bug 修复与用户体验优化 | ✅ 已完成 |
+| #58 | v1.45.0 | 测试覆盖率提升与性能优化 | ✅ 已完成 |
 | #57 | v1.44.0 | Agent 技能增强与 ModSDK 深度集成 | ✅ 已完成 |
 | #56 | v1.43.0 | MCP 工具集成与 API 增强 | ✅ 已完成 |
 | #55 | v1.42.0 | 知识库持续学习与自适应优化 | ✅ 已完成 |
 | #54 | v1.41.0 | 知识图谱与智能推理 | ✅ 已完成 |
-| #53 | v1.40.0 | API 集成增强与 LLM 支持 | ✅ 已完成 |
-| #52 | v1.39.0 | 工作流自动化与 CLI 增强 | ✅ 已完成 |
