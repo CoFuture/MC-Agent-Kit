@@ -27,6 +27,20 @@ from .code_review import (
     ReviewSeverity,
     review_code,
 )
+from .context_manager import (
+    CodeContext,
+    CodeContextAnalyzer,
+    ContextMessage,
+    ContextSummary,
+    ContextType,
+    ContextWindow,
+    ConversationManager,
+    ProjectContext,
+    ProjectContextAnalyzer,
+    analyze_code_context,
+    analyze_project_context,
+    create_conversation_manager,
+)
 from .intelligent_fix import (
     DiagnosisResult,
     ErrorContext,
@@ -44,6 +58,17 @@ from .providers import (
     MockProvider,
     OllamaProvider,
     OpenAIProvider,
+)
+from .workflow import (
+    IntelligentWorkflow,
+    RequirementAnalyzer,
+    SolutionDesigner,
+    WorkflowContext,
+    WorkflowResult,
+    WorkflowStatus,
+    WorkflowStep,
+    WorkflowStepType,
+    run_workflow,
 )
 
 __all__ = [
@@ -85,4 +110,27 @@ __all__ = [
     "IntelligentFixer",
     "diagnose_error",
     "fix_error",
+    # Workflow
+    "IntelligentWorkflow",
+    "RequirementAnalyzer",
+    "SolutionDesigner",
+    "WorkflowContext",
+    "WorkflowResult",
+    "WorkflowStatus",
+    "WorkflowStep",
+    "WorkflowStepType",
+    "run_workflow",
+    # Context Management
+    "CodeContext",
+    "CodeContextAnalyzer",
+    "ContextMessage",
+    "ContextSummary",
+    "ContextType",
+    "ContextWindow",
+    "ConversationManager",
+    "ProjectContext",
+    "ProjectContextAnalyzer",
+    "analyze_code_context",
+    "analyze_project_context",
+    "create_conversation_manager",
 ]
