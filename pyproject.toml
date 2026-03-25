@@ -1,6 +1,6 @@
 [project]
 name = "mc-agent-kit"
-version = "1.60.0"
+version = "1.62.0"
 description = "MC-Agent-Kit - AI Agent toolkit for Minecraft NetEase ModSDK development"
 readme = "README.md"
 requires-python = ">=3.13"

@@ -4,6 +4,20 @@ LLM 集成模块
 提供统一的 LLM 接口，支持多种提供商。
 """
 
+from .api_doc_generator import (
+    ApiDocGenerator,
+    ApiDocResult,
+    ClassDoc,
+    DocFormat,
+    DocstringParser,
+    ExampleCode,
+    ExampleGenerator,
+    FunctionDoc,
+    ModuleDoc,
+    ParameterDoc,
+    generate_api_doc,
+    get_doc_generator,
+)
 from .base import (
     ChatMessage,
     ChatRole,
@@ -41,6 +55,17 @@ from .context_manager import (
     analyze_project_context,
     create_conversation_manager,
 )
+from .enhanced_context import (
+    CompressionResult,
+    ContextCategory,
+    ContextCompressor,
+    ContextPersistence,
+    ContextPriority,
+    CrossSessionContext,
+    EnhancedContextManager,
+    PrioritizedContextMessage,
+    get_enhanced_context_manager,
+)
 from .intelligent_fix import (
     DiagnosisResult,
     ErrorContext,
@@ -52,12 +77,39 @@ from .intelligent_fix import (
     fix_error,
 )
 from .manager import LLMManager, get_llm_manager
+from .model_selector import (
+    ModelCapability,
+    ModelFallbackManager,
+    ModelInfo,
+    ModelRegistry,
+    ModelSelectionResult,
+    ModelSelector,
+    TaskType,
+    get_model_registry,
+    get_model_selector,
+    select_model,
+)
 from .providers import (
     AnthropicProvider,
     GeminiProvider,
     MockProvider,
     OllamaProvider,
     OpenAIProvider,
+)
+from .stream_manager import (
+    LargeFileStreamer,
+    StreamBuffer,
+    StreamCheckpoint,
+    StreamCheckpointManager,
+    StreamError,
+    StreamErrorHandler,
+    StreamErrorType,
+    StreamManager,
+    StreamProgress,
+    StreamResult,
+    StreamState,
+    get_stream_manager,
+    process_stream,
 )
 from .workflow import (
     IntelligentWorkflow,
@@ -133,4 +185,52 @@ __all__ = [
     "analyze_code_context",
     "analyze_project_context",
     "create_conversation_manager",
+    # Model Selector (Iteration 75)
+    "ModelCapability",
+    "ModelFallbackManager",
+    "ModelInfo",
+    "ModelRegistry",
+    "ModelSelectionResult",
+    "ModelSelector",
+    "TaskType",
+    "get_model_registry",
+    "get_model_selector",
+    "select_model",
+    # Stream Manager (Iteration 75)
+    "LargeFileStreamer",
+    "StreamBuffer",
+    "StreamCheckpoint",
+    "StreamCheckpointManager",
+    "StreamError",
+    "StreamErrorHandler",
+    "StreamErrorType",
+    "StreamManager",
+    "StreamProgress",
+    "StreamResult",
+    "StreamState",
+    "get_stream_manager",
+    "process_stream",
+    # Enhanced Context (Iteration 75)
+    "CompressionResult",
+    "ContextCategory",
+    "ContextCompressor",
+    "ContextPersistence",
+    "ContextPriority",
+    "CrossSessionContext",
+    "EnhancedContextManager",
+    "PrioritizedContextMessage",
+    "get_enhanced_context_manager",
+    # API Doc Generator (Iteration 75)
+    "ApiDocGenerator",
+    "ApiDocResult",
+    "ClassDoc",
+    "DocFormat",
+    "DocstringParser",
+    "ExampleCode",
+    "ExampleGenerator",
+    "FunctionDoc",
+    "ModuleDoc",
+    "ParameterDoc",
+    "generate_api_doc",
+    "get_doc_generator",
 ]
