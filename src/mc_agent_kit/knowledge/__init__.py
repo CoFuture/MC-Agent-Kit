@@ -38,6 +38,40 @@ from .search_cache import (
     create_search_cache,
 )
 
+# Iteration #71: 统一索引模块
+from .unified_index import (
+    CodeBlock,
+    EntryScope,
+    EntryType,
+    IndexStats,
+    Parameter,
+    RelatedAPI,
+    UnifiedEntry,
+)
+
+# Iteration #71: 示例代码库
+from .example_library import (
+    ExampleCode,
+    ExampleLibrary,
+    ExampleMetadata,
+    get_example,
+    get_example_library,
+    list_examples,
+    search_examples,
+)
+
+# Iteration #71: 增强检索
+from .enhanced_retriever import (
+    EnhancedKnowledgeRetriever,
+    SearchFilter,
+    SearchReport,
+    SearchResult as EnhancedSearchResult,
+    get_api_info,
+    get_event_info,
+    get_retriever,
+    search_knowledge,
+)
+
 __all__ = [
     "KnowledgeBase",
     "Document",
@@ -71,6 +105,31 @@ __all__ = [
     "ExampleManagerConfig",
     "ExampleSearchResult",
     "create_example_manager",
+    # Iteration #71: 统一索引
+    "CodeBlock",
+    "EntryScope",
+    "EntryType",
+    "IndexStats",
+    "Parameter",
+    "RelatedAPI",
+    "UnifiedEntry",
+    # Iteration #71: 示例代码库
+    "ExampleCode",
+    "ExampleLibrary",
+    "ExampleMetadata",
+    "get_example",
+    "get_example_library",
+    "list_examples",
+    "search_examples",
+    # Iteration #71: 增强检索
+    "EnhancedKnowledgeRetriever",
+    "SearchFilter",
+    "SearchReport",
+    "EnhancedSearchResult",
+    "get_api_info",
+    "get_event_info",
+    "get_retriever",
+    "search_knowledge",
 ]
 
 
