@@ -1,7 +1,7 @@
 [project]
 name = "mc-agent-kit"
-version = "1.59.0"
-description = "MC-Agent-Kit - AI Agent 工具集，用于 Minecraft 网易版 ModSDK 开发"
+version = "1.60.0"
+description = "MC-Agent-Kit - AI Agent 工具集，用于 Minecraft 网易�?ModSDK 开�?
 readme = "README.md"
 requires-python = ">=3.13"
 license = { text = "MIT" }
@@ -91,8 +91,7 @@ warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
 
-# 对核心模块启用严格检查
-[[tool.mypy.overrides]]
+# 对核心模块启用严格检�?[[tool.mypy.overrides]]
 module = [
     "mc_agent_kit.knowledge.*",
     "mc_agent_kit.knowledge_base.*",
@@ -107,8 +106,7 @@ module = [
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
 
-# 对 CLI 和实验性模块放宽检查
-[[tool.mypy.overrides]]
+# �?CLI 和实验性模块放宽检�?[[tool.mypy.overrides]]
 module = [
     "mc_agent_kit.cli",
     "mc_agent_kit.cli_optimize",

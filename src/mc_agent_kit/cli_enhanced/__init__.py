@@ -69,6 +69,21 @@ from mc_agent_kit.cli_enhanced.repl import (
     ReplState,
     create_repl,
 )
+from mc_agent_kit.cli_enhanced.enhanced_repl import (
+    CommandHistory as NewCommandHistory,
+    CompletionSuggestion,
+    EnhancedCompleter,
+    EnhancedReplSession,
+    OutputBuilder,
+    OutputFormat,
+    ProgressBar as NewProgressBar,
+    ProgressState,
+    Spinner as NewSpinner,
+    SyntaxHighlighter,
+    SyntaxToken,
+    create_enhanced_repl,
+    run_interactive,
+)
 
 __all__ = [
     # Completion
@@ -95,13 +110,27 @@ __all__ = [
     "create_error_enhancer",
     "format_error",
     "get_error_message",
-    # REPL
+    # REPL (legacy)
     "CLIRepl",
     "ReplConfig",
     "ReplCommand",
     "ReplResult",
     "ReplState",
     "create_repl",
+    # Enhanced REPL
+    "EnhancedReplSession",
+    "EnhancedCompleter",
+    "OutputBuilder",
+    "OutputFormat",
+    "CompletionSuggestion",
+    "SyntaxHighlighter",
+    "SyntaxToken",
+    "NewCommandHistory",
+    "NewProgressBar",
+    "NewSpinner",
+    "ProgressState",
+    "create_enhanced_repl",
+    "run_interactive",
     # History
     "CommandHistory",
     "HistoryEntry",
